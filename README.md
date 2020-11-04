@@ -2,7 +2,7 @@
 # UniFi Protect  Binding
 ## Usage
 Integrates UniFi Protect Camera System into OpenHAB. See https://ui.com/why-protect/
-This binding utilizes an undocumented json REST api that is present in the NVR. It works very similar
+This binding utilizes an undocumented json REST API that is present in the NVR. It works very similar
 to the Homebridge solution: and HomeAssistant solution: but is written in java and tailored for OpenHAB.
 
 ## About
@@ -14,7 +14,7 @@ OpenHAB Version: 2.5.x
 Example of usage
 - Detect Motion and trigger other system (Notifications, Alexa, Google Home, turn on lights, sound an alarm etc)
 - Turn on and off notifications, can be used together with presence detection.
-- View general information about Cameras and NVR, for instance check harddrive health and storage.
+- View general information about Cameras and NVR, for instance check hard-drive health and storage.
 - Reboot Cameras
 - Turn on / off IR - leds
 - Turn on / off Recording from the camera
@@ -24,18 +24,18 @@ Example of usage
 - Download a thumbnail of latest motion event
 - Download a snapshot from the Camera
 - Download an anonymous snapshot (needed if more than you require snapshots more frequent than every 10 seconds)
-- Download a Heatmap of latest recorded motion event
+- Download a Heat map of latest recorded motion event
 
 ## Supported hardware
 - UniFi Protect Cloud Key Gen2+
 - UniFi Dream Machine / Pro NOT SUPPORTED (Support can be added at a later stage)
 - Any UniFi Protect Camera
 - UniFi NVR NOT SUPPORTED (Same as UDMP)
-- UniFi Doorbell NOT SUPPORTED (Support canbe added at a later stage)
+- UniFi Doorbell NOT SUPPORTED (Support can be added at a later stage)
 
 The reason why UniFi NVR and UniFi Dream Machine/Pro is not supported is because they
 are built on UniFi OS and have a slightly different json/rest protocol. For UniFi OS
-it is possible to subscripe to a event subscription protol over websockets, thus removing
+it is possible to subscribe to an event subscription protocol over web sockets, thus removing
 polling the API for events. This could probably be added in the future, but right now
 I don't have any UniFi OS hardware to test / develop this.
 
@@ -53,7 +53,7 @@ enable it yourself
 * `camera` -  A UniFi Camera G3/G4 etc
 
 ## Discovery
-Discovery of cameras is possible. Background autodiscovery is turned off and the Controller / NVR needs
+Discovery of cameras is possible. Background auto discovery is turned off and the Controller / NVR needs
 to be added manually before you can discover any devices.
 
 ## Binding Configuration
@@ -71,13 +71,13 @@ The following table describes the Bridge configuration parameters:
 | Port                     | Port of the for NVR                                  | Required | 7443    |
 | Username                 | The username to access the UniFiProtect              | Required | -       |
 | Password                 | The password credential                              | Required | -       |
-| Refresh Inteval          | Refresh interval in seconds (Polling)                | Required | 10      |
-| Thumbnail Width          | Thumbanils will use this width                       | Required | 640     |
+| Refresh Interval         | Refresh interval in seconds (Polling)                | Required | 10      |
+| Thumbnail Width          | Thumbnails will use this width                       | Required | 640     |
 | Image Folder             | Images (snapshots etc) will be stored in this folder | Optional | -       |
 
 ## Thing Configuration
 
-You must add a NVR / Controllerr (Bridge) before adding Cameras.
+You must add a NVR / Controller (Bridge) before adding Cameras.
 
 The following table describes the Thing configuration parameters:
 
@@ -103,14 +103,14 @@ The NVR Channels
 | enable-automatic-backups     | Switch    | Automatic backups is enabled or disabled                             | Read        |
 | hosts                        | String    | Hosts string (multiple hosts)                                        | Read        |
 | host-short-name              | String    | The host short-name                                                  | Read        |
-| recording-retention-duration | Number    | Recording retetion duration in ms                                    | Read        |
+| recording-retention-duration | Number    | Recording retention duration in ms                                   | Read        |
 | total-size                   | Number    | Total storage size                                                   | Read        |
 | total-space-used             | Number    | Total space used                                                     | Read        |
-| hard-drive-0-status          | String    | Harddrive 0 status (present/absent)                                  | Read        |
-| hard-drive-0-name            | String    | Harddrive 0 name Manufacturer name                                   | Read        |
-| hard-drive-0-size            | Number    | Harddrive 0 size                                                     | Read        |
-| hard-drive-0-health          | String    | Harddrive 0 Health                                                   | Read        |
-| alerts                       | Switch    | Turn or or of notifications                                          | Read/Write  |
+| hard-drive-0-status          | String    | Hard drive 0 status (present/absent)                                 | Read        |
+| hard-drive-0-name            | String    | Hard drive 0 name Manufacturer name                                  | Read        |
+| hard-drive-0-size            | Number    | Hard drive 0 size                                                    | Read        |
+| hard-drive-0-health          | String    | Hard drive 0 Health                                                  | Read        |
+| alerts                       | Switch    | Turn on or of notifications                                          | Read/Write  |
 
 ### `alerts`
 
@@ -139,8 +139,8 @@ You need to configure the alerts yourself by logging into the controller.
 | high-fps-mode                | Switch    | Turn High FPS mode on / off (needs to be supported by camera)        | Read/Write  |
 | recording-mode               | Number    | Set recording mode for the camera On/Off/Motion                      | Read/Write  |
 | is-motion-detected           | Switch    | Turned on when a motion is detected                                  | Read        |
-| is-mic-enabled               | Switch    | If mic is enalbed / disabled                                         | Read        |
-| is-recording                 | Switch    | If the camera is recoring                                            | Read        |
+| is-mic-enabled               | Switch    | If mic is enabled / disabled                                         | Read        |
+| is-recording                 | Switch    | If the camera is recording                                           | Read        |
 | up-since                     | DateTime  | Camera has been up since                                             | Read        |
 | connected-since              | DateTime  | Camera has been connected since                                      | Read        |
 | last-seen                    | DateTime  | Camera was last seen                                                 | Read        |
@@ -212,7 +212,7 @@ Image   G3DMyCamHeatmapImg    "G3 Cam Heatmap Img" (G3DMyCam) { channel="unifipr
 ```
 
 rules/unifiprotect.rules
-This rules example will caputre a thumbnail and heatmap once a motion is triggered.
+This rules example will capture a thumbnail and heatmap once a motion is triggered.
 The delay is in order for the NVR to finish registering the event
 ```
 val String LOG = "UniFiProtect"
@@ -256,7 +256,7 @@ sitemap unifiprotect label="UniFiProtect Binding" {
 ```
 
 ## Manual Install
-Get jar-file from repo. Place jar-filen in the openhab-addons folder
+Get jar-file from repo. Place the jar-file in the openhab-addons folder
 https://github.com/seaside1/unifiprotect
 
 ## Roadmap
