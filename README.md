@@ -13,7 +13,7 @@ OpenHAB Version: 2.5.x
 ##  
 
 Example of usage
-- Detect Motion and trigger other system notifications, Alexa, Google Home, turn on lights, sound an alarm etc)
+- Detect Motion and trigger other system notifications, Alexa, Google Home, turn on lights, sound an alarm etc.
 - Turn on and off notifications, can be used together with presence detection.
 - View general information about Cameras and NVR, for instance check hard-drive health and storage.
 - Reboot Cameras
@@ -45,7 +45,7 @@ I don't have any UniFi OS hardware to test / develop this.
 
 ## Manual setup
 * Log into UniFi Protect and create a user with admin rights that you use
-* Manually log into all cameras where you want to use anonmous-snapshots, you have to
+* Manually log into all cameras where you want to use anonymous-snapshots, you have to
 enable it yourself
 
 ## Supported Things
