@@ -3,7 +3,8 @@
 ## Usage
 Integrates UniFi Protect Camera System into OpenHAB. See https://ui.com/why-protect/
 This binding utilizes an undocumented json REST API that is present in the NVR. It works very similar
-to the Homebridge solution: and HomeAssistant solution: but is written in java and tailored for OpenHAB.
+to the Homebridge solution: https://github.com/hjdhjd/homebridge-unifi-protect and HomeAssistant solution: https://github.com/briis/unifiprotect
+but is written in java and tailored for OpenHAB.
 
 ## About
 Maturity: ALPHA
@@ -12,7 +13,7 @@ OpenHAB Version: 2.5.x
 ##  
 
 Example of usage
-- Detect Motion and trigger other system (Notifications, Alexa, Google Home, turn on lights, sound an alarm etc)
+- Detect Motion and trigger other system notifications, Alexa, Google Home, turn on lights, sound an alarm etc)
 - Turn on and off notifications, can be used together with presence detection.
 - View general information about Cameras and NVR, for instance check hard-drive health and storage.
 - Reboot Cameras
