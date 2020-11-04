@@ -249,7 +249,7 @@ sitemap unifiprotect label="UniFiProtect Binding" {
 	Frame {
 		 Group item=sUniFiProtect {
 		   Group item=gUniFiProtect
-                   Switch item=G3DMyCamMode mappings=[0="Auto",1="On",2="FilterOnly"]
+                   Switch item=G3DMyCamIRMode mappings=[0="Auto",1="On",2="FilterOnly"]
                    Switch item=G3DMyCamRecordingMode mappings=[0="Never",1="Always",2="Motion"]
                  }
 	}
