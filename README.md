@@ -75,6 +75,8 @@ The following table describes the Bridge configuration parameters:
 | Refresh Interval         | Refresh interval in seconds (Polling)                | Required | 10      |
 | Thumbnail Width          | Thumbnails will use this width                       | Required | 640     |
 | Image Folder             | Images (snapshots etc) will be stored in this folder | Optional | -       |
+| Events Timer Period 	   | The number of seconds to look back for motion events | Optional | 30      |
+
 
 ## Thing Configuration
 
@@ -223,7 +225,7 @@ when
     Item G3DMyCamMotionDetect changed to ON
 then
     logInfo(LOG,"Motion detected by UniFiProtect")
-    createTimer(now.plusSeconds(10), [ |    
+    createTimer(now.plusSeconds(15), [ |    
         G3DMyCamThumbnail.sendCommand(ON)
         G3DMyCamHeatmap.sendCommand(ON) 
     ])
