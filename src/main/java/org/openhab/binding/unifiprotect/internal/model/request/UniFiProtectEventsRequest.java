@@ -18,6 +18,8 @@ import org.openhab.binding.unifiprotect.internal.UniFiProtectNvrThingConfig;
 import org.openhab.binding.unifiprotect.internal.UniFiProtectUtil;
 import org.openhab.binding.unifiprotect.internal.model.UniFiProtectNvrType;
 import org.openhab.binding.unifiprotect.internal.types.UniFiProtectCamera;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link UniFiProtectEventsRequest}
@@ -30,14 +32,19 @@ public class UniFiProtectEventsRequest extends UniFiProtectRequest {
     private static final String END = "end";
     private static final String START = "start";
     private static final String API_EVENTS = "/api/events";
-    private static final long TIME_DELAY_SECONDS_MILLIS = 70000;
+    private static final long TIME_DELAY_SECONDS_MILLIS = 10000;
+
+    private static final Logger logger = LoggerFactory.getLogger(UniFiProtectEventsRequest.class);
 
     public UniFiProtectEventsRequest(HttpClient httpClient, UniFiProtectCamera camera,
             UniFiProtectNvrThingConfig config, UniFiProtectNvrType nvrType) {
         super(httpClient, config);
         setPath(API_EVENTS);
         setHeader(nvrType.getAuthHeaderName(), nvrType.getAuthHeaderValue());
-        setQueryParameter(START, UniFiProtectUtil.calculateStartTimeForEvent(config.getEventsTimePeriodLength()));
-        setQueryParameter(END, System.currentTimeMillis() + TIME_DELAY_SECONDS_MILLIS);
+        long now = System.currentTimeMillis();
+        long start = UniFiProtectUtil.calculateStartTimeForEvent(config.getEventsTimePeriodLength());
+        setQueryParameter(START, start);
+        setQueryParameter(END, now + TIME_DELAY_SECONDS_MILLIS);
+        logger.info("Requesting events start seconds: {}s end seconds: {}s", (now - start), TIME_DELAY_SECONDS_MILLIS);
     }
 }
