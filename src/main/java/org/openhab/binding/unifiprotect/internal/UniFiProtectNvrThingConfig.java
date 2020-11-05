@@ -83,8 +83,14 @@ public class UniFiProtectNvrThingConfig {
 
     @Override
     public String toString() {
-        return "UniFiProtectNvrThingConfig [host=" + host + ", port=" + port + ", user=" + username + ", password="
-                + "********" + "]";
+        return "UniFiProtectNvrThingConfig [host=" + host + ", port=" + port + ", username=" + username + ", password="
+                + "*************" + ", refresh=" + refresh + ", eventsTimePeriodLength=" + eventsTimePeriodLength
+                + ", thumbnailWidth=" + thumbnailWidth + ", imageFolder=" + imageFolder + ", g4SnapshotWidth="
+                + g4SnapshotWidth + ", g4SnapshotHeight=" + g4SnapshotHeight + ", defaultSnapshotWidth="
+                + defaultSnapshotWidth + ", defaultSnapshotHeight=" + defaultSnapshotHeight
+                + ", g4SnapshotWidthAsString=" + g4SnapshotWidthAsString + ", g4SnapshotHeightAsString="
+                + g4SnapshotHeightAsString + ", defaultSnapshotWidthAsString=" + defaultSnapshotWidthAsString
+                + ", defaultSnapshotHeightAsString=" + defaultSnapshotHeightAsString + "]";
     }
 
     public int getRefresh() {

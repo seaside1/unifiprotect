@@ -30,7 +30,7 @@ public class UniFiProtectEventsRequest extends UniFiProtectRequest {
     private static final String END = "end";
     private static final String START = "start";
     private static final String API_EVENTS = "/api/events";
-    private static final long TEN_SECONDS_MILLIS = 20000;
+    private static final long TIME_DELAY_SECONDS_MILLIS = 70000;
 
     public UniFiProtectEventsRequest(HttpClient httpClient, UniFiProtectCamera camera,
             UniFiProtectNvrThingConfig config, UniFiProtectNvrType nvrType) {
@@ -38,6 +38,6 @@ public class UniFiProtectEventsRequest extends UniFiProtectRequest {
         setPath(API_EVENTS);
         setHeader(nvrType.getAuthHeaderName(), nvrType.getAuthHeaderValue());
         setQueryParameter(START, UniFiProtectUtil.calculateStartTimeForEvent(config.getEventsTimePeriodLength()));
-        setQueryParameter(END, System.currentTimeMillis() + TEN_SECONDS_MILLIS);
+        setQueryParameter(END, System.currentTimeMillis() + TIME_DELAY_SECONDS_MILLIS);
     }
 }
