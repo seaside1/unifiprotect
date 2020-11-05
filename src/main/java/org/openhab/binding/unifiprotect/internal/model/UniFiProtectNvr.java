@@ -90,11 +90,13 @@ public class UniFiProtectNvr {
                 .registerTypeAdapter(UniFiProtectCamera.class, uniFiProtectCameraInstanceCreator)
                 .setFieldNamingPolicy(FieldNamingPolicy.IDENTITY).create();
         controllerType = UniFiProtectNvrType.UNKNOWN;
+
     }
 
     public boolean init() {
         try {
             httpClient.start();
+            logger.info("Initializing the binding, with config: {}", config);
         } catch (Exception e) {
             logger.error("Failed to start binding: ", e);
             return false;

@@ -367,13 +367,11 @@ public class UniFiProtectCameraThingHandler extends BaseThingHandler {
         }
         if (command == OnOffType.ON) {
             logger.info("Getting Anon snapshot for camera: {}, ip: {}", camera.getName(), camera.getHost());
-            if (getNvr() == null) {
-                logger.error("No nvr could be found for camera: {} {}", camera.getMac(), camera.getName());
-                return;
-            }
             UniFiProtectImage anonSnapshot = getNvr().getAnonSnapshot(camera);
-            camera.setaSnapshotUrl(anonSnapshot.getFile().getAbsolutePath());
-            imageHandler.setAnonSnapshot(anonSnapshot);
+            if (anonSnapshot != null) {
+                camera.setaSnapshotUrl(anonSnapshot.getFile().getAbsolutePath());
+                imageHandler.setAnonSnapshot(anonSnapshot);
+            }
         }
     }
 
