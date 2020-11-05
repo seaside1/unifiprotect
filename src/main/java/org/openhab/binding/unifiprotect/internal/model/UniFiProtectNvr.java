@@ -287,7 +287,8 @@ public class UniFiProtectNvr {
         String jsonContent = eventsRequest.getJsonContent();
         UniFiProtectEvent[] events = UniFiProtectJsonParser.getEventsFromJson(gson, jsonContent);
         Arrays.stream(events).forEach(event -> logger.debug("Events resultT: {}", event));
-        String thumbnail = UniFiProtectUtil.findFirstThumbnailForCamera(events, camera);
+        final UniFiProtectEvent event = UniFiProtectUtil.findLastMotionEventForCamera(events, camera);
+        final String thumbnail = event != null ? event.getThumbnail() : null;
         if (thumbnail == null || thumbnail.isEmpty()) {
             logger.debug("Could not find any thumbnails in events for camera: {}", camera.getId());
             return null;
@@ -341,7 +342,8 @@ public class UniFiProtectNvr {
         String jsonContent = eventsRequest.getJsonContent();
         UniFiProtectEvent[] events = UniFiProtectJsonParser.getEventsFromJson(gson, jsonContent);
         Arrays.stream(events).forEach(event -> logger.debug("Events resultT: {}", event));
-        String heatmap = UniFiProtectUtil.findFirstHeatmapForCamera(events, camera);
+        UniFiProtectEvent event = UniFiProtectUtil.findLastMotionEventForCamera(events, camera);
+        String heatmap = event != null ? event.getHeatmap() : null;
         if (heatmap == null || heatmap.isEmpty()) {
             logger.debug("Could not find any heatMap in events for camera: {}", camera.getId());
             return null;

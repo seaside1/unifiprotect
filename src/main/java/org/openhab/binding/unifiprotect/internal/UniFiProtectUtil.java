@@ -103,15 +103,15 @@ public class UniFiProtectUtil {
     }
 
     @Nullable
-    public static String findFirstThumbnailForCamera(UniFiProtectEvent[] events, UniFiProtectCamera camera) {
-        final UniFiProtectEvent event = findFirstEventTypeForCamera(events, camera, EVENT_MOTION);
-        return event == null ? null : event.getThumbnail();
+    public static UniFiProtectEvent findFirstMotionEventForCamera(UniFiProtectEvent[] events,
+            UniFiProtectCamera camera) {
+        return findFirstEventTypeForCamera(events, camera, EVENT_MOTION);
     }
 
     @Nullable
-    public static String findFirstHeatmapForCamera(UniFiProtectEvent[] events, UniFiProtectCamera camera) {
-        final UniFiProtectEvent event = findFirstEventTypeForCamera(events, camera, EVENT_MOTION);
-        return event == null ? null : event.getHeatmap();
+    public static UniFiProtectEvent findLastMotionEventForCamera(UniFiProtectEvent[] events,
+            UniFiProtectCamera camera) {
+        return findLastEventTypeForCamera(events, camera, EVENT_MOTION);
     }
 
     @Nullable
@@ -123,6 +123,19 @@ public class UniFiProtectUtil {
 
         if (!filteredEvents.isEmpty()) {
             return filteredEvents.get(0);
+        }
+        return null;
+    }
+
+    @Nullable
+    public static UniFiProtectEvent findLastEventTypeForCamera(UniFiProtectEvent[] events, UniFiProtectCamera camera,
+            String eventType) {
+        List<UniFiProtectEvent> filteredEvents = Arrays.stream(events).filter(
+                e -> e.getCamera() != null && e.getCamera().equals(camera.getId()) && e.getType().equals(eventType))
+                .collect(Collectors.toList());
+
+        if (!filteredEvents.isEmpty()) {
+            return filteredEvents.get(filteredEvents.size() - 1);
         }
         return null;
     }

@@ -28,7 +28,7 @@ public class UniFiProtectNvrThingConfig {
     private String username = "";
     private String password = "";
     private int refresh = 10;
-    private int eventsTimePeriodLength = 30;
+    private int eventsTimePeriodLength = 40;
     private double thumbnailWidth = 640;
     private static final String TEMP_DIR_PROPERTY = "java.io.tmpdir";
     private String imageFolder = System.getProperty(TEMP_DIR_PROPERTY);

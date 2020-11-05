@@ -62,6 +62,11 @@
 				<label>Image Folder</label>
 				<description>The Image Folder to be used for storing thumbnails/snapshots</description>
 			</parameter>
+			<parameter name="eventsTimePeriodLength" type="integer" required="false">
+				<label>Events Timer Period</label>
+				<description>The number of seconds to look back for motion events</description>
+				<default>30</default>
+			</parameter>
 		</config-description>
 
 	</bridge-type>
