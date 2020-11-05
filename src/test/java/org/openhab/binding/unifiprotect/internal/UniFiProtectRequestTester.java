@@ -66,7 +66,7 @@ public class UniFiProtectRequestTester {
         user = properties.getProperty("user");
         password = properties.getProperty("password");
         host = properties.getProperty("host");
-        UniFiProtectNvrThingConfig config = new UniFiProtectNvrThingConfig();
+        config = new UniFiProtectNvrThingConfig();
         config.setHost(host);
         config.setPort(port);
         config.setPassword(password);
