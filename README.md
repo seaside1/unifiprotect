@@ -131,8 +131,9 @@ You need to configure the alerts yourself by logging into the controller.
 | is-dark                      | Switch    | If it is considered to be dark                                       | Read        |
 | status-light                 | Switch    | Turn on / off status light on the camera                             | Read/Write  |
 | reboot                       | Switch    | Reboot a camera                                                      | Read/Write  |
-| thumbnail                    | Switch    | Store a thumbnail of last motion event in the image folder           | Read/write  |
-| thumbnail-img                | Image     | Image to thumbnail last motion event                                 | Read        |
+| motion-heatmap               | Image     | An Heatmap of the last motion event                                  | Read        |
+| motion-thumbnail             | Image     | A thumbnail image of the last motion event                           | Read        |
+| motion-score                 | Number    | A numeric score for last motion event 0-100                          | Read        |
 | snapshot                     | Switch    | Capture a snapshot in the image folder                               | Read/Write  |
 | snapshot-img                 | Image     | The snapshot image                                                   | Read        |
 | a-snapshot                   | Switch    | Capture Anonymous snapshot, stored in the image folder               | Read/Write  |
@@ -208,28 +209,9 @@ Switch   G3DMyCamAnonSnapshot   "G3 Cam AnonSnapshot " (G3DMyCam) { channel="uni
 Image   G3DMyCamAnonSnapshotImg    "G3 Cam AnonSnapshot Img" (G3DMyCam) { channel="unifiprotect:camera:NVRID:MACADDRESS:a-snapshot-img" } 
 Switch   G3DMyCamSnapshot   "G3 Cam Snapshot " (G3DMyCam) { channel="unifiprotect:camera:NVRID:MACADDRESS:snapshot",expire="3s,command=OFF" } 
 Image   G3DMyCamSnapshotImg    "G3 Cam Snapshot Img" (G3DMyCam) { channel="unifiprotect:camera:NVRID:MACADDRESS:snapshot-img" } 
-Switch   G3DMyCamThumbnail   "G3 Cam Thumbnail" (G3DMyCam) { channel="unifiprotect:camera:NVRID:MACADDRESS:thumbnail",expire="3s,command=OFF" } 
-Image   G3DMyCamThumbnailImg    "G3 Cam Thumbnail Img" (G3DMyCam) { channel="unifiprotect:camera:NVRID:MACADDRESS:thumbnail-img" } 
-Switch   G3DMyCamHeatmap   "G3 Cam Heatmap" (G3DMyCam) { channel="unifiprotect:camera:NVRID:MACADDRESS:heatmap",expire="3s,command=OFF" } 
-Image   G3DMyCamHeatmapImg    "G3 Cam Heatmap Img" (G3DMyCam) { channel="unifiprotect:camera:NVRID:MACADDRESS:heatmap-img" } 
-```
-
-rules/unifiprotect.rules
-This rules example will capture a thumbnail and heatmap once a motion is triggered.
-The delay is in order for the NVR to finish registering the event
-```
-val String LOG = "UniFiProtect"
-
-rule "UniFiProtectMotionDetect"
-when 
-    Item G3DMyCamMotionDetect changed to ON
-then
-    logInfo(LOG,"Motion detected by UniFiProtect")
-    createTimer(now.plusSeconds(15), [ |    
-        G3DMyCamThumbnail.sendCommand(ON)
-        G3DMyCamHeatmap.sendCommand(ON) 
-    ])
-end
+Image   G3DMyMotionThumbnail    "G3 Thumbnail Img" (G3DMyCam) { channel="unifiprotect:camera:NVRID:MACADDRESS:motion-thumbnail" } 
+Image   G3DMyMotionHeatmap    "G3 Heatmap Img" (G3DMyCam) { channel="unifiprotect:camera:NVRID:MACADDRESS:motion-heatmap" } 
+Number  G3DMyMotionScore      "G3 Score [%d]" (G3DMyCam) { channel="unifiprotect:camera:NVRID:MACADDRESS:motion-score" } 
 ```
 transform/unifiprotect_ir.map
 ```
