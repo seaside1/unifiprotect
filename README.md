@@ -1,18 +1,17 @@
 ![alt text](https://raw.githubusercontent.com/seaside1/unifiprotect/main/img/logocombo.png)
 # UniFi Protect  Binding
-## Usage
+
+## About
 Integrates UniFi Protect Camera System into OpenHAB. See https://ui.com/why-protect/
 This binding utilizes an undocumented json REST API that is present in the NVR. It works very similar
 to the Homebridge solution: https://github.com/hjdhjd/homebridge-unifi-protect and HomeAssistant solution: https://github.com/briis/unifiprotect
 but is written in java and tailored for OpenHAB.
 
-## About
+## Usage
 Maturity: ALPHA
-OpenHAB Version: 2.5.x
+OpenHAB Version: 2.5.x 
 
-##  
-
-Example of usage
+## Example of usage
 - Detect Motion and trigger other system notifications, Alexa, Google Home, turn on lights, sound an alarm etc.
 - Turn on and off notifications, can be used together with presence detection.
 - View general information about Cameras and NVR, for instance check hard-drive health and storage.
