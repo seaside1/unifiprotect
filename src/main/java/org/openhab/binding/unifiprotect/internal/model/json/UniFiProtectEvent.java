@@ -25,7 +25,7 @@ public class UniFiProtectEvent {
     private @Nullable String type;
     private @Nullable Long start;
     private @Nullable Long end;
-    private @Nullable String camera;
+    private String camera = "";
     private @Nullable Long score;
     private @Nullable String id;
     private @Nullable MetaData metadata;

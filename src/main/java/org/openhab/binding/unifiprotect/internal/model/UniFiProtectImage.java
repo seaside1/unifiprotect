@@ -13,8 +13,12 @@
 package org.openhab.binding.unifiprotect.internal.model;
 
 import java.io.File;
+import java.io.IOException;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link UniFiProtectImage}
@@ -23,24 +27,28 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class UniFiProtectImage {
+    private final Logger logger = LoggerFactory.getLogger(UniFiProtectImage.class);
+
     @Override
     public String toString() {
-        return "UniFiProtectImage [dataLen=" + data != null ? "" + data.length
-                : "null" + ", mimeType=" + mimeType + ", file=" + file + "]";
+        return "UniFiProtectImage [mimeType=" + mimeType + ", file=" + file + "]";
     }
 
-    private final byte[] data;
     private final String mimeType;
     private final File file;
 
-    public UniFiProtectImage(byte[] data, String mimeType, File file) {
-        this.data = data;
+    public UniFiProtectImage(String mimeType, File file) {
         this.mimeType = mimeType;
         this.file = file;
     }
 
     public byte[] getData() {
-        return data;
+        try {
+            return FileUtils.readFileToByteArray(file);
+        } catch (IOException e) {
+            logger.error("Failed to read file on disk: {}", file.getAbsolutePath());
+            return new byte[0];
+        }
     }
 
     public String getMimeType() {

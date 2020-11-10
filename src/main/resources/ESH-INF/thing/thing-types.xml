@@ -84,10 +84,9 @@
 			<channel id="is-dark" typeId="is-dark" />
 			<channel id="status-light" typeId="status-light" />
 			<channel id="reboot" typeId="reboot" />
-			<channel id="thumbnail" typeId="thumbnail" />
-			<channel id="thumbnail-img" typeId="thumbnail-img" />
-			<channel id="heatmap" typeId="heatmap" />
-			<channel id="heatmap-img" typeId="heatmap-img" />
+			<channel id="motion-thumbnail" typeId="motion-thumbnail" />
+			<channel id="motion-heatmap" typeId="motion-heatmap" />
+			<channel id="motion-score" typeId="motion-score" />
 			<channel id="snapshot" typeId="snapshot" />
 			<channel id="snapshot-img" typeId="snapshot-img" />
 			<channel id="a-snapshot" typeId="a-snapshot" />
@@ -237,29 +236,23 @@
 		<description>If it is dark (infrared activated)</description>
 		<state readOnly="true"></state>
 	</channel-type>
-	<channel-type id="thumbnail-img">
-		<item-type>String</item-type>
-		<label>Thumbnail Image</label>
-		<description>Thumbnail Image</description>
+	<channel-type id="motion-thumbnail">
+		<item-type>Image</item-type>
+		<label>Motion Thumbnail</label>
+		<description>Will capture a thumbnail from last motion event</description>
 		<state readOnly="true"></state>
 	</channel-type>
-	<channel-type id="thumbnail">
-		<item-type>Switch</item-type>
-		<label>Thumbnail</label>
-		<description>Will capture a thumbnail from last motion event</description>
-		<state readOnly="false"></state>
-	</channel-type>
-	<channel-type id="heatmap-img">
-		<item-type>String</item-type>
+	<channel-type id="motion-heatmap">
+		<item-type>Image</item-type>
 		<label>Heatmap Image</label>
 		<description>Image of heatmap</description>
 		<state readOnly="true"></state>
 	</channel-type>
-	<channel-type id="heatmap">
-		<item-type>Switch</item-type>
-		<label>Heatmap</label>
-		<description>Will capture a heatmap picture for latest triggered motion</description>
-		<state readOnly="false"></state>
+	<channel-type id="motion-score">
+		<item-type>Number</item-type>
+		<label>Event Motion Score</label>
+		<description>Motion Score 0 - 100 for the event</description>
+		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="a-snapshot-img">
 		<item-type>Image</item-type>

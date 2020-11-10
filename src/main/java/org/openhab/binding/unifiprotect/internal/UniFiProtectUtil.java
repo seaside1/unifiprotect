@@ -17,6 +17,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -71,6 +75,20 @@ public class UniFiProtectUtil {
     @Nullable
     public static File writeThumbnailToImageFolder(String imageFolder, UniFiProtectCamera camera, byte[] content) {
         return writeFileToImageFolder(imageFolder, camera, content, THUMBNAIL_SUFFIX);
+    }
+
+    public static <T> CompletableFuture<T> scheduleAsync(ScheduledExecutorService executor,
+            Supplier<CompletableFuture<T>> command, long delay, TimeUnit unit) {
+        CompletableFuture<T> completableFuture = new CompletableFuture<>();
+        executor.schedule((() -> {
+            command.get().thenAccept(t -> {
+                completableFuture.complete(t);
+            }).exceptionally(t -> {
+                completableFuture.completeExceptionally(t);
+                return null;
+            });
+        }), delay, unit);
+        return completableFuture;
     }
 
     @Nullable

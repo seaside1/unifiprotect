@@ -14,6 +14,7 @@ package org.openhab.binding.unifiprotect.internal;
 
 import org.eclipse.smarthome.core.library.types.RawType;
 import org.openhab.binding.unifiprotect.internal.model.UniFiProtectImage;
+import org.openhab.binding.unifiprotect.internal.types.UniFiProtectCamera;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,45 +24,63 @@ import org.slf4j.LoggerFactory;
  * @author Joseph (Seaside) Hagberg - Initial contribution
  */
 public class UniFiProtectImageHandler {
+
+    private UniFiProtectImageCache heatmapCache = new UniFiProtectImageCache();
+
+    private UniFiProtectImageCache thumbnailCache = new UniFiProtectImageCache();
+
+    private UniFiProtectImageCache snapshotCache = new UniFiProtectImageCache();
+
+    private UniFiProtectImageCache anonSnapshotCache = new UniFiProtectImageCache();
+
+    // private UniFiProtectThumbnailCache imageCache = new UniFiProtectHeatmapCache();
+
     public static final String IMAGE_JPEG = "image/jpeg";
     public static final String IMAGE_PNG = "image/png";
-    private volatile RawType anonSnapshot;
-    private volatile RawType snapshot;
-    private volatile RawType thumbnail;
-    private volatile RawType heatmap;
+    // private volatile RawType anonSnapshot;
+    // private volatile RawType snapshot;
+    // private volatile RawType thumbnail;
+    // private volatile RawType heatmap;
     private final Logger logger = LoggerFactory.getLogger(UniFiProtectImageHandler.class);
 
-    public synchronized void setThumbnail(UniFiProtectImage thumbnail) {
-        this.thumbnail = new RawType(thumbnail.getData(), thumbnail.getMimeType());
+    public synchronized void setThumbnail(UniFiProtectCamera camera, UniFiProtectImage thumbnail) {
+        thumbnailCache.put(camera, thumbnail);
+        // this.thumbnail = new RawType(thumbnail.getData(), thumbnail.getMimeType());
     }
 
-    public synchronized void setSnapshot(UniFiProtectImage snapshot) {
-        this.snapshot = new RawType(snapshot.getData(), snapshot.getMimeType());
+    public synchronized void setSnapshot(UniFiProtectCamera camera, UniFiProtectImage snapshot) {
+        snapshotCache.put(camera, snapshot);
     }
 
-    public synchronized void setAnonSnapshot(UniFiProtectImage image) {
-        logger.debug("Setting image: {}", image);
-        anonSnapshot = new RawType(image.getData(), image.getMimeType());
+    public synchronized void setAnonSnapshot(UniFiProtectCamera camera, UniFiProtectImage image) {
+        anonSnapshotCache.put(camera, image);
+        // logger.debug("Setting image: {}", image);
+        // anonSnapshot = new RawType(image.getData(), image.getMimeType());
     }
 
-    public synchronized void setHeatmap(UniFiProtectImage image) {
-        logger.debug("Setting image: {}", image);
-        heatmap = new RawType(image.getData(), image.getMimeType());
+    public synchronized void setHeatmap(UniFiProtectCamera camera, UniFiProtectImage image) {
+        heatmapCache.put(camera, image);
+        // logger.debug("Setting image: {}", image);
+        // heatmap = new RawType(image.getData(), image.getMimeType());
     }
 
-    public synchronized RawType getAnonSnapshot() {
-        return anonSnapshot;
+    public synchronized RawType getAnonSnapshot(UniFiProtectCamera camera) {
+        final UniFiProtectImage image = anonSnapshotCache.getImage(camera);
+        return image != null ? new RawType(image.getData(), image.getMimeType()) : null;
     }
 
-    public synchronized RawType getSnapshot() {
-        return snapshot;
+    public synchronized RawType getSnapshot(UniFiProtectCamera camera) {
+        final UniFiProtectImage image = snapshotCache.getImage(camera);
+        return image != null ? new RawType(image.getData(), image.getMimeType()) : null;
     }
 
-    public synchronized RawType getThumbnail() {
-        return thumbnail;
+    public synchronized RawType getThumbnail(UniFiProtectCamera camera) {
+        final UniFiProtectImage image = thumbnailCache.getImage(camera);
+        return image != null ? new RawType(image.getData(), image.getMimeType()) : null;
     }
 
-    public synchronized RawType getHeatmap() {
-        return heatmap;
+    public synchronized RawType getHeatmap(UniFiProtectCamera camera) {
+        final UniFiProtectImage image = heatmapCache.getImage(camera);
+        return image != null ? new RawType(image.getData(), image.getMimeType()) : null;
     }
 }
