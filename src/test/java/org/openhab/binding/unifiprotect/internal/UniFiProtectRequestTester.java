@@ -26,6 +26,7 @@ import org.openhab.binding.unifiprotect.internal.model.UniFiProtectNvr;
 import org.openhab.binding.unifiprotect.internal.model.UniFiProtectNvrType;
 import org.openhab.binding.unifiprotect.internal.model.UniFiProtectNvrType.Type;
 import org.openhab.binding.unifiprotect.internal.model.json.UniFiProtectCameraInstanceCreator;
+import org.openhab.binding.unifiprotect.internal.model.json.UniFiProtectEvent;
 import org.openhab.binding.unifiprotect.internal.model.json.UniFiProtectJsonParser;
 import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectBootstrapRequest;
 import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectLoginRequest;
@@ -124,7 +125,10 @@ public class UniFiProtectRequestTester {
         cameraInsightCache.getCameras().stream().forEach(camera -> logger.debug(camera.toString()));
         UniFiProtectCamera camera = cameraInsightCache.getCamera("7483C22FA4A5");
         if (camera != null) {
-            nvr.getHeatmap(camera);
+            UniFiProtectEvent lastMotionEvent = nvr.getLastMotionEvent(camera);
+            if (lastMotionEvent != null) {
+                nvr.getHeatmap(camera, lastMotionEvent);
+            }
         }
     }
 
@@ -138,7 +142,10 @@ public class UniFiProtectRequestTester {
         UniFiProtectCameraCache cameraInsightCache = nvr.getCameraInsightCache();
         UniFiProtectCamera camera = cameraInsightCache.getCamera("7483C22FA4A5");
         if (camera != null) {
-            nvr.getThumbnail(camera);
+            UniFiProtectEvent lastMotionEvent = nvr.getLastMotionEvent(camera);
+            if (lastMotionEvent != null) {
+                nvr.getThumbnail(camera, lastMotionEvent);
+            }
         }
     }
 
@@ -260,13 +267,10 @@ public class UniFiProtectRequestTester {
         //
         UniFiProtectRequest request2 = new UniFiProtectBootstrapRequest(httpClient, config,
                 new UniFiProtectNvrType(Type.CLOUD_KEY_GEN2_PLUS, "Bearer " + auth, "Authorization"));
-        // request2.setPath("/api/bootstrap");
-        // request2.setHeader("Authorization", "Bearer " + auth);
         request2.sendRequest();
         String json = request.getResponse().getContentAsString();
         JsonObject jsonObject = UniFiProtectJsonParser.parseJson(gson, json);
         UniFiProtectCamera[] cameras = UniFiProtectJsonParser.getCamerasFromJson(gson, jsonObject);
         UniFiProtectNvrDevice nvrFromJson = UniFiProtectJsonParser.getNvrDeviceFromJson(gson, jsonObject);
     }
-
 }
