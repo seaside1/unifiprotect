@@ -16,7 +16,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.unifiprotect.internal.UniFiProtectNvrThingConfig;
-import org.openhab.binding.unifiprotect.internal.model.UniFiProtectNvrType;
 import org.openhab.binding.unifiprotect.internal.types.UniFiProtectCamera;
 
 /**
@@ -30,10 +29,10 @@ public class UniFiProtectRebootCameraRequest extends UniFiProtectRequest {
     private static final String REBOOT = "/reboot";
 
     public UniFiProtectRebootCameraRequest(HttpClient httpClient, UniFiProtectCamera camera,
-            UniFiProtectNvrThingConfig config, UniFiProtectNvrType nvrType) {
+            UniFiProtectNvrThingConfig config, String token) {
         super(httpClient, config);
         setPath(API_CAMERAS.concat(camera.getId()).concat(REBOOT));
-        setHeader(nvrType.getAuthHeaderName(), nvrType.getAuthHeaderValue());
+        setHeader(UniFiProtectRequest.HEADER_X_CSRF_TOKEN, token);
     }
 
     @Override

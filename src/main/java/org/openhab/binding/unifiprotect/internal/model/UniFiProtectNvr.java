@@ -14,6 +14,7 @@ package org.openhab.binding.unifiprotect.internal.model;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -30,7 +31,6 @@ import org.openhab.binding.unifiprotect.internal.model.UniFiProtectStatus.SendSt
 import org.openhab.binding.unifiprotect.internal.model.json.UniFiProtectCameraInstanceCreator;
 import org.openhab.binding.unifiprotect.internal.model.json.UniFiProtectEvent;
 import org.openhab.binding.unifiprotect.internal.model.json.UniFiProtectJsonParser;
-import org.openhab.binding.unifiprotect.internal.model.json.UniFiProtectLoginContext;
 import org.openhab.binding.unifiprotect.internal.model.json.UniFiProtectNvrInstanceCreator;
 import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectAlertsRequest;
 import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectAnonymousSnapshotRequest;
@@ -46,6 +46,7 @@ import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectRecor
 import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectSnapshotRequest;
 import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectStatusLightRequest;
 import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectThumbnailRequest;
+import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectTokenRequest;
 import org.openhab.binding.unifiprotect.internal.types.UniFiProtectCamera;
 import org.openhab.binding.unifiprotect.internal.types.UniFiProtectNvrDevice;
 import org.openhab.binding.unifiprotect.internal.types.UniFiProtectNvrUser;
@@ -66,8 +67,7 @@ import com.google.gson.JsonObject;
 public class UniFiProtectNvr {
 
     private static final int IMAGE_MIN_SIZE = 800;
-    private UniFiProtectNvrType controllerType;
-    private @Nullable volatile UniFiProtectLoginContext loginContext;
+    private volatile String token = "";
     private @Nullable UniFiProtectNvrDevice nvrDevice;
     private @Nullable UniFiProtectNvrUser nvrUser;
 
@@ -89,8 +89,6 @@ public class UniFiProtectNvr {
         gson = new GsonBuilder().registerTypeAdapter(UniFiProtectNvrDevice.class, uniFiProtectNvrInstanceCreator)
                 .registerTypeAdapter(UniFiProtectCamera.class, uniFiProtectCameraInstanceCreator)
                 .setFieldNamingPolicy(FieldNamingPolicy.IDENTITY).create();
-        controllerType = UniFiProtectNvrType.UNKNOWN;
-
     }
 
     public boolean init() {
@@ -106,17 +104,21 @@ public class UniFiProtectNvr {
     }
 
     public synchronized UniFiProtectStatus login() {
-        UniFiProtectLoginRequest request = new UniFiProtectLoginRequest(httpClient, getConfig());
-        UniFiProtectStatus sendRequest = request.sendRequest();
-        if (!requestSuccessFullySent(sendRequest)) {
-            return sendRequest;
+        UniFiProtectTokenRequest tokenRequest = new UniFiProtectTokenRequest(httpClient, config);
+        UniFiProtectStatus sendStatus = tokenRequest.sendRequest();
+        if (!requestSuccessFullySent(sendStatus)) {
+            return sendStatus;
         }
-        UniFiProtectNvrType nvrTypeFromResponse = request.getNvrTypeFromResponse();
-        controllerType = nvrTypeFromResponse == null ? UniFiProtectNvrType.UNKNOWN : nvrTypeFromResponse;
-        String jsonContent = request.getJsonContent();
-        loginContext = UniFiProtectJsonParser.getLoginContextFromJson(gson, jsonContent);
-        logger.debug("Login ControllerType Success: {}", controllerType);
-        return sendRequest;
+        token = tokenRequest.getToken();
+        if (token.isEmpty()) {
+            return UniFiProtectStatus.STATUS_TOKEN_MISSING;
+        }
+        UniFiProtectLoginRequest loginRequest = new UniFiProtectLoginRequest(token, httpClient, getConfig());
+        sendStatus = loginRequest.sendRequest();
+        if (!requestSuccessFullySent(sendStatus)) {
+            return sendStatus;
+        }
+        return sendStatus;
     }
 
     @SuppressWarnings("null")
@@ -130,15 +132,14 @@ public class UniFiProtectNvr {
             logger.error("Failed to updated Cameras since we can't seem to login");
             return status;
         }
-        UniFiProtectBootstrapRequest request = new UniFiProtectBootstrapRequest(httpClient, getConfig(),
-                controllerType);
+        UniFiProtectBootstrapRequest request = new UniFiProtectBootstrapRequest(httpClient, getConfig(), token);
         UniFiProtectStatus bootStrapRequestStatus = request.sendRequest();
         if (!requestSuccessFullySent(bootStrapRequestStatus)) {
             if (request.creditialsExpired()) {
                 logger.debug("Credentials expired, logging in again");
                 status = login();
                 if (status.getStatus() == SendStatus.SUCCESS) {
-                    request = new UniFiProtectBootstrapRequest(httpClient, getConfig(), controllerType);
+                    request = new UniFiProtectBootstrapRequest(httpClient, getConfig(), token);
                     bootStrapRequestStatus = request.sendRequest();
                 } else {
                     return bootStrapRequestStatus;
@@ -149,6 +150,7 @@ public class UniFiProtectNvr {
         String jsonContent = request.getJsonContent();
         JsonObject jsonObject = UniFiProtectJsonParser.parseJson(gson, jsonContent);
         UniFiProtectCamera[] cameras = UniFiProtectJsonParser.getCamerasFromJson(gson, jsonObject);
+        Arrays.stream(cameras).forEach(camera -> logger.debug("Camera: {}", camera));
         logger.debug("Got Cameras size: {}", cameras.length);
         getCameraInsightCache().clear();
         getCameraInsightCache().putAll(Arrays.asList(cameras));
@@ -157,20 +159,27 @@ public class UniFiProtectNvr {
         logger.debug("UniFiProtectNvrDevice: {}", getNvrDevice());
         UniFiProtectNvrUser[] nvrUsersFromJson = UniFiProtectJsonParser.getNvrUsersFromJson(gson, jsonObject);
         Optional<@Nullable UniFiProtectNvrUser> findAny = Arrays.stream(nvrUsersFromJson)
-                .filter(u -> (u.getLocalUsername() != null && u.getLocalUsername().equals(getConfig().getUserName())))
+                .filter(u -> (u.getLocalUsername() != null && u.getLocalUsername().equals(getConfig().getUserName()))
+                        || u.getFirstName() != null && u.getFirstName().toLowerCase().equals(getConfig().getUserName()))
                 .findAny();
-        nvrUser = findAny.get();
+        try {
+            nvrUser = findAny.get();
+        } catch (NoSuchElementException x) {
+            logger.error("Could not find any valid user. Looking for: {}", getConfig().getUserName());
+            Arrays.stream(nvrUsersFromJson).forEach(user -> logger.debug("User in response: {}", user));
+            logger.debug("Json response: {}", jsonContent);
+        }
+        if (nvrUser != null && (nvrUser.getLocalUsername() == null || nvrUser.getLocalUsername().isEmpty())) {
+            nvrUser.setLocalUsername(nvrUser.getFirstName().toLowerCase()); // Ugly workaround for localusername being
+                                                                            // null in response
+        }
         logger.debug("UniFiProtectNvrUser: {}", getNvrUser());
-
+        logger.debug("Login Token Success: {}", token);
         return bootStrapRequestStatus;
     }
 
     private boolean isLoggedIn() {
-        return controllerType != UniFiProtectNvrType.UNKNOWN;
-    }
-
-    public UniFiProtectNvrType getControllerType() {
-        return controllerType;
+        return token != null && !token.isEmpty();
     }
 
     public synchronized UniFiProtectCameraCache getCameraInsightCache() {
@@ -195,7 +204,7 @@ public class UniFiProtectNvr {
 
     public synchronized void setStatusLightOn(UniFiProtectCamera camera, boolean enabled) {
         UniFiProtectStatusLightRequest request = new UniFiProtectStatusLightRequest(httpClient, camera, getConfig(),
-                getControllerType(), enabled);
+                token, enabled);
         if (!requestSuccessFullySent(request.sendRequest())) {
             return;
         }
@@ -205,7 +214,7 @@ public class UniFiProtectNvr {
 
     public synchronized void rebootCamera(UniFiProtectCamera camera) {
         UniFiProtectRebootCameraRequest request = new UniFiProtectRebootCameraRequest(httpClient, camera, getConfig(),
-                getControllerType());
+                token);
         if (!requestSuccessFullySent(request.sendRequest())) {
             return;
         }
@@ -220,7 +229,7 @@ public class UniFiProtectNvr {
         }
 
         UniFiProtectRecordingModeRequest request = new UniFiProtectRecordingModeRequest(httpClient, camera, getConfig(),
-                getControllerType(), recordingMode);
+                token, recordingMode);
         if (!requestSuccessFullySent(request.sendRequest())) {
             return;
         }
@@ -230,10 +239,14 @@ public class UniFiProtectNvr {
 
     @SuppressWarnings("null")
     public synchronized void turnOnOrOffAlerts(boolean enable) {
-        String id = loginContext.getId();
-        if (loginContext != null && id != null && !id.isEmpty()) {
-            UniFiProtectAlertsRequest request = new UniFiProtectAlertsRequest(httpClient, getConfig(),
-                    getControllerType(), id, enable);
+        if (nvrUser == null) {
+            logger.error("No user set for UniFiProtect, can't turn on or off");
+            return;
+        }
+        String id = nvrUser.getId();
+        if (id != null && !id.isEmpty()) {
+            UniFiProtectAlertsRequest request = new UniFiProtectAlertsRequest(httpClient, getConfig(), token, id,
+                    enable);
             if (!requestSuccessFullySent(request.sendRequest())) {
                 return;
             }
@@ -248,8 +261,8 @@ public class UniFiProtectNvr {
             return;
         }
 
-        UniFiProtectIrModeRequest request = new UniFiProtectIrModeRequest(httpClient, camera, getConfig(),
-                getControllerType(), irMode);
+        UniFiProtectIrModeRequest request = new UniFiProtectIrModeRequest(httpClient, camera, getConfig(), token,
+                irMode);
         if (!requestSuccessFullySent(request.sendRequest())) {
             return;
         }
@@ -258,8 +271,8 @@ public class UniFiProtectNvr {
     }
 
     public synchronized void turnOnOrOffHdrMode(UniFiProtectCamera camera, boolean enable) {
-        UniFiProtectHdrModeRequest request = new UniFiProtectHdrModeRequest(httpClient, camera, getConfig(),
-                getControllerType(), enable);
+        UniFiProtectHdrModeRequest request = new UniFiProtectHdrModeRequest(httpClient, camera, getConfig(), token,
+                enable);
         if (!requestSuccessFullySent(request.sendRequest())) {
             return;
         }
@@ -269,7 +282,7 @@ public class UniFiProtectNvr {
 
     public synchronized void turnOnOrOffHighFpsMode(UniFiProtectCamera camera, boolean enable) {
         UniFiProtectHighFpsModeRequest request = new UniFiProtectHighFpsModeRequest(httpClient, camera, getConfig(),
-                getControllerType(), enable);
+                token, enable);
         if (!requestSuccessFullySent(request.sendRequest())) {
             return;
         }
@@ -285,12 +298,12 @@ public class UniFiProtectNvr {
             return null;
         }
         UniFiProtectImage thumbnailImage = null;
-        UniFiProtectThumbnailRequest request = new UniFiProtectThumbnailRequest(httpClient, camera, getControllerType(),
-                thumbnail, getConfig());
+        UniFiProtectThumbnailRequest request = new UniFiProtectThumbnailRequest(httpClient, camera, token, thumbnail,
+                getConfig());
         if (!requestSuccessFullySent(request.sendRequest())) {
             return null;
         }
-        if (UniFiProtectUtil.regquestHasContentOfSize(request, IMAGE_MIN_SIZE)) {
+        if (UniFiProtectUtil.requestHasContentOfSize(request, IMAGE_MIN_SIZE)) {
             byte[] data = request.getResponse().getContent();
             logger.debug("Content size for thumbnail request: {}", data.length);
             File thumbnailFile = UniFiProtectUtil.writeThumbnailToImageFolder(getConfig().getImageFolder(), camera,
@@ -324,8 +337,7 @@ public class UniFiProtectNvr {
 
     @SuppressWarnings("null")
     public synchronized @Nullable UniFiProtectEvent getLastMotionEvent(UniFiProtectCamera camera) {
-        UniFiProtectEventsRequest eventsRequest = new UniFiProtectEventsRequest(httpClient, camera, getConfig(),
-                getControllerType());
+        UniFiProtectEventsRequest eventsRequest = new UniFiProtectEventsRequest(httpClient, camera, getConfig(), token);
         if (!requestSuccessFullySent(eventsRequest.sendRequest())) {
             return null;
         }
@@ -343,13 +355,13 @@ public class UniFiProtectNvr {
             return null;
         }
         UniFiProtectImage heatmapImage = null;
-        UniFiProtectHeatmapRequest request = new UniFiProtectHeatmapRequest(httpClient, camera, getControllerType(),
-                heatmap, getConfig());
+        UniFiProtectHeatmapRequest request = new UniFiProtectHeatmapRequest(httpClient, camera, token, heatmap,
+                getConfig());
         if (!requestSuccessFullySent(request.sendRequest())) {
             return null;
         }
 
-        if (UniFiProtectUtil.regquestHasContentOfSize(request, IMAGE_MIN_SIZE)) {
+        if (UniFiProtectUtil.requestHasContentOfSize(request, IMAGE_MIN_SIZE)) {
             byte[] data = request.getResponse().getContent();
             File heatmapFile = UniFiProtectUtil.writeHeatmapToFile(getConfig().getImageFolder(), camera, data);
             logger.debug("Content size for heatmap request: {}", data.length);
@@ -365,20 +377,20 @@ public class UniFiProtectNvr {
     @SuppressWarnings("null")
     public synchronized @Nullable UniFiProtectImage getSnapshot(UniFiProtectCamera camera) {
         UniFiProtectImage snapshot = null;
-        UniFiProtectSnapshotRequest request = new UniFiProtectSnapshotRequest(httpClient, camera, getControllerType(),
-                getConfig());
+        UniFiProtectSnapshotRequest request = new UniFiProtectSnapshotRequest(httpClient, camera, token, getConfig());
         if (!requestSuccessFullySent(request.sendRequest())) {
             return null;
         }
-        if (UniFiProtectUtil.regquestHasContentOfSize(request, IMAGE_MIN_SIZE)) {
+        if (UniFiProtectUtil.requestHasContentOfSize(request, IMAGE_MIN_SIZE)) {
             logger.debug("Content size for snapshot request: {}", request.getResponse().getContent().length);
             File file = UniFiProtectUtil.writeSnapshotToFile(getConfig().getImageFolder(), camera,
                     request.getResponse().getContent());
             if (file != null) {
-                byte[] data = request.getResponse().getContent();
                 logger.debug("Wrote snapshot file: {} size: {}", file.getAbsolutePath(), file.length());
                 snapshot = new UniFiProtectImage(UniFiProtectImageHandler.IMAGE_JPEG, file);
             }
+        } else {
+            logger.debug("Snapshot not reccieved");
         }
         return snapshot;
     }
@@ -390,11 +402,11 @@ public class UniFiProtectNvr {
         }
         UniFiProtectImage anonSnapshotImage = null;
         UniFiProtectAnonymousSnapshotRequest request = new UniFiProtectAnonymousSnapshotRequest(httpClient, camera,
-                getControllerType(), getConfig());
+                token, getConfig());
         if (!requestSuccessFullySent(request.sendRequest())) {
             return null;
         }
-        if (UniFiProtectUtil.regquestHasContentOfSize(request, IMAGE_MIN_SIZE)) {
+        if (UniFiProtectUtil.requestHasContentOfSize(request, IMAGE_MIN_SIZE)) {
             logger.debug("Content size for anon snapshot request: {}", request.getResponse().getContent().length);
             final byte[] data = request.getResponse().getContent();
             File file = UniFiProtectUtil.writeAnonSnapshotToFile(getConfig().getImageFolder(), camera, data);

@@ -54,8 +54,9 @@ public abstract class UniFiProtectRequest {
 
     public static final String QUERY_PARAM_WIDTH = "w";
     public static final String QUERY_PARAM_HEIGHT = "h";
-    public static final String API_CAMERAS = "/api/cameras/";
+    public static final String API_CAMERAS = "/proxy/protect/api/cameras/";
     public static final String HTTP_METHOD_PATCH = "PATCH";
+    public static final String HEADER_X_CSRF_TOKEN = "x-csrf-token";
 
     private static final int HTTP_STATUS_200 = 200;
 
@@ -68,6 +69,7 @@ public abstract class UniFiProtectRequest {
     public static final String PROPERTY_CAMERAS = "cameras";
 
     private static final UniFiProtectStatus RESPONSE_STATUS_OK = new UniFiProtectStatus(SendStatus.SUCCESS);
+    private static final String SCHEME_SEPARATOR = "://";
 
     private final Logger logger = LoggerFactory.getLogger(UniFiProtectRequest.class);
 
@@ -75,8 +77,6 @@ public abstract class UniFiProtectRequest {
 
     @Nullable
     private String host;
-
-    private int port;
 
     private String path = "/";
 
@@ -95,8 +95,6 @@ public abstract class UniFiProtectRequest {
     public UniFiProtectRequest(HttpClient httpClient, UniFiProtectNvrThingConfig config) {
         this.httpClient = httpClient;
         this.setHost(config.getHost());
-        this.setPort(config.getPort());
-
     }
 
     public synchronized void setPath(String path) {
@@ -183,7 +181,7 @@ public abstract class UniFiProtectRequest {
 
     @SuppressWarnings("null")
     private synchronized Request newRequest() {
-        HttpURI uri = new HttpURI(getHttpScheme(), host, port, path);
+        HttpURI uri = new HttpURI(getHttpScheme().concat(SCHEME_SEPARATOR).concat(host).concat(path));
         final Request request = httpClient.newRequest(uri.toString()).timeout(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         request.method(getHttpMethod());
         for (Entry<String, String> entry : queryParameters.entrySet()) {
@@ -208,7 +206,7 @@ public abstract class UniFiProtectRequest {
             headers.keySet().stream().forEach(key -> logger.debug("Key: {}, value: {}", key, headers.get(key)));
             headers.keySet().stream().forEach(key -> request.header(key, headers.get((key))));
         }
-        logger.debug("Created new request host: {}, port: {}, path: {}", host, port, path);
+        logger.debug("Created new request host: {}, scheme: {}, path: {}", host, getHttpScheme(), path);
         return request;
     }
 
@@ -248,7 +246,4 @@ public abstract class UniFiProtectRequest {
         this.host = host;
     }
 
-    public void setPort(int port) {
-        this.port = port;
-    }
 }

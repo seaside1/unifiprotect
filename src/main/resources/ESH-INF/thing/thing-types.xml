@@ -20,12 +20,18 @@
 			<channel id="hosts" typeId="hosts" />
 			<channel id="host-short-name" typeId="host-short-name" />
 			<channel id="recording-retention-duration" typeId="recording-retention-duration" />
-			<channel id="total-size" typeId="total-size" />
-			<channel id="total-space-used" typeId="total-space-used" />
-			<channel id="hard-drive-0-status" typeId="hard-drive-0-status" />
-			<channel id="hard-drive-0-name" typeId="hard-drive-0-name" />
-			<channel id="hard-drive-0-size" typeId="hard-drive-0-size" />
-			<channel id="hard-drive-0-health" typeId="hard-drive-0-health" />
+			<channel id="storage-total-size" typeId="storage-total-size" />
+			<channel id="storage-type" typeId="storage-type" />
+			<channel id="storage-used" typeId="storage-used" />
+			<channel id="storage-available" typeId="storage-available" />
+			<channel id="cpu-average-load" typeId="cpu-average-load" />
+			<channel id="cpu-temperature" typeId="cpu-temperature" />
+			<channel id="mem-available" typeId="mem-available" />
+			<channel id="mem-free" typeId="mem-free" />
+			<channel id="mem-total" typeId="mem-total" />
+			<channel id="device-0-model" typeId="device-0-model" />
+			<channel id="device-0-size" typeId="device-0-size" />
+			<channel id="device-0-healthy" typeId="device-0-healthy" />
 			<channel id="alerts" typeId="alerts" />
 		</channels>
 		<config-description>
@@ -33,11 +39,6 @@
 				<label>Hostname</label>
 				<description>Hostname or IP address of the NVR</description>
 				<context>network-address</context>
-			</parameter>
-			<parameter name="port" type="integer" max="65535" min="1" required="true">
-				<label>Port</label>
-				<description>Port of the UniFi Protect NVR</description>
-				<default>7443</default>
 			</parameter>
 			<parameter name="username" type="text" required="true">
 				<label>Username</label>
@@ -116,40 +117,82 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-	<channel-type id="hard-drive-0-status">
+	<channel-type id="device-0-model">
 		<item-type>String</item-type>
-		<label>Hard drive 0 Status</label>
-		<description>Hard drive 0 Status</description>
+		<label>Device 0 Model</label>
+		<description>Device 0 Name</description>
 		<state readOnly="true"></state>
 	</channel-type>
-	<channel-type id="hard-drive-0-name">
-		<item-type>String</item-type>
-		<label>Hard drive 0 Name</label>
-		<description>Hard drive 0 Name</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="hard-drive-0-health">
-		<item-type>String</item-type>
-		<label>Hard drive 0 Health</label>
-		<description>Hard drive 0 Health</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="hard-drive-0-size">
+	<channel-type id="device-0-size">
 		<item-type>Number</item-type>
-		<label>Hard drive 0 Size</label>
-		<description>Hard drive 0 Size in bytes</description>
+		<label>Device 0 Size</label>
+		<description>Device 0 Size in bytes</description>
 		<state readOnly="true"></state>
 	</channel-type>
-	<channel-type id="total-space-used">
+	<channel-type id="device-0-healthy">
+		<item-type>Switch</item-type>
+		<label>Device 0 Healthy</label>
+		<description>Device 0 Healthy</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="cpu-average-load">
 		<item-type>Number</item-type>
-		<label>Total Space Used</label>
-		<description>Total Storage Space Used in bytes</description>
+		<label>Average CPU Load</label>
+		<description>Average CPU Load</description>
 		<state readOnly="true"></state>
 	</channel-type>
-	<channel-type id="total-size">
+	<channel-type id="cpu-temperature">
+		<item-type>Number</item-type>
+		<label>CPU Temperature</label>
+		<description>CPU Temperature</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="mem-available">
+		<item-type>Number</item-type>
+		<label>Available Memory</label>
+		<description>Available Memory</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="mem-free">
+		<item-type>Number</item-type>
+		<label>Free Memory</label>
+		<description>Free Memory</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="mem-total">
+		<item-type>Number</item-type>
+		<label>Total Memory</label>
+		<description>Total Memory</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="storage-available">
+		<item-type>Number</item-type>
+		<label>Total Storage Available</label>
+		<description>Total Storage Available in bytes</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="storage-used">
+		<item-type>Number</item-type>
+		<label>Total Storage Used</label>
+		<description>Total Storage Available in bytes</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="storage-is-recycling">
+		<item-type>Number</item-type>
+		<label>Total Storage Available</label>
+		<description>Total Storage Available in bytes</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="storage-total-size">
 		<item-type>Number</item-type>
 		<label>Total Storage Size</label>
 		<description>Total Storage Size in bytes</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="storage-type">
+		<item-type>String</item-type>
+		<label>Storage Type</label>
+		<description>Storage Type</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="recording-retention-duration">
@@ -374,4 +417,4 @@
 		<description>When last motion was detected</description>
 		<state readOnly="true"></state>
 	</channel-type>
-</thing:thing-descriptions> 
+</thing:thing-descriptions>

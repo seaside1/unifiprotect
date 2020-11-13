@@ -39,17 +39,6 @@ public class UniFiProtectJsonParser {
 
     public static final String PROPERTY_JSON_ID = "id";
 
-    public static @Nullable UniFiProtectLoginContext getLoginContextFromJson(Gson gson, String jsonContent) {
-        JsonObject jsonObject = parseJson(gson, jsonContent);
-        String id = jsonObject.get(PROPERTY_JSON_ID).getAsString();
-        if (id != null && !id.isEmpty()) {
-            UniFiProtectLoginContext context = new UniFiProtectLoginContext();
-            context.setId(id);
-            return context;
-        }
-        return null;
-    }
-
     public static JsonObject parseJson(Gson gson, String jsonContent) {
         return new JsonParser().parse(jsonContent).getAsJsonObject();
     }

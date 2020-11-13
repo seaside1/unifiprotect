@@ -24,7 +24,6 @@ import org.eclipse.jdt.annotation.Nullable;
 public class UniFiProtectNvrThingConfig {
 
     private String host = "";
-    private int port;
     private String username = "";
     private String password = "";
     private int refresh = 10;
@@ -65,14 +64,6 @@ public class UniFiProtectNvrThingConfig {
         this.username = userName;
     }
 
-    public int getPort() {
-        return port;
-    }
-
-    public void setPort(int port) {
-        this.port = port;
-    }
-
     public String getHost() {
         return host;
     }
@@ -83,14 +74,14 @@ public class UniFiProtectNvrThingConfig {
 
     @Override
     public String toString() {
-        return "UniFiProtectNvrThingConfig [host=" + host + ", port=" + port + ", username=" + username + ", password="
-                + "*************" + ", refresh=" + refresh + ", eventsTimePeriodLength=" + eventsTimePeriodLength
-                + ", thumbnailWidth=" + thumbnailWidth + ", imageFolder=" + imageFolder + ", g4SnapshotWidth="
-                + g4SnapshotWidth + ", g4SnapshotHeight=" + g4SnapshotHeight + ", defaultSnapshotWidth="
-                + defaultSnapshotWidth + ", defaultSnapshotHeight=" + defaultSnapshotHeight
-                + ", g4SnapshotWidthAsString=" + g4SnapshotWidthAsString + ", g4SnapshotHeightAsString="
-                + g4SnapshotHeightAsString + ", defaultSnapshotWidthAsString=" + defaultSnapshotWidthAsString
-                + ", defaultSnapshotHeightAsString=" + defaultSnapshotHeightAsString + "]";
+        return "UniFiProtectNvrThingConfig [host=" + host + ", username=" + username + ", password=" + "*************"
+                + ", refresh=" + refresh + ", eventsTimePeriodLength=" + eventsTimePeriodLength + ", thumbnailWidth="
+                + thumbnailWidth + ", imageFolder=" + imageFolder + ", g4SnapshotWidth=" + g4SnapshotWidth
+                + ", g4SnapshotHeight=" + g4SnapshotHeight + ", defaultSnapshotWidth=" + defaultSnapshotWidth
+                + ", defaultSnapshotHeight=" + defaultSnapshotHeight + ", g4SnapshotWidthAsString="
+                + g4SnapshotWidthAsString + ", g4SnapshotHeightAsString=" + g4SnapshotHeightAsString
+                + ", defaultSnapshotWidthAsString=" + defaultSnapshotWidthAsString + ", defaultSnapshotHeightAsString="
+                + defaultSnapshotHeightAsString + "]";
     }
 
     public int getRefresh() {

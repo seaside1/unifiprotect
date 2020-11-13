@@ -26,12 +26,16 @@ import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectReque
 public class UniFiProtectStatus {
 
     public static final UniFiProtectStatus STATUS_NOT_SENT = new UniFiProtectStatus(SendStatus.NOT_SENT);
+    public static final UniFiProtectStatus STATUS_TOKEN_MISSING = new UniFiProtectStatus(SendStatus.TOKEN_MISSING);
+
     private static final String MSG_EXECUTION_FAULT = "Execution fault when sending request to UniFi Protect";
     private static final String MSG_INTERRUPTED = "Interrupted while transmitting request to UniFi Protect";
     private static final String MSG_SUCCESS = "Sucessfully sent request to UniFi Protect";
     private static final String MSG_TIMEOUT = "Timeout while sending request to UniFi Protect";
     private static final String MSG_UNHANDLED_CASE = "Unhandled fault while sending request to UniFi Protect";
     private static final String MSG_NOT_SENT = "Request not sent";
+    private static final String MSG_TOKEN_MISSING = "Token is missing";
+
     private final SendStatus status;
     private final @Nullable Exception exception;
 
@@ -58,6 +62,7 @@ public class UniFiProtectStatus {
         TIMEOUT,
         INTERRUPTED,
         NOT_SENT,
+        TOKEN_MISSING,
         EXECUTION_FAULT;
     }
 
@@ -73,6 +78,8 @@ public class UniFiProtectStatus {
                 return MSG_NOT_SENT;
             case TIMEOUT:
                 return MSG_TIMEOUT;
+            case TOKEN_MISSING:
+                return MSG_TOKEN_MISSING;
             default:
                 return MSG_UNHANDLED_CASE;
         }

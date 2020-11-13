@@ -77,6 +77,7 @@ public class UniFiProtectCameraThingHandler extends BaseThingHandler {
 
     protected synchronized @Nullable UniFiProtectCamera getCamera(UniFiProtectNvr nvr) {
         UniFiProtectCamera camera = nvr.getCamera(config);
+        logger.debug("Getting camera: {}", camera != null ? camera.toString() : "NOTFOUND");
         return camera == null ? null : camera;
     }
 

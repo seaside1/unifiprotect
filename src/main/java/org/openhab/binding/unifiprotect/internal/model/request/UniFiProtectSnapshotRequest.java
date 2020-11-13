@@ -16,7 +16,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.unifiprotect.internal.UniFiProtectNvrThingConfig;
 import org.openhab.binding.unifiprotect.internal.UniFiProtectUtil;
-import org.openhab.binding.unifiprotect.internal.model.UniFiProtectNvrType;
 import org.openhab.binding.unifiprotect.internal.types.UniFiProtectCamera;
 
 /**
@@ -33,11 +32,11 @@ public class UniFiProtectSnapshotRequest extends UniFiProtectRequest {
     private static final String QUERY_PARAM_TIME_SINCE = "ts";
     private static final String TRUE = "true";
 
-    public UniFiProtectSnapshotRequest(HttpClient httpClient, UniFiProtectCamera camera, UniFiProtectNvrType nvrType,
+    public UniFiProtectSnapshotRequest(HttpClient httpClient, UniFiProtectCamera camera, String token,
             UniFiProtectNvrThingConfig config) {
         super(httpClient, config);
         setPath(API_CAMERAS.concat(camera.getId()).concat(SNAPSHOT));
-        setHeader(nvrType.getAuthHeaderName(), nvrType.getAuthHeaderValue());
+        setHeader(UniFiProtectRequest.HEADER_X_CSRF_TOKEN, token);
         final boolean isG4 = camera.getType().contains(G4_MODEL);
         setQueryParameter(QUERY_PARAM_WIDTH, isG4 ? config.getG4SnapshotWidth() : config.getDefaultSnapshotWidth());
         setQueryParameter(QUERY_PARAM_HEIGHT, isG4 ? config.getG4SnapshotHeight() : config.getDefaultSnapshotHeight());

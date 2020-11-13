@@ -16,29 +16,14 @@ import java.io.InputStream;
 import java.util.Properties;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.openhab.binding.unifiprotect.internal.model.UniFiProtectCameraCache;
 import org.openhab.binding.unifiprotect.internal.model.UniFiProtectNvr;
-import org.openhab.binding.unifiprotect.internal.model.UniFiProtectNvrType;
-import org.openhab.binding.unifiprotect.internal.model.UniFiProtectNvrType.Type;
-import org.openhab.binding.unifiprotect.internal.model.json.UniFiProtectCameraInstanceCreator;
 import org.openhab.binding.unifiprotect.internal.model.json.UniFiProtectEvent;
-import org.openhab.binding.unifiprotect.internal.model.json.UniFiProtectJsonParser;
-import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectBootstrapRequest;
-import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectLoginRequest;
-import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectRequest;
 import org.openhab.binding.unifiprotect.internal.types.UniFiProtectCamera;
-import org.openhab.binding.unifiprotect.internal.types.UniFiProtectNvrDevice;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.FieldNamingPolicy;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
@@ -55,7 +40,6 @@ public class UniFiProtectRequestTester {
     private String user = "";
     private String host = "";
     private String password = "";
-    private int port = 7443;
     private UniFiProtectNvrThingConfig config = new UniFiProtectNvrThingConfig();
 
     @Before
@@ -69,7 +53,6 @@ public class UniFiProtectRequestTester {
         host = properties.getProperty("host");
         config = new UniFiProtectNvrThingConfig();
         config.setHost(host);
-        config.setPort(port);
         config.setPassword(password);
         config.setUserName(user);
         config.setEventsTimePeriodLength(30000);
@@ -80,7 +63,6 @@ public class UniFiProtectRequestTester {
     }
 
     @Test
-    @Ignore
     public void getBootstrap() throws Exception {
         UniFiProtectNvr nvr = new UniFiProtectNvr(config);
         nvr.init();
@@ -91,7 +73,6 @@ public class UniFiProtectRequestTester {
     }
 
     @Test
-    @Ignore
     public void getAnonSnapshot() throws Exception {
         UniFiProtectNvr nvr = new UniFiProtectNvr(config);
         nvr.init();
@@ -103,7 +84,6 @@ public class UniFiProtectRequestTester {
     }
 
     @Test
-    @Ignore
     public void getSnapshot() throws Exception {
         UniFiProtectNvr nvr = new UniFiProtectNvr(config);
         nvr.init();
@@ -115,7 +95,6 @@ public class UniFiProtectRequestTester {
     }
 
     @Test
-    @Ignore
     public void getHeatmap() throws Exception {
         UniFiProtectNvr nvr = new UniFiProtectNvr(config);
         nvr.init();
@@ -133,7 +112,6 @@ public class UniFiProtectRequestTester {
     }
 
     @Test
-    @Ignore
     public void getThumbnail() throws Exception {
         UniFiProtectNvr nvr = new UniFiProtectNvr(config);
         nvr.init();
@@ -158,7 +136,7 @@ public class UniFiProtectRequestTester {
         nvr.refreshProtect();
         UniFiProtectCameraCache cameraInsightCache = nvr.getCameraInsightCache();
         cameraInsightCache.getCameras().stream().forEach(camera -> logger.debug(camera.toString()));
-        nvr.turnOnOrOffAlerts(true);
+        nvr.turnOnOrOffAlerts(false);
     }
 
     @Test
@@ -171,7 +149,7 @@ public class UniFiProtectRequestTester {
         UniFiProtectCameraCache cameraInsightCache = nvr.getCameraInsightCache();
         cameraInsightCache.getCameras().stream().forEach(camera -> logger.debug(camera.toString()));
         nvr.turnOnOrOffHighFpsMode(cameraInsightCache.getCameras().stream().reduce((first, second) -> second).get(),
-                true);
+                false);
     }
 
     @Test
@@ -236,41 +214,42 @@ public class UniFiProtectRequestTester {
         nvr.rebootCamera(cameraInsightCache.getCameras().stream().reduce((first, second) -> second).get());
     }
 
-    @Test
-    @Ignore
-    public void testCameraParser2() throws Exception {
-        UniFiProtectNvr nvr = new UniFiProtectNvr(config);
-        nvr.init();
-        nvr.login();
-        nvr.refreshProtect();
-        UniFiProtectCameraCache cameraInsightCache = nvr.getCameraInsightCache();
-        cameraInsightCache.getCameras().stream().forEach(camera -> logger.debug(camera.toString()));
-        nvr.setStatusLightOn(cameraInsightCache.getCameras().stream().reduce((first, second) -> second).get(), false);
-        nvr.rebootCamera(cameraInsightCache.getCameras().stream().reduce((first, second) -> second).get());
-    }
+    // @Test
+    // @Ignore
+    // public void testCameraParser2() throws Exception {
+    // UniFiProtectNvr nvr = new UniFiProtectNvr(config);
+    // nvr.init();
+    // nvr.login();
+    // nvr.refreshProtect();
+    // UniFiProtectCameraCache cameraInsightCache = nvr.getCameraInsightCache();
+    // cameraInsightCache.getCameras().stream().forEach(camera -> logger.debug(camera.toString()));
+    // nvr.setStatusLightOn(cameraInsightCache.getCameras().stream().reduce((first, second) -> second).get(), false);
+    // nvr.rebootCamera(cameraInsightCache.getCameras().stream().reduce((first, second) -> second).get());
+    // }
 
-    @SuppressWarnings("null")
-    @Ignore
-    public void testCameraParser() throws Exception {
-        // HttpClient httpClient = new HttpClient();
-        HttpClient httpClient = new HttpClient(new SslContextFactory(true));
-        httpClient.setFollowRedirects(false);
-        // Start HttpClient
-        httpClient.start();
-        UniFiProtectCameraInstanceCreator cameraInstanceCreator = new UniFiProtectCameraInstanceCreator();
-        Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.IDENTITY)
-                .registerTypeAdapter(UniFiProtectCamera.class, cameraInstanceCreator).create();
-        UniFiProtectLoginRequest request = new UniFiProtectLoginRequest(httpClient, config);
-        request.sendRequest();
-
-        String auth = request.getResponse().getHeaders().get("Authorization");
-        //
-        UniFiProtectRequest request2 = new UniFiProtectBootstrapRequest(httpClient, config,
-                new UniFiProtectNvrType(Type.CLOUD_KEY_GEN2_PLUS, "Bearer " + auth, "Authorization"));
-        request2.sendRequest();
-        String json = request.getResponse().getContentAsString();
-        JsonObject jsonObject = UniFiProtectJsonParser.parseJson(gson, json);
-        UniFiProtectCamera[] cameras = UniFiProtectJsonParser.getCamerasFromJson(gson, jsonObject);
-        UniFiProtectNvrDevice nvrFromJson = UniFiProtectJsonParser.getNvrDeviceFromJson(gson, jsonObject);
-    }
+    // @SuppressWarnings("null")
+    // @Ignore
+    // public void testCameraParser() throws Exception {
+    // // HttpClient httpClient = new HttpClient();
+    // HttpClient httpClient = new HttpClient(new SslContextFactory(true));
+    // httpClient.setFollowRedirects(false);
+    // // Start HttpClient
+    // httpClient.start();
+    // UniFiProtectCameraInstanceCreator cameraInstanceCreator = new UniFiProtectCameraInstanceCreator();
+    // Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.IDENTITY)
+    // .registerTypeAdapter(UniFiProtectCamera.class, cameraInstanceCreator).create();
+    //
+    // UniFiProtectLoginRequest request = new UniFiProtectLoginRequest(httpClient, config);
+    // request.sendRequest();
+    //
+    // String auth = request.getResponse().getHeaders().get("Authorization");
+    // //
+    // UniFiProtectRequest request2 = new UniFiProtectBootstrapRequest(httpClient, config,
+    // new UniFiProtectNvrType(Type.CLOUD_KEY_GEN2_PLUS, "Bearer " + auth, "Authorization"));
+    // request2.sendRequest();
+    // String json = request.getResponse().getContentAsString();
+    // JsonObject jsonObject = UniFiProtectJsonParser.parseJson(gson, json);
+    // UniFiProtectCamera[] cameras = UniFiProtectJsonParser.getCamerasFromJson(gson, jsonObject);
+    // UniFiProtectNvrDevice nvrFromJson = UniFiProtectJsonParser.getNvrDeviceFromJson(gson, jsonObject);
+    // }
 }
