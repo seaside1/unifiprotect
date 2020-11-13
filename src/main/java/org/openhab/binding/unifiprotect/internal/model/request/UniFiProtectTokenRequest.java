@@ -12,35 +12,36 @@
  */
 package org.openhab.binding.unifiprotect.internal.model.request;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
 import org.openhab.binding.unifiprotect.internal.UniFiProtectNvrThingConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link UniFiProtectLoginRequest}
+ * The {@link UniFiProtectTokenRequest}
  *
  * @author Joseph (Seaside) Hagberg - Initial contribution
  */
 @NonNullByDefault
-public class UniFiProtectLoginRequest extends UniFiProtectRequest {
+public class UniFiProtectTokenRequest extends UniFiProtectRequest {
 
     public static final String AUTH_PATH_UNIFI_OS = "/api/auth/login";
+    private final Logger logger = LoggerFactory.getLogger(UniFiProtectTokenRequest.class);
+    public static final String HEADER_X_CSRF_TOKEN = "X-CSRF-Token";
 
-    private static final String REMEMBER = "remember";
-    private static final String STRICT = "strict";
-    private static final String PASSWORD = "password";
-    private static final String USERNAME = "username";
-    private final Logger logger = LoggerFactory.getLogger(UniFiProtectLoginRequest.class);
-
-    public UniFiProtectLoginRequest(String token, HttpClient httpClient, UniFiProtectNvrThingConfig config) {
+    public UniFiProtectTokenRequest(HttpClient httpClient, UniFiProtectNvrThingConfig config) {
         super(httpClient, config);
         setPath(AUTH_PATH_UNIFI_OS);
-        setBodyParameter(USERNAME, config.getUserName());
-        setBodyParameter(PASSWORD, config.getPassword());
-        setBodyParameter(STRICT, false);
-        setBodyParameter(REMEMBER, false);
-        setHeader(HEADER_X_CSRF_TOKEN, token);
+    }
+
+    public String getToken() {
+        final ContentResponse response = getResponse();
+        return response != null && response.getHeaders() != null
+                && response.getHeaders().get(HEADER_X_CSRF_TOKEN) != null
+                        ? response.getHeaders().get(HEADER_X_CSRF_TOKEN)
+                        : StringUtils.EMPTY;
     }
 }

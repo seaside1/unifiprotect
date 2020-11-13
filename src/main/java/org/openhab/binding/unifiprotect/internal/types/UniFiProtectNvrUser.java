@@ -25,11 +25,13 @@ public class UniFiProtectNvrUser {
 
     private @Nullable Boolean enableNotifications;
     private @Nullable String localUsername;
+    private @Nullable String firstName;
+    private @Nullable String id;
 
     @Override
     public String toString() {
         return "UniFiProtectNvrUser [enableNotifications=" + enableNotifications + ", localUsername=" + localUsername
-                + "]";
+                + ", firstName=" + firstName + ", id=" + id + "]";
     }
 
     public @Nullable Boolean getEnableNotifications() {
@@ -46,6 +48,22 @@ public class UniFiProtectNvrUser {
 
     public void setLocalUsername(String localUsername) {
         this.localUsername = localUsername;
+    }
+
+    public @Nullable String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public @Nullable String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
 }

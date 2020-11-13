@@ -211,26 +211,6 @@ public class UniFiProtectNvrThingHandler extends BaseBridgeHandler {
                     state = StringType.valueOf(nvr.getNvrDevice().getFirmwareVersion());
                 }
                 break;
-            case HARD_DRIVE_0_HEALTH:
-                if (StringUtils.isNotBlank(nvr.getNvrDevice().getHardDrive0Health())) {
-                    state = StringType.valueOf(nvr.getNvrDevice().getHardDrive0Health());
-                }
-                break;
-            case HARD_DRIVE_0_NAME:
-                if (StringUtils.isNotBlank(nvr.getNvrDevice().getHardDrive0Name())) {
-                    state = StringType.valueOf(nvr.getNvrDevice().getHardDrive0Name());
-                }
-                break;
-            case HARD_DRIVE_0_SIZE:
-                if (nvr.getNvrDevice().getHardDrive0Size() != null) {
-                    state = new DecimalType(nvr.getNvrDevice().getHardDrive0Size());
-                }
-                break;
-            case HARD_DRIVE_0_STATUS:
-                if (StringUtils.isNotBlank(nvr.getNvrDevice().getHardDrive0Status())) {
-                    state = StringType.valueOf(nvr.getNvrDevice().getHardDrive0Status());
-                }
-                break;
             case HOST:
                 if (StringUtils.isNotBlank(nvr.getNvrDevice().getHost())) {
                     state = StringType.valueOf(nvr.getNvrDevice().getHost());
@@ -269,16 +249,6 @@ public class UniFiProtectNvrThingHandler extends BaseBridgeHandler {
                     state = new DecimalType(nvr.getNvrDevice().getRecordingRetentionDurationMs());
                 }
                 break;
-            case TOTAL_SIZE:
-                if (nvr.getNvrDevice().getStorageInfo().getTotalSize() != null) {
-                    state = new DecimalType(nvr.getNvrDevice().getStorageInfo().getTotalSize());
-                }
-                break;
-            case TOTAL_SPACE_USED:
-                if (nvr.getNvrDevice().getStorageInfo().getTotalSize() != null) {
-                    state = new DecimalType(nvr.getNvrDevice().getStorageInfo().getTotalSize());
-                }
-                break;
             case UPTIME:
                 if (nvr.getNvrDevice().getUptime() != null) {
                     state = new DecimalType(nvr.getNvrDevice().getUptime());
@@ -302,9 +272,70 @@ public class UniFiProtectNvrThingHandler extends BaseBridgeHandler {
                     logger.debug("Alert NVR val: {}:", enableNotifications.booleanValue());
                 }
                 break;
+            case CPU_AVERAGE_LOAD:
+                if (nvr.getNvrDevice().getSystemInfo().getCpu().getAverageLoad() != null) {
+                    state = new DecimalType(nvr.getNvrDevice().getSystemInfo().getCpu().getAverageLoad());
+                }
+                break;
+            case CPU_TEMPERATURE:
+                if (nvr.getNvrDevice().getSystemInfo().getCpu().getTemperature() != null) {
+                    state = new DecimalType(nvr.getNvrDevice().getSystemInfo().getCpu().getTemperature());
+                }
+                break;
+            case DEVICE_0_HEALTHY:
+                if (nvr.getNvrDevice().getSystemInfo().getStorage().getDevices()[0] != null) {
+                    state = OnOffType
+                            .from(nvr.getNvrDevice().getSystemInfo().getStorage().getDevices()[0].getHealthy());
+                }
+                break;
+            case DEVICE_0_MODEL:
+                if (nvr.getNvrDevice().getSystemInfo().getStorage().getDevices()[0] != null) {
+                    state = StringType
+                            .valueOf(nvr.getNvrDevice().getSystemInfo().getStorage().getDevices()[0].getModel());
+                }
+                break;
+            case DEVICE_0_SIZE:
+                if (nvr.getNvrDevice().getSystemInfo().getStorage().getDevices()[0] != null) {
+                    state = new DecimalType(nvr.getNvrDevice().getSystemInfo().getStorage().getDevices()[0].getSize());
+                }
+                break;
+            case MEM_AVAILABLE:
+                if (nvr.getNvrDevice().getSystemInfo().getMemory().getAvailable() != null) {
+                    state = new DecimalType(nvr.getNvrDevice().getSystemInfo().getMemory().getAvailable());
+                }
+                break;
+            case MEM_FREE:
+                if (nvr.getNvrDevice().getSystemInfo().getMemory().getFree() != null) {
+                    state = new DecimalType(nvr.getNvrDevice().getSystemInfo().getMemory().getFree());
+                }
+                break;
+            case MEM_TOTAL:
+                if (nvr.getNvrDevice().getSystemInfo().getMemory().getTotal() != null) {
+                    state = new DecimalType(nvr.getNvrDevice().getSystemInfo().getMemory().getTotal());
+                }
+                break;
+            case STORAGE_AVAILABLE:
+                if (nvr.getNvrDevice().getSystemInfo().getStorage().getAvailable() != null) {
+                    state = new DecimalType(nvr.getNvrDevice().getSystemInfo().getStorage().getAvailable());
+                }
+                break;
+            case STORAGE_TOTAL_SIZE:
+                if (nvr.getNvrDevice().getSystemInfo().getStorage().getSize() != null) {
+                    state = new DecimalType(nvr.getNvrDevice().getSystemInfo().getStorage().getSize());
+                }
+                break;
+            case STORAGE_TYPE:
+                if (StringUtils.isNotBlank(nvr.getNvrDevice().getSystemInfo().getStorage().getType())) {
+                    state = StringType.valueOf(nvr.getNvrDevice().getSystemInfo().getStorage().getType());
+                }
+                break;
+            case STORAGE_USED:
+                if (nvr.getNvrDevice().getSystemInfo().getStorage().getUsed() != null) {
+                    state = new DecimalType(nvr.getNvrDevice().getSystemInfo().getStorage().getUsed());
+                }
+                break;
             default:
                 break;
-
         }
         if (state != UnDefType.NULL) {
             updateState(channelID, state);

@@ -21,27 +21,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link UniFiProtectNvrDevice}
- * 17:14:03.872 [main] DEBUG org.openhab.binding.unifiprotect.internal.model.UniFiProtectNvr -
- * UniFiProtectProperties: UniFiProtectNvr
- * [mac=7483C2161619, host=10.0.44.4, name=DrakeProtect
- * , canAutoUpdate=false, isStatsGatheringEnabled=true, timezone=Europe/Stockholm
- * , version=1.13.4, firmwareVersion=1.1.13, hardwarePlatform=apq8053
- * , ports={ump=7449, http=7080, https=7443, rtsp=7447, rtmp=1935
- * , devicesWss=7442, cameraHttps=7444, cameraTcp=7877, liveWs=7445
- * , liveWss=7446, tcpStreams=7448, emsCLI=7440, emsLiveFLV=7550
- * , cameraEvents=7551, discoveryClient=0}, uptime=140845000
- * , lastSeen=1601651634112, isUpdating=false, lastUpdateAt=1596392274129
- * , isConnectedToCloud=true, isStation=false, enableAutomaticBackups=true
- * , enableStatsReporting=false, isSshEnabled=false, releaseChannel=release
- * , hosts=[10.0.44.4], hardwareId=2cb7390c-fc8b-5707-8158-3fca88e06713
- * , hardwareRevision=113-02570-16, hostType=59760, hostShortname=UCKP
- * , isHardware=true, timeFormat=12h, recordingRetentionDurationMs=8640000000
- * , enableCrashReporting=true, disableAudio=false,
- * storageInfo=StorageInfo [totalSize=942307909632, totalSpaceUsed=909433630720
- * , harddrives=[HardDrive [status=present, name=TOSHIBA MQ01ABD100V
- * , serial=19OQTSHDT, firmware=AX001Q, size=1000204886016, rpm=5400
- * , ataVersion=ATA8-ACS (minor revision not indicated)
- * , sataVersion=SATA 2.6, 3.0 Gb/s (current: 3.0 Gb/s), health=passed]]]]
  *
  * @author Joseph (Seaside) Hagberg - Initial contribution
  */
@@ -79,7 +58,7 @@ public class UniFiProtectNvrDevice {
     private Long recordingRetentionDurationMs = new Long(-1);
     private Boolean enableCrashReporting = Boolean.FALSE;
     private Boolean disableAudio = Boolean.FALSE;
-    private UniFiProtectStorageInfo storageInfo = new UniFiProtectStorageInfo();
+    private UniFiProtectSystemInfo systemInfo = new UniFiProtectSystemInfo();
 
     @Override
     public String toString() {
@@ -94,7 +73,7 @@ public class UniFiProtectNvrDevice {
                 + hardwareId + ", hardwareRevision=" + hardwareRevision + ", hostType=" + hostType + ", hostShortname="
                 + hostShortname + ", isHardware=" + isHardware + ", timeFormat=" + timeFormat
                 + ", recordingRetentionDurationMs=" + recordingRetentionDurationMs + ", enableCrashReporting="
-                + enableCrashReporting + ", disableAudio=" + disableAudio + ", storageInfo=" + storageInfo + "]";
+                + enableCrashReporting + ", disableAudio=" + disableAudio + ", storageInfo=" + systemInfo + "]";
     }
 
     public String getMac() {
@@ -340,32 +319,36 @@ public class UniFiProtectNvrDevice {
         this.disableAudio = disableAudio;
     }
 
-    public UniFiProtectStorageInfo getStorageInfo() {
-        return storageInfo;
+    public UniFiProtectSystemInfo getSystemInfo() {
+        return systemInfo;
     }
 
-    public void setUniFiProtectStorageInfo(UniFiProtectStorageInfo storageInfo) {
-        this.storageInfo = storageInfo;
+    public void setSystemInfo(UniFiProtectSystemInfo systemInfo) {
+        this.systemInfo = systemInfo;
     }
 
-    public String getHardDrive0Name() {
-        return hardDrive0isPresent() ? storageInfo.getHardDrives()[0].getName() : StringUtils.EMPTY;
-    }
-
-    public String getHardDrive0Health() {
-        return hardDrive0isPresent() ? storageInfo.getHardDrives()[0].getHealth() : StringUtils.EMPTY;
-    }
-
-    public String getHardDrive0Status() {
-        return hardDrive0isPresent() ? storageInfo.getHardDrives()[0].getStatus() : StringUtils.EMPTY;
-    }
-
-    @SuppressWarnings("null")
-    private boolean hardDrive0isPresent() {
-        return storageInfo != null && storageInfo.getHardDrives() != null && storageInfo.getHardDrives()[0] != null;
-    }
-
-    public Long getHardDrive0Size() {
-        return hardDrive0isPresent() ? storageInfo.getHardDrives()[0].getSize() : 0L;
-    }
+    // public String getHardDrive0Name() {
+    // return hardDrive0isPresent() ? systemInfo.getStorage().getDevices()[0].getModel() : StringUtils.EMPTY;
+    // }
+    //
+    // public String getHardDrive0Health() {
+    // return hardDrive0isPresent() ? systemInfo.getHardDrives()[0].getHealth() : StringUtils.EMPTY;
+    // }
+    //
+    // public String getHardDrive0Status() {
+    // if (hardDrive0isPresent()) {
+    // return systemInfo.getStorage().getDevices()[0].getHealthy() ? "Healthy" : "Not Healthy";
+    // }
+    // return StringUtils.EMPTY;
+    // }
+    //
+    // @SuppressWarnings("null")
+    // private boolean hardDrive0isPresent() {
+    // return systemInfo != null && systemInfo.getStorage().getDevices() != null
+    // && systemInfo.getStorage().getDevices()[0] != null;
+    // }
+    //
+    // public Long getHardDrive0Size() {
+    // return hardDrive0isPresent() ? systemInfo.getStorage().getDevices()[0].getSize() : 0L;
+    // }
 }

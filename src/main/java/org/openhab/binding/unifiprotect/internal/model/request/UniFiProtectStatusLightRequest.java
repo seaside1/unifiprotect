@@ -15,7 +15,6 @@ package org.openhab.binding.unifiprotect.internal.model.request;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.unifiprotect.internal.UniFiProtectNvrThingConfig;
-import org.openhab.binding.unifiprotect.internal.model.UniFiProtectNvrType;
 import org.openhab.binding.unifiprotect.internal.types.UniFiProtectCamera;
 
 /**
@@ -30,10 +29,10 @@ public class UniFiProtectStatusLightRequest extends UniFiProtectRequest {
     private static final String JSON_RAW_DISBLED = "{\"ledSettings\": {\"isEnabled\": false }}";
 
     public UniFiProtectStatusLightRequest(HttpClient httpClient, UniFiProtectCamera camera,
-            UniFiProtectNvrThingConfig config, UniFiProtectNvrType nvrType, boolean enabled) {
+            UniFiProtectNvrThingConfig config, String token, boolean enabled) {
         super(httpClient, config);
         setPath(API_CAMERAS.concat(camera.getId()));
-        setHeader(nvrType.getAuthHeaderName(), nvrType.getAuthHeaderValue());
+        setHeader(UniFiProtectRequest.HEADER_X_CSRF_TOKEN, token);
         setJsonRaw(enabled ? JSON_RAW_ENABLED : JSON_RAW_DISBLED);
     }
 

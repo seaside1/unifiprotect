@@ -14,6 +14,7 @@ package org.openhab.binding.unifiprotect.internal.types;
 
 import java.util.Arrays;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -23,37 +24,66 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class UniFiProtectStorageInfo {
-    private Long totalSize = new Long(-1);
-    private Long totalSpaceUsed = new Long(-1);
-    private UniFiProtectHardDrive[] hardDrives = new UniFiProtectHardDrive[0];
+
+    private UniFiProtectHardDrive[] devices = new UniFiProtectHardDrive[0];
+    private Long available = -1L;
+    private Boolean isRecycling = Boolean.FALSE;
+    private Long size = -1L;
+    private String type = StringUtils.EMPTY;
+    private Long used = -1L;
 
     @Override
     public String toString() {
-        return "StorageInfo [totalSize=" + totalSize + ", totalSpaceUsed=" + totalSpaceUsed + ", harddrives="
-                + Arrays.toString(hardDrives) + "]";
+        return "UniFiProtectStorageInfo [devices=" + Arrays.toString(getDevices()) + ", available=" + getAvailable()
+                + ", isRecycling=" + getIsRecycling() + ", size=" + getSize() + ", type=" + getType() + ", used="
+                + getUsed() + "]";
     }
 
-    public Long getTotalSpaceUsed() {
-        return totalSpaceUsed;
+    public UniFiProtectHardDrive[] getDevices() {
+        return devices;
     }
 
-    public void setTotalSpaceUsed(Long totalSpaceUsed) {
-        this.totalSpaceUsed = totalSpaceUsed;
+    public void setDevices(UniFiProtectHardDrive[] devices) {
+        this.devices = devices;
     }
 
-    public UniFiProtectHardDrive[] getHardDrives() {
-        return hardDrives;
+    public Long getAvailable() {
+        return available;
     }
 
-    public void setHardDrives(UniFiProtectHardDrive[] hardDrives) {
-        this.hardDrives = hardDrives;
+    public void setAvailable(Long available) {
+        this.available = available;
     }
 
-    public Long getTotalSize() {
-        return totalSize;
+    public Boolean getIsRecycling() {
+        return isRecycling;
     }
 
-    public void setTotalSize(Long totalSize) {
-        this.totalSize = totalSize;
+    public void setIsRecycling(Boolean isRecycling) {
+        this.isRecycling = isRecycling;
+    }
+
+    public Long getSize() {
+        return size;
+    }
+
+    public void setSize(Long size) {
+        this.size = size;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public Long getUsed() {
+        return used;
+    }
+
+    public void setUsed(Long used) {
+        this.used = used;
     }
 }

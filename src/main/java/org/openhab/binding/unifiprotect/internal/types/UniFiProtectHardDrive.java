@@ -15,8 +15,6 @@ package org.openhab.binding.unifiprotect.internal.types;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
  * The {@link UniFiProtectHardDrive}
  *
@@ -24,43 +22,22 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class UniFiProtectHardDrive {
+
+    private String model = StringUtils.EMPTY;
+    private Long size = -1L;
+    private Boolean healthy = Boolean.FALSE;
+
     @Override
     public String toString() {
-        return "HardDrive [status=" + status + ", name=" + name + ", serial=" + serial + ", firmware=" + firmware
-                + ", size=" + size + ", rpm=" + rpm + ", ataVersion=" + ataVersion + ", sataVersion=" + sataVersion
-                + ", health=" + health + "]";
+        return "UniFiProtectHardDrive [model=" + getModel() + ", size=" + getSize() + ", healthy=" + getHealthy() + "]";
     }
 
-    public String getStatus() {
-        return status;
+    public String getModel() {
+        return model;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getSerial() {
-        return serial;
-    }
-
-    public void setSerial(String serial) {
-        this.serial = serial;
-    }
-
-    public String getFirmware() {
-        return firmware;
-    }
-
-    public void setFirmware(String firmware) {
-        this.firmware = firmware;
+    public void setModel(String model) {
+        this.model = model;
     }
 
     public Long getSize() {
@@ -71,47 +48,11 @@ public class UniFiProtectHardDrive {
         this.size = size;
     }
 
-    public String getRpm() {
-        return rpm;
+    public Boolean getHealthy() {
+        return healthy;
     }
 
-    public void setRpm(String rpm) {
-        this.rpm = rpm;
+    public void setHealthy(Boolean healthy) {
+        this.healthy = healthy;
     }
-
-    public String getAtaVersion() {
-        return ataVersion;
-    }
-
-    public void setAtaVersion(String ataVersion) {
-        this.ataVersion = ataVersion;
-    }
-
-    public String getSataVersion() {
-        return sataVersion;
-    }
-
-    public void setSataVersion(String sataVersion) {
-        this.sataVersion = sataVersion;
-    }
-
-    public String getHealth() {
-        return health;
-    }
-
-    public void setHealth(String health) {
-        this.health = health;
-    }
-
-    private String status = StringUtils.EMPTY;
-    private String name = StringUtils.EMPTY;
-    private String serial = StringUtils.EMPTY;
-    private String firmware = StringUtils.EMPTY;
-    private Long size = -1L;
-    @SerializedName(value = "RPM", alternate = "rpm")
-    private String rpm = StringUtils.EMPTY;
-    private String ataVersion = StringUtils.EMPTY;
-    private String sataVersion = StringUtils.EMPTY;
-    private String health = StringUtils.EMPTY;
-
 }

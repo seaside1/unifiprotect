@@ -60,7 +60,7 @@ public class UniFiProtectUtil {
     }
 
     @SuppressWarnings("null")
-    public static boolean regquestHasContentOfSize(UniFiProtectRequest request, int size) {
+    public static boolean requestHasContentOfSize(UniFiProtectRequest request, int size) {
         return request != null && request.getResponse() != null && request.getResponse().getContent() != null
                 && request.getResponse().getContent().length > size;
     }

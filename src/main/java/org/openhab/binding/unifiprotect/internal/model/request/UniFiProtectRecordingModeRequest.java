@@ -16,7 +16,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.unifiprotect.internal.UniFiProtectNvrThingConfig;
 import org.openhab.binding.unifiprotect.internal.UniFiProtectRecordingMode;
-import org.openhab.binding.unifiprotect.internal.model.UniFiProtectNvrType;
 import org.openhab.binding.unifiprotect.internal.types.UniFiProtectCamera;
 
 /**
@@ -28,10 +27,10 @@ import org.openhab.binding.unifiprotect.internal.types.UniFiProtectCamera;
 public class UniFiProtectRecordingModeRequest extends UniFiProtectRequest {
 
     public UniFiProtectRecordingModeRequest(HttpClient httpClient, UniFiProtectCamera camera,
-            UniFiProtectNvrThingConfig config, UniFiProtectNvrType nvrType, UniFiProtectRecordingMode recordingMode) {
+            UniFiProtectNvrThingConfig config, String token, UniFiProtectRecordingMode recordingMode) {
         super(httpClient, config);
         setPath(API_CAMERAS.concat(camera.getId()));
-        setHeader(nvrType.getAuthHeaderName(), nvrType.getAuthHeaderValue());
+        setHeader(UniFiProtectRequest.HEADER_X_CSRF_TOKEN, token);
         String jsonRaw = recordingMode.getJsonRaw();
         if (jsonRaw != null) {
             setJsonRaw(jsonRaw);
