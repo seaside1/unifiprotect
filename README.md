@@ -4,8 +4,12 @@
 ## About
 Integrates UniFi Protect Camera System into OpenHAB. See https://ui.com/why-protect/
 This binding utilizes an undocumented json REST API that is present in the NVR. It works very similar
-to the Homebridge solution: https://github.com/hjdhjd/homebridge-unifi-protect and HomeAssistant solution: https://github.com/briis/unifiprotect
-but is written in java and tailored for OpenHAB.
+to the 
+
+1) Homebridge solution: https://github.com/hjdhjd/homebridge-unifi-protect 
+2) HomeAssistant solution: https://github.com/briis/unifiprotect
+
+The binding is written in java and tailored for OpenHAB.
 
 ## Usage
 Maturity: ALPHA
@@ -25,19 +29,20 @@ OpenHAB Version: 2.5.x
 - Download a snapshot from the Camera
 - Download an anonymous snapshot (needed if more than you require snapshots more frequent than every 10 seconds)
 - Download a Heat map of latest recorded motion event
+- Detect if a hardrive in the nvr fails
+- Monitor the memory / diskstorage and CPU temperature
 
 ## Supported hardware
-- UniFi Protect Cloud Key Gen2+
-- UniFi Dream Machine / Pro NOT SUPPORTED (Support can be added at a later stage)
+- UniFi Protect Cloud Key Gen2+ Firmware >= 2.0.18
+- UniFi Dream Machine / Pro 
 - Any UniFi Protect Camera
-- UniFi NVR NOT SUPPORTED (Same as UDMP)
+- UniFi NVR 
 - UniFi Doorbell NOT SUPPORTED (Support can be added at a later stage)
 
-The reason why UniFi NVR and UniFi Dream Machine/Pro is not supported is because they
-are built on UniFi OS and have a slightly different json/rest protocol. For UniFi OS
-it is possible to subscribe to an event subscription protocol over web sockets, thus removing
-polling the API for events. This could probably be added in the future, but right now
-I don't have any UniFi OS hardware to test / develop this.
+The binding has been rewritten to support UniFi OS only. That means if you have a UCKP (Cloudkey gen2+)
+you need to update it to at least firmware 2.0.18. After 2.0.18 UCKP is running UniFiOs just like the
+UDMP and UNVR. For UniFi OS it is possible to subscribe to an event subscription protocol over web sockets, thus removing
+polling the API for events. This could probably be added in the future, but right now the binding is based on polling.
 
 ## Dependencies
 
@@ -45,7 +50,12 @@ I don't have any UniFi OS hardware to test / develop this.
 ## Manual setup
 * Log into UniFi Protect and create a user with admin rights that you use
 * Manually log into all cameras where you want to use anonymous-snapshots, you have to
-enable it yourself
+enable it yourself.
+
+See https://github.com/briis/unifiprotect for instructions on how to add a user.
+A quirk is that there is a bug in firmware 2.0.18 which does not display the local user name
+when calling the API. Therefor you need to have the same First Name as user name in order for the binding to pick
+up the correct user.
 
 ## Supported Things
 
@@ -68,7 +78,6 @@ The following table describes the Bridge configuration parameters:
 | Parameter                | Description                                          | Config   | Default |
 | ------------------------ | ---------------------------------------------------- |--------- | ------- |
 | Hostname                 | Hostname or IP address of the NVR                    | Required | -       |
-| Port                     | Port of the for NVR                                  | Required | 7443    |
 | Username                 | The username to access the UniFiProtect              | Required | -       |
 | Password                 | The password credential                              | Required | -       |
 | Refresh Interval         | Refresh interval in seconds (Polling)                | Required | 10      |
@@ -162,26 +171,35 @@ items/unifiprotect.items
 Group    gUniFiProtect        "UniFi Protect"
 Group    sUniFiProtect        "Sitemap UniFiProtect"
 
-Group    CKG2PNvr "CKG2+ Nvr" (gUniFiProtect)
+//NVR
+Group    CKG2PNvr                 "CKG2+ Nvr" (gUniFiProtect)
 String   CKG2PNvrName             "CKG2+ Name"                   (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:name" }
 String   CKG2PNvrHost             "CKG2+ Host"                   (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:host" }
-String   CKG2PNvrHosts            "CKG2+ Hosts"                  (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:hosts" }
-String   CKG2PNvrHostShortName    "CKG2+ Host Short Name"        (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:host-short-name" }
-String   CKG2PNvrVersion          "CKG2+ Version"                (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:version" }
-String   CKG2PNvrFirmwareVersion  "CKG2+ FirmwareVersion"        (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:firmware-version" }
-Number   CKG2PNvrUptime           "CKG2+ Uptime [%d]"            (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:uptime" }
-DateTime CKG2PNvrLastUpdatedAt    "CKG2+ LastUpdated [%1$tY.%1$tm.%1$td %1$tH:%1$tM]" (CKG2PNvr) {channel="unifiprotect:nvr:NVRID:last-updated-at" }
-DateTime CKG2PNvrLastSeen         "CKG2+ LastSeen [%1$tY.%1$tm.%1$td %1$tH:%1$tM]" (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:last-seen" }
-Switch   CKG2PNvrConnectedToCloud "CKG2+ Cloud Connected [%s]"   (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:is-connected-to-cloud" }
+String   CKG2PNvrHosts             "CKG2+ Hosts"                   (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:hosts" }
+String   CKG2PNvrHostShortName     "CKG2+ Host Short Name"                   (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:host-short-name" }
+String   CKG2PNvrVersion             "CKG2+ Version"                   (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:version" }
+String   CKG2PNvrFirmwareVersion             "CKG2+ FirmwareVersion"                   (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:firmware-version" }
+Number   CKG2PNvrUptime             "CKG2+ Uptime [%d]"                   (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:uptime" }
+DateTime CKG2PNvrLastUpdatedAt      "CKG2+ LastUpdated [%1$tY.%1$tm.%1$td %1$tH:%1$tM]" <timestamp>  (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:last-updated-at" }
+DateTime CKG2PNvrLastSeen      "CKG2+ LastSeen [%1$tY.%1$tm.%1$td %1$tH:%1$tM]"  <timestamp> (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:last-seen" }
+Switch   CKG2PNvrConnectedToCloud "CKG2+ Cloud Connected [%s]" (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:is-connected-to-cloud" }
 Switch   CKG2PNvrAutomaticBackups "CKG2+ Enabled Automatic Backups [%s]" (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:enable-automatic-backups" }
-Number   CKG2PNvrRetention        "CKG2+ Recording Retention Duration [%d]" (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:recording-retention-duration" }
-Number   CKG2PNvrTotalSize        "CKG2+ Total Size [%d]"        (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:total-size" }
-Number   CKG2PNvrTotalSpaceUsed   "CKG2+ Total Space Used [%d]"  (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:total-space-used" }
-String   CKG2PNvrHd0Status        "CKG2+ Harddrive 0 Status"     (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:hard-drive-0-status" }
-String   CKG2PNvrHd0Name          "CKG2+ Harddrive 0 Name"       (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:hard-drive-0-name" }
-String   CKG2PNvrHd0Health        "CKG2+ Harddrive 0 Health"     (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:hard-drive-0-health" }
-Number   CKG2PNvrHd0Size          "CKG2+ Harddrive 0 Size [%d]"  (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:hard-drive-0-size" }
-Switch   CKG2PNvrAlerts           "CKG2+ Alerts [%s]"            (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:alerts" }
+Number   CKG2PNvrRetention             "CKG2+ Recording Retention Duration [%d]"                   (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:recording-retention-duration" }
+Number   CKG2PNvrCpuLoad             "CKG2+ CPU Load [%d]"                   (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:cpu-average-load" }
+Number   CKG2PNvrCpuTemperature             "CKG2+ CPU Temperature [%d]"                   (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:cpu-temperature" }
+Number   CKG2PNvrMemAvailable             "CKG2+ Memory Available [%d]"                   (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:mem-available" }
+Number   CKG2PNvrMemFree             "CKG2+ Memory Free [%d]"                   (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:mem-total" }
+Number   CKG2PNvrMemTotal             "CKG2+ Memory Total [%d]"                   (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:mem-free" }
+Number   CKG2PNvrStorageUsed             "CKG2+ Storage Used [%d]"                   (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:storage-used" }
+Number   CKG2PNvrStorageTotalSize             "CKG2+ Storage Total Size [%d]"                   (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:storage-total-size" }
+Number   CKG2PNvrStorageAvailable             "CKG2+ Storage Available [%d]"                   (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:storage-available" }
+String   CKG2PNvrStorageType             "CKG2+ Storage Type"                   (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:storage-type" }
+String   CKG2PNvrD0Model    "CKG2+ Device 0 Model"                                    (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:device-0-model" }
+Switch   CKG2PNvrD0Healthy    "CKG2+ Device 0 Healthy"                                    (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:device-0-healthy" }
+Number   CKG2PNvrD0Size    "CKG2+ Device 0 Size [%d]"                                    (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:device-0-size" }
+Switch   CKG2PNvrAlerts           "CKG2+ Alerts [%s]" (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:alerts" }
+
+
 
 //G3 Dome Camera
 Group    G3DMyCam                 "G3 Cam"                       (gUniFiProtect)
@@ -242,6 +260,13 @@ sitemap unifiprotect label="UniFiProtect Binding" {
 ## Manual Install
 Get jar-file from repo. Place the jar-file in the openhab-addons folder
 https://github.com/seaside1/unifiprotect
+
+## Changelog
+ * Removed port configuration from the binding. Port 443 and port 80 are used.
+ * Renamed and added several attributes for NVR thing
+ * Major refactoring for UniFiOS
+ * Prepared for event based API
+ * Workaround for bug with localusername, firstname needs to be the same as localusername
 
 ## Roadmap
 
