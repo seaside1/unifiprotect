@@ -276,10 +276,13 @@ https://github.com/seaside1/unifiprotect
  * Major refactoring for UniFiOS
  * Prepared for event based API
  * Workaround for bug with localusername, firstname needs to be the same as localusername
+ * Motion score added
+ * Events are now fetched at the same rate as refresh (polling)
+ * Changed debug log to not be as verbose
 
 ## Roadmap
 
 * OpenHAB Version 3 support
-* Add support for UniFi OS (Websocket event api)
+* Websocket Event API Support
 * Support UniFi Doorbell
 * Support for multiple harddrives
