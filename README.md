@@ -29,6 +29,7 @@ OpenHAB Version: 2.5.x
 - Download a snapshot from the Camera
 - Download an anonymous snapshot (needed if more than you require snapshots more frequent than every 10 seconds)
 - Download a Heat map of latest recorded motion event
+- Get a score of 0-100 on each motion event, in order to be able to filter out false positives
 - Detect if a hardrive in the nvr fails
 - Monitor the memory / diskstorage and CPU temperature
 
@@ -115,12 +116,18 @@ The NVR Channels
 | hosts                        | String    | Hosts string (multiple hosts)                                        | Read        |
 | host-short-name              | String    | The host short-name                                                  | Read        |
 | recording-retention-duration | Number    | Recording retention duration in ms                                   | Read        |
-| total-size                   | Number    | Total storage size                                                   | Read        |
-| total-space-used             | Number    | Total space used                                                     | Read        |
-| hard-drive-0-status          | String    | Hard drive 0 status (present/absent)                                 | Read        |
-| hard-drive-0-name            | String    | Hard drive 0 name Manufacturer name                                  | Read        |
-| hard-drive-0-size            | Number    | Hard drive 0 size                                                    | Read        |
-| hard-drive-0-health          | String    | Hard drive 0 Health                                                  | Read        |
+| storage-total-size           | Number    | Total storage size                                                   | Read        |
+| storage-type                 | String    | Type of Storage (hdd, usb or similar)                                | Read        |
+| storage-used                 | Number    | Used storage space                                                   | Read        |
+| storage-available            | String    | Total storage available                                              | Read        |
+| device-0-model               | String    | Storage Device 0 model                                               | Read        |
+| device-0-size                | Number    | Storage Device 0 size                                                | Read        |
+| device-0-healthy             | Switch    | Storage Device 0 Healthy                                             | Read        |
+| cpu-average-load             | Number    | CPU Average Load                                                     | Read        |
+| cpu-temperature              | Number    | CPU Temperature                                                      | Read        |
+| mem-available                | Number    | Available Memory                                                     | Read        |
+| mem-free                     | Number    | Free Memory                                                          | Read        |
+| mem-total                    | Number    | Tota Memory                                                          | Read        |
 | alerts                       | Switch    | Turn on or of notifications                                          | Read/Write  |
 
 ### `alerts`
@@ -198,8 +205,6 @@ String   CKG2PNvrD0Model    "CKG2+ Device 0 Model"                              
 Switch   CKG2PNvrD0Healthy    "CKG2+ Device 0 Healthy"                                    (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:device-0-healthy" }
 Number   CKG2PNvrD0Size    "CKG2+ Device 0 Size [%d]"                                    (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:device-0-size" }
 Switch   CKG2PNvrAlerts           "CKG2+ Alerts [%s]" (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:alerts" }
-
-
 
 //G3 Dome Camera
 Group    G3DMyCam                 "G3 Cam"                       (gUniFiProtect)
