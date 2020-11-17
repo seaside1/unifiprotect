@@ -68,9 +68,9 @@ public class UniFiProtectNvr {
 
     private static final int IMAGE_MIN_SIZE = 800;
     private volatile String token = "";
-    private @Nullable UniFiProtectNvrDevice nvrDevice;
-    private @Nullable UniFiProtectNvrUser nvrUser;
-
+    private volatile @Nullable UniFiProtectNvrDevice nvrDevice;
+    private volatile @Nullable UniFiProtectNvrUser nvrUser;
+    private volatile UniFiProtectEvent[] events = new UniFiProtectEvent[0];
     private UniFiProtectCameraCache cameraInsightCache = new UniFiProtectCameraCache();
     private final HttpClient httpClient;
     private final Logger logger = LoggerFactory.getLogger(UniFiProtectNvr.class);
@@ -121,23 +121,13 @@ public class UniFiProtectNvr {
         return sendStatus;
     }
 
-    @SuppressWarnings("null")
-    public synchronized UniFiProtectStatus refreshProtect() {
-        logger.debug("Refresh Protect fetch cameras");
-        UniFiProtectStatus status = null;
-        if (!isLoggedIn()) {
-            status = login();
-        }
-        if (status != null && status.getStatus() != SendStatus.SUCCESS) {
-            logger.error("Failed to updated Cameras since we can't seem to login");
-            return status;
-        }
+    private synchronized UniFiProtectStatus refreshBootstrap() {
         UniFiProtectBootstrapRequest request = new UniFiProtectBootstrapRequest(httpClient, getConfig(), token);
         UniFiProtectStatus bootStrapRequestStatus = request.sendRequest();
         if (!requestSuccessFullySent(bootStrapRequestStatus)) {
             if (request.creditialsExpired()) {
                 logger.debug("Credentials expired, logging in again");
-                status = login();
+                UniFiProtectStatus status = login();
                 if (status.getStatus() == SendStatus.SUCCESS) {
                     request = new UniFiProtectBootstrapRequest(httpClient, getConfig(), token);
                     bootStrapRequestStatus = request.sendRequest();
@@ -176,6 +166,39 @@ public class UniFiProtectNvr {
         logger.debug("UniFiProtectNvrUser: {}", getNvrUser());
         logger.debug("Login Token Success: {}", token);
         return bootStrapRequestStatus;
+    }
+
+    private synchronized UniFiProtectStatus refreshEvents() {
+        UniFiProtectEventsRequest eventsRequest = new UniFiProtectEventsRequest(httpClient, getConfig(), token);
+        UniFiProtectStatus sendStatus = eventsRequest.sendRequest();
+        if (!requestSuccessFullySent(sendStatus)) {
+            return sendStatus;
+        }
+        String jsonContent = eventsRequest.getJsonContent();
+        events = UniFiProtectJsonParser.getEventsFromJson(gson, jsonContent);
+        return sendStatus;
+    }
+
+    @SuppressWarnings("null")
+    public synchronized UniFiProtectStatus refreshProtect() {
+        logger.debug("Refresh Protect fetch cameras");
+        UniFiProtectStatus status = null;
+        if (!isLoggedIn()) {
+            status = login();
+        }
+        if (status != null && status.getStatus() != SendStatus.SUCCESS) {
+            logger.error("Failed to updated Cameras since we can't seem to login");
+            return status;
+        }
+        UniFiProtectStatus refreshBootstrap = refreshBootstrap();
+        if (refreshBootstrap.getStatus() == SendStatus.SUCCESS) {
+            UniFiProtectStatus refreshEvents = refreshEvents();
+            if (refreshEvents.getStatus() != SendStatus.SUCCESS) {
+                logger.debug("Failed to update events via API: {} {}", refreshEvents.getMessage(),
+                        refreshEvents.getStatus().toString());
+            }
+        }
+        return refreshBootstrap;
     }
 
     private boolean isLoggedIn() {
@@ -337,12 +360,6 @@ public class UniFiProtectNvr {
 
     @SuppressWarnings("null")
     public synchronized @Nullable UniFiProtectEvent getLastMotionEvent(UniFiProtectCamera camera) {
-        UniFiProtectEventsRequest eventsRequest = new UniFiProtectEventsRequest(httpClient, camera, getConfig(), token);
-        if (!requestSuccessFullySent(eventsRequest.sendRequest())) {
-            return null;
-        }
-        String jsonContent = eventsRequest.getJsonContent();
-        UniFiProtectEvent[] events = UniFiProtectJsonParser.getEventsFromJson(gson, jsonContent);
         Arrays.stream(events).forEach(event -> logger.debug("Events resultT: {}", event));
         return UniFiProtectUtil.findLastMotionEventForCamera(events, camera);
     }

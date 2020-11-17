@@ -14,8 +14,8 @@ package org.openhab.binding.unifiprotect.internal.types;
 
 import java.util.Arrays;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link UniFiProtectStorageInfo}
@@ -29,7 +29,7 @@ public class UniFiProtectStorageInfo {
     private Long available = -1L;
     private Boolean isRecycling = Boolean.FALSE;
     private Long size = -1L;
-    private String type = StringUtils.EMPTY;
+    private @Nullable String type = null;
     private Long used = -1L;
 
     @Override
@@ -71,7 +71,7 @@ public class UniFiProtectStorageInfo {
         this.size = size;
     }
 
-    public String getType() {
+    public @Nullable String getType() {
         return type;
     }
 

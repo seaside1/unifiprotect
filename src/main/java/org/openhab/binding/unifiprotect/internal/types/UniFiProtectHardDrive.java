@@ -14,6 +14,7 @@ package org.openhab.binding.unifiprotect.internal.types;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link UniFiProtectHardDrive}
@@ -25,7 +26,7 @@ public class UniFiProtectHardDrive {
 
     private String model = StringUtils.EMPTY;
     private Long size = -1L;
-    private Boolean healthy = Boolean.FALSE;
+    private @Nullable Boolean healthy = null;
 
     @Override
     public String toString() {
@@ -48,7 +49,7 @@ public class UniFiProtectHardDrive {
         this.size = size;
     }
 
-    public Boolean getHealthy() {
+    public @Nullable Boolean getHealthy() {
         return healthy;
     }
 

@@ -87,7 +87,6 @@ public class UniFiProtectCameraThingHandler extends BaseThingHandler {
     }
 
     public final void refresh() {
-        logger.debug("Camera Refresh!");
         if (getThing().getStatus() == ONLINE) {
             UniFiProtectNvr nvr = getNvr();
             if (nvr != null) {
