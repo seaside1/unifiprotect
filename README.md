@@ -240,6 +240,8 @@ transform/unifiprotect_ir.map
 0=Auto
 1=On
 2=FilterOnly
+NULL=-
+-=-
 ```
 
 transform/unifiprotect_rec.map
@@ -247,6 +249,8 @@ transform/unifiprotect_rec.map
 0=Never
 1=Always
 2=Motion
+NULL=-
+-=-
 ```
 
 Sitemap
