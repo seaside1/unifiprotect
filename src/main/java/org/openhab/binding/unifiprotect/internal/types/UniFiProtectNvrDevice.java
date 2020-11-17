@@ -18,6 +18,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link UniFiProtectNvrDevice}
@@ -327,6 +328,65 @@ public class UniFiProtectNvrDevice {
         this.systemInfo = systemInfo;
     }
 
+    public @Nullable Long getMemAvailable() {
+        return getSystemInfo() != null && getSystemInfo().getMemory() != null
+                ? getSystemInfo().getMemory().getAvailable()
+                : null;
+    }
+
+    public @Nullable Long getMemFree() {
+        return getSystemInfo() != null && getSystemInfo().getMemory().getFree() != null
+                ? getSystemInfo().getMemory().getFree()
+                : null;
+    }
+
+    public @Nullable Long getMemTotal() {
+        return getSystemInfo() != null && getSystemInfo().getMemory().getTotal() != null
+                ? getSystemInfo().getMemory().getTotal()
+                : null;
+    }
+
+    public @Nullable Long getStorageAvailable() {
+        return getSystemInfo() != null && getSystemInfo().getStorage() != null
+                ? getSystemInfo().getStorage().getAvailable()
+                : null;
+    }
+
+    public @Nullable Long getStorageSize() {
+        return getSystemInfo() != null && getSystemInfo().getStorage() != null ? getSystemInfo().getStorage().getSize()
+                : null;
+    }
+
+    public @Nullable String getStorageType() {
+        return getSystemInfo() != null && getSystemInfo().getStorage() != null ? getSystemInfo().getStorage().getType()
+                : null;
+    }
+
+    public @Nullable Long getStorageUsed() {
+        return getSystemInfo() != null && getSystemInfo().getStorage() != null ? getSystemInfo().getStorage().getUsed()
+                : null;
+    }
+
+    public @Nullable String getDevice0Model() {
+        return device0isPresent() ? systemInfo.getStorage().getDevices()[0].getModel() : null;
+    }
+
+    public @Nullable Boolean getDevice0Healthy() {
+        return device0isPresent() ? systemInfo.getStorage().getDevices()[0].getHealthy() : null;
+    }
+
+    public Double getCpuTemperature() {
+        return getSystemInfo() != null && getSystemInfo().getCpu() != null ? getSystemInfo().getCpu().getTemperature()
+                : null;
+
+    }
+
+    public Double getCpuAverageLoad() {
+        return getSystemInfo() != null && getSystemInfo().getCpu() != null ? getSystemInfo().getCpu().getAverageLoad()
+                : null;
+
+    }
+
     // public String getHardDrive0Name() {
     // return hardDrive0isPresent() ? systemInfo.getStorage().getDevices()[0].getModel() : StringUtils.EMPTY;
     // }
@@ -342,13 +402,13 @@ public class UniFiProtectNvrDevice {
     // return StringUtils.EMPTY;
     // }
     //
-    // @SuppressWarnings("null")
-    // private boolean hardDrive0isPresent() {
-    // return systemInfo != null && systemInfo.getStorage().getDevices() != null
-    // && systemInfo.getStorage().getDevices()[0] != null;
-    // }
-    //
-    // public Long getHardDrive0Size() {
-    // return hardDrive0isPresent() ? systemInfo.getStorage().getDevices()[0].getSize() : 0L;
-    // }
+    @SuppressWarnings("null")
+    private boolean device0isPresent() {
+        return systemInfo != null && systemInfo.getStorage().getDevices() != null
+                && systemInfo.getStorage().getDevices()[0] != null;
+    }
+
+    public @Nullable Long getDevice0Size() {
+        return device0isPresent() ? systemInfo.getStorage().getDevices()[0].getSize() : null;
+    }
 }

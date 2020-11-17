@@ -68,7 +68,6 @@ public enum UniFiProtectCameraChannel {
     }
 
     public static UniFiProtectCameraChannel fromString(String str) {
-        logger.debug("From string: {}", str);
         UniFiProtectCameraChannel channel = UNKNOWN;
         try {
             channel = UniFiProtectCameraChannel.stream()

@@ -16,7 +16,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.unifiprotect.internal.UniFiProtectNvrThingConfig;
 import org.openhab.binding.unifiprotect.internal.UniFiProtectUtil;
-import org.openhab.binding.unifiprotect.internal.types.UniFiProtectCamera;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,8 +34,7 @@ public class UniFiProtectEventsRequest extends UniFiProtectRequest {
 
     private static final Logger logger = LoggerFactory.getLogger(UniFiProtectEventsRequest.class);
 
-    public UniFiProtectEventsRequest(HttpClient httpClient, UniFiProtectCamera camera,
-            UniFiProtectNvrThingConfig config, String token) {
+    public UniFiProtectEventsRequest(HttpClient httpClient, UniFiProtectNvrThingConfig config, String token) {
         super(httpClient, config);
         setPath(API_EVENTS);
         setHeader(UniFiProtectRequest.HEADER_X_CSRF_TOKEN, token);
