@@ -12,10 +12,14 @@
  */
 package org.openhab.binding.unifiprotect.internal;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Properties;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -55,11 +59,35 @@ public class UniFiProtectRequestTester {
         config.setHost(host);
         config.setPassword(password);
         config.setUserName(user);
-        config.setEventsTimePeriodLength(30000);
+        config.setEventsTimePeriodLength(13000);
         Logger rootLogger = (Logger) LoggerFactory.getLogger("org.openhab");
         rootLogger.setLevel(Level.DEBUG);
         rootLogger = (Logger) LoggerFactory.getLogger("org.eclipse.jetty");
         rootLogger.setLevel(Level.WARN);
+    }
+
+    @Test
+    public void getWebsocketMessage() throws Exception {
+        UniFiProtectNvr nvr = new UniFiProtectNvr(config);
+        nvr.init();
+        nvr.login();
+        nvr.refreshProtect();
+        nvr.getNvrUser();
+        logger.debug("Fetch NvrUser: {}", nvr.getNvrUser());
+        UniFiProtectEventManager em = new UniFiProtectEventManager(nvr.getHttpClient(), nvr.getGson(), config);
+        em.start();
+        em.addPropertyChangeListener(new PropertyChangeListener() {
+
+            @Override
+            public void propertyChange(@Nullable PropertyChangeEvent evt) {
+                System.out.println(evt.getPropertyName());
+            }
+        });
+        Thread.sleep(15000);
+        nvr.refreshProtect();
+
+        UniFiProtectEvent[] events = nvr.getEvents();
+        Arrays.stream(events).forEach(e -> System.out.println(e));
     }
 
     @Test

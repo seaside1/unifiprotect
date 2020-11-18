@@ -15,6 +15,8 @@ package org.openhab.binding.unifiprotect.internal;
 import static org.eclipse.smarthome.core.thing.ThingStatus.*;
 import static org.eclipse.smarthome.core.thing.ThingStatusDetail.COMMUNICATION_ERROR;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -53,7 +55,7 @@ import org.slf4j.LoggerFactory;
  * @author Joseph (Seaside) Hagberg - Initial contribution
  */
 @NonNullByDefault
-public class UniFiProtectNvrThingHandler extends BaseBridgeHandler {
+public class UniFiProtectNvrThingHandler extends BaseBridgeHandler implements PropertyChangeListener {
 
     private @Nullable ScheduledFuture<?> refreshJob;
     private final Logger logger = LoggerFactory.getLogger(UniFiProtectNvrThingHandler.class);
@@ -62,6 +64,8 @@ public class UniFiProtectNvrThingHandler extends BaseBridgeHandler {
     private @Nullable volatile UniFiProtectNvr nvr;
 
     private UniFiProtectNvrThingConfig config = new UniFiProtectNvrThingConfig();
+
+    private @Nullable UniFiProtectEventManager eventManager;
 
     public UniFiProtectNvrThingHandler(Bridge bridge) {
         super(bridge);
@@ -89,6 +93,11 @@ public class UniFiProtectNvrThingHandler extends BaseBridgeHandler {
         UniFiProtectStatus status = null;
         if (initNvr) {
             status = nvr.start();
+            if (status.getStatus() == SendStatus.SUCCESS) {
+                eventManager = new UniFiProtectEventManager(nvr.getHttpClient(), nvr.getGson(), config);
+                eventManager.start();
+                eventManager.addPropertyChangeListener(this);
+            }
         }
         if (initNvr && status.getStatus() == SendStatus.SUCCESS) {
             updateStatus(ONLINE);
@@ -104,6 +113,7 @@ public class UniFiProtectNvrThingHandler extends BaseBridgeHandler {
     protected void updateStatus(ThingStatus status) {
         if (disposed) {
             cancelRefreshJob();
+            eventManager.stop();
             return;
         }
         if (status == ONLINE) {
@@ -164,25 +174,30 @@ public class UniFiProtectNvrThingHandler extends BaseBridgeHandler {
     }
 
     @SuppressWarnings("null")
-    private synchronized UniFiProtectStatus refresh() {
+    public synchronized UniFiProtectStatus refresh() {
         logger.debug("Refreshing Protect: {}", this.hashCode());
         UniFiProtectStatus status = UniFiProtectStatus.STATUS_NOT_SENT;
+
         if (nvr != null) {
             logger.debug("Refreshing the UniFi Protect Controller {}", getThing().getUID());
             status = nvr.refreshProtect();
             if (status.getStatus() == SendStatus.SUCCESS) {
                 refreshNvrChannels();
-                getThing().getThings().forEach((thing) -> {
-                    if (thing.getHandler() instanceof UniFiProtectCameraThingHandler) {
-                        ((UniFiProtectCameraThingHandler) thing.getHandler()).refresh();
-                    }
-                });
+                refreshCameras();
             }
         }
         return status;
     }
 
-    private void refreshNvrChannels() {
+    public synchronized void refreshCameras() {
+        getThing().getThings().forEach((thing) -> {
+            if (thing.getHandler() instanceof UniFiProtectCameraThingHandler) {
+                ((UniFiProtectCameraThingHandler) thing.getHandler()).refresh();
+            }
+        });
+    }
+
+    private synchronized void refreshNvrChannels() {
         logger.debug("Nvr Refresh!");
         if (getThing().getStatus() == ONLINE) {
             UniFiProtectNvr nvr = getNvr();
@@ -194,13 +209,6 @@ public class UniFiProtectNvrThingHandler extends BaseBridgeHandler {
             }
         }
     }
-
-    // @Override
-    // public void dispose() {
-    // super.dispose();
-    // cancelChannelFutures();
-    // freeGroupAdresses();
-    // }
 
     @SuppressWarnings("null")
     private void refreshChannel(ChannelUID channelUID) {
@@ -393,4 +401,14 @@ public class UniFiProtectNvrThingHandler extends BaseBridgeHandler {
     public static boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return UniFiProtectBindingConstants.THING_TYPE_NVR.equals(thingTypeUID);
     }
+
+    @Override
+    public void propertyChange(@Nullable PropertyChangeEvent evt) {
+        if (evt.getPropertyName() == UniFiProtectEventManager.EVENT_MOTION) {
+            getNvr().refreshProtect();
+            getNvr().refreshEvents();
+            refreshCameras();
+        }
+    }
+
 }

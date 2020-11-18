@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.unifiprotect.internal;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -22,6 +23,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.zip.DataFormatException;
+import java.util.zip.Inflater;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -57,6 +60,28 @@ public class UniFiProtectUtil {
 
     public static double calculateHeightFromWidth(double thumbnailWidth) {
         return (thumbnailWidth / HEIGHT_DIVISOR) * HEIGHT_FACTOR;
+    }
+
+    public static byte[] zlibDecompress(byte[] compressed) throws IOException, DataFormatException {
+        final Inflater inflater = new Inflater();
+        ByteArrayOutputStream out = null;
+        // System.out.println("Compressed length: " + compressed.length);
+        try {
+            out = new ByteArrayOutputStream(compressed.length);
+            inflater.setInput(compressed);
+            byte[] bytes = new byte[1024];
+            int size = 1;
+            while (size > 0) {
+                size = inflater.inflate(bytes);
+                out.write(bytes, 0, size);
+            }
+            return out.toByteArray();
+        } finally {
+            inflater.end();
+            if (out != null) {
+                out.close();
+            }
+        }
     }
 
     @SuppressWarnings("null")

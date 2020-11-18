@@ -168,7 +168,7 @@ public class UniFiProtectNvr {
         return bootStrapRequestStatus;
     }
 
-    private synchronized UniFiProtectStatus refreshEvents() {
+    public synchronized UniFiProtectStatus refreshEvents() {
         UniFiProtectEventsRequest eventsRequest = new UniFiProtectEventsRequest(httpClient, getConfig(), token);
         UniFiProtectStatus sendStatus = eventsRequest.sendRequest();
         if (!requestSuccessFullySent(sendStatus)) {
@@ -192,11 +192,12 @@ public class UniFiProtectNvr {
         }
         UniFiProtectStatus refreshBootstrap = refreshBootstrap();
         if (refreshBootstrap.getStatus() == SendStatus.SUCCESS) {
-            UniFiProtectStatus refreshEvents = refreshEvents();
-            if (refreshEvents.getStatus() != SendStatus.SUCCESS) {
-                logger.debug("Failed to update events via API: {} {}", refreshEvents.getMessage(),
-                        refreshEvents.getStatus().toString());
-            }
+            // TODO: FIXME
+            // UniFiProtectStatus refreshEvents = refreshEvents();
+            // if (refreshEvents.getStatus() != SendStatus.SUCCESS) {
+            // logger.debug("Failed to update events via API: {} {}", refreshEvents.getMessage(),
+            // refreshEvents.getStatus().toString());
+            // }
         }
         return refreshBootstrap;
     }
@@ -360,8 +361,8 @@ public class UniFiProtectNvr {
 
     @SuppressWarnings("null")
     public synchronized @Nullable UniFiProtectEvent getLastMotionEvent(UniFiProtectCamera camera) {
-        Arrays.stream(events).forEach(event -> logger.debug("Events resultT: {}", event));
-        return UniFiProtectUtil.findLastMotionEventForCamera(events, camera);
+        Arrays.stream(getEvents()).forEach(event -> logger.debug("Events resultT: {}", event));
+        return UniFiProtectUtil.findLastMotionEventForCamera(getEvents(), camera);
     }
 
     @SuppressWarnings("null")
@@ -442,4 +443,46 @@ public class UniFiProtectNvr {
     public UniFiProtectNvrThingConfig getConfig() {
         return config;
     }
+
+    public HttpClient getHttpClient() {
+        return httpClient;
+    }
+
+    public Gson getGson() {
+        return gson;
+    }
+
+    public UniFiProtectEvent[] getEvents() {
+        return events;
+    }
+
+    // if(evt.getPropertyName().equals(OMaticBindingConstants.PROPERTY_COMPLETED))
+    //
+    // {
+    // storeProperty(OMaticBindingConstants.PROPERTY_TOTAL_TIME, "" + oMaticMachine.getTotalTime());
+    // storeProperty(OMaticBindingConstants.PROPERTY_TOTAL_ENERGY, "" + oMaticMachine.getTotalEnergy());
+    // storeProperty(OMaticBindingConstants.PROPERTY_TOTAL_ESTIMATED_ENERGY, "" + oMaticMachine.getEstimatedEnergy());
+    // refreshChannels();
+    // logInfo("State Machine completed time: {}, energy(measured): {}, energy(estimated): {}",
+    // oMaticMachine.getRunningTimeString(), oMaticMachine.getEnergy(), oMaticMachine.getEstimatedEnergy());
+    // return;
+    // }
+    //
+    // if(evt.getPropertyName().equals(OMaticBindingConstants.PROPERTY_LAST_KNOWN_ENERGY_VALUE))
+    // {
+    // storeProperty(OMaticBindingConstants.PROPERTY_LAST_KNOWN_ENERGY_VALUE,
+    // "" + oMaticMachine.getLastKnownEnergyValue());
+    // refreshChannels();
+    // return;
+    // }
+    //
+    // logDebug("Failed to handle property change for prop: {}", evt.getPropertyName());
+    // }
+    // }
+
+    // @Override
+    // public void propertyChange(PropertyChangeEvent evt) {
+    // // TODO Auto-generated method stub
+    //
+    // }
 }
