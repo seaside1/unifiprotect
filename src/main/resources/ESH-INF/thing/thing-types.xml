@@ -52,7 +52,7 @@
 			<parameter name="refresh" type="integer" required="false">
 				<label>Refresh Interval</label>
 				<description>The refresh interval in seconds to poll the UniFi Protect NVR</description>
-				<default>10</default>
+				<default>60</default>
 			</parameter>
 			<parameter name="thumbnailWidth" type="integer" required="false">
 				<label>Thumbnail Width</label>
