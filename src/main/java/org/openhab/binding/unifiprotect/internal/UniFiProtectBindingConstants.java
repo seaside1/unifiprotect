@@ -47,4 +47,7 @@ public class UniFiProtectBindingConstants {
     public static final String CAMERA_PROP_HOST = "host";
     public static final String CAMERA_PROP_MAC = "mac";
     public static final String CAMERA_PROP_NAME = "name";
+
+    public static final String PROPERTY_EVENT_ACTION_ADD = "EVENT_ACTION_ADD";
+
 }

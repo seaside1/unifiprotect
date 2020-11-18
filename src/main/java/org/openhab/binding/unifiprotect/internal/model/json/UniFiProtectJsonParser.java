@@ -17,6 +17,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.unifiprotect.internal.types.UniFiProtectCamera;
 import org.openhab.binding.unifiprotect.internal.types.UniFiProtectNvrDevice;
 import org.openhab.binding.unifiprotect.internal.types.UniFiProtectNvrUser;
+import org.openhab.binding.unifiprotect.websocket.UniFiProtectAction;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -38,6 +39,7 @@ public class UniFiProtectJsonParser {
     public static final String PROPERTY_JSON_NVR_USERS = "users";
 
     public static final String PROPERTY_JSON_ID = "id";
+    private static final String PROPERTY_JSON_ACTION = "action";
 
     public static JsonObject parseJson(Gson gson, String jsonContent) {
         return new JsonParser().parse(jsonContent).getAsJsonObject();
@@ -69,4 +71,11 @@ public class UniFiProtectJsonParser {
         return gson.fromJson(asJsonArray, UniFiProtectEvent[].class);
     }
 
+    public static @Nullable UniFiProtectAction getActionFromJson(Gson gson, String jsonContent) {
+        JsonObject jsonObject = parseJson(gson, jsonContent);
+        if (jsonObject.has(PROPERTY_JSON_ACTION)) {
+            return gson.fromJson(jsonObject.getAsJsonObject(), UniFiProtectAction.class);
+        }
+        return null;
+    }
 }
