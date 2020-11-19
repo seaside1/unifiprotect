@@ -11,6 +11,10 @@ to the
 
 The binding is written in java and tailored for OpenHAB.
 
+The Binding has a configurable refresh rate. The refresh rate will update the NVR information. 
+For Events (motion detection) starting at ALPHA6 the UniFiProtect Event API over websockets has 
+been implemented. Thus motion detection should be instant and without the need of polling.
+
 ## Usage
 Maturity: ALPHA
 OpenHAB Version: 2.5.x 
@@ -42,8 +46,7 @@ OpenHAB Version: 2.5.x
 
 The binding has been rewritten to support UniFi OS only. That means if you have a UCKP (Cloudkey gen2+)
 you need to update it to at least firmware 2.0.18. After 2.0.18 UCKP is running UniFiOs just like the
-UDMP and UNVR. For UniFi OS it is possible to subscribe to an event subscription protocol over web sockets, thus removing
-polling the API for events. This could probably be added in the future, but right now the binding is based on polling.
+UDMP and UNVR. 
 
 ## Dependencies
 
@@ -81,7 +84,7 @@ The following table describes the Bridge configuration parameters:
 | Hostname                 | Hostname or IP address of the NVR                    | Required | -       |
 | Username                 | The username to access the UniFiProtect              | Required | -       |
 | Password                 | The password credential                              | Required | -       |
-| Refresh Interval         | Refresh interval in seconds (Polling)                | Required | 10      |
+| Refresh Interval         | Refresh interval in seconds                          | Required | 60      |
 | Thumbnail Width          | Thumbnails will use this width                       | Required | 640     |
 | Image Folder             | Images (snapshots etc) will be stored in this folder | Optional | -       |
 | Events Timer Period 	   | The number of seconds to look back for motion events | Optional | 30      |
@@ -277,12 +280,12 @@ https://github.com/seaside1/unifiprotect
  * Prepared for event based API
  * Workaround for bug with localusername, firstname needs to be the same as localusername
  * Motion score added
- * Events are now fetched at the same rate as refresh (polling)
+ * Events are now fetched at the same rate as refresh 
  * Changed debug log to not be as verbose
+ * Websocket Event API Support
 
 ## Roadmap
 
 * OpenHAB Version 3 support
-* Websocket Event API Support
 * Support UniFi Doorbell
 * Support for multiple harddrives
