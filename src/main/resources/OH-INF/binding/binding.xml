@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<binding:binding id="unifiprotect" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:binding="https://openhab.org/schemas/binding/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
+	<name>UniFi Protect Binding</name>
+	<description>The UniFi Protect binding connects to the Unifi Protect NVR (Cloudkey) to use an unofficial API. The API
+		can be used to detect motions and do basic configuration</description>
+	<author>Joseph Hagberg</author>
+</binding:binding>
