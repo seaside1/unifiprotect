@@ -378,13 +378,11 @@ public class UniFiProtectNvrDevice {
     public Double getCpuTemperature() {
         return getSystemInfo() != null && getSystemInfo().getCpu() != null ? getSystemInfo().getCpu().getTemperature()
                 : null;
-
     }
 
     public Double getCpuAverageLoad() {
         return getSystemInfo() != null && getSystemInfo().getCpu() != null ? getSystemInfo().getCpu().getAverageLoad()
                 : null;
-
     }
 
     // public String getHardDrive0Name() {

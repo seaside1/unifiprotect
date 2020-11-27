@@ -56,5 +56,4 @@ public class UniFiProtectAction {
     public void setId(String id) {
         this.id = id;
     }
-
 }

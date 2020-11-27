@@ -83,6 +83,5 @@ public class UniFiProtectStatus {
             default:
                 return MSG_UNHANDLED_CASE;
         }
-
     }
 }

@@ -336,7 +336,6 @@ public class UniFiProtectCamera {
     }
 
     public void setStatusLight(boolean status) {
-
     }
 
     public @Nullable String getId() {

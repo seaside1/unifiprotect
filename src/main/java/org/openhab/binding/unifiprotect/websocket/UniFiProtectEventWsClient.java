@@ -64,5 +64,4 @@ public class UniFiProtectEventWsClient {
             client.stop();
         }
     }
-
 }
