@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.unifiprotect.internal;
 
-import org.eclipse.smarthome.core.library.types.RawType;
 import org.openhab.binding.unifiprotect.internal.model.UniFiProtectImage;
 import org.openhab.binding.unifiprotect.internal.types.UniFiProtectCamera;
+import org.openhab.core.library.types.RawType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

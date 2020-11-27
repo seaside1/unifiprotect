@@ -20,9 +20,9 @@ import java.util.Properties;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.unifiprotect.internal.model.UniFiProtectCameraCache;
 import org.openhab.binding.unifiprotect.internal.model.UniFiProtectNvr;
 import org.openhab.binding.unifiprotect.internal.model.json.UniFiProtectEvent;
@@ -46,7 +46,7 @@ public class UniFiProtectRequestTester {
     private String password = "";
     private UniFiProtectNvrThingConfig config = new UniFiProtectNvrThingConfig();
 
-    @Before
+    @BeforeAll
     public void setUp() throws Exception {
         Properties properties = new Properties();
         InputStream stream = this.getClass().getResourceAsStream("credentials.test");
@@ -91,7 +91,7 @@ public class UniFiProtectRequestTester {
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void getBootstrap() throws Exception {
         UniFiProtectNvr nvr = new UniFiProtectNvr(config);
         nvr.init();
@@ -102,7 +102,7 @@ public class UniFiProtectRequestTester {
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void getAnonSnapshot() throws Exception {
         UniFiProtectNvr nvr = new UniFiProtectNvr(config);
         nvr.init();
@@ -114,7 +114,7 @@ public class UniFiProtectRequestTester {
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void getSnapshot() throws Exception {
         UniFiProtectNvr nvr = new UniFiProtectNvr(config);
         nvr.init();
@@ -126,7 +126,7 @@ public class UniFiProtectRequestTester {
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void getHeatmap() throws Exception {
         UniFiProtectNvr nvr = new UniFiProtectNvr(config);
         nvr.init();
@@ -144,7 +144,7 @@ public class UniFiProtectRequestTester {
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void getThumbnail() throws Exception {
         UniFiProtectNvr nvr = new UniFiProtectNvr(config);
         nvr.init();
@@ -161,7 +161,7 @@ public class UniFiProtectRequestTester {
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void setAlerts() throws Exception {
         UniFiProtectNvr nvr = new UniFiProtectNvr(config);
         nvr.init();
@@ -173,7 +173,7 @@ public class UniFiProtectRequestTester {
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void setHighFpsMode() throws Exception {
         UniFiProtectNvr nvr = new UniFiProtectNvr(config);
         nvr.init();
@@ -186,7 +186,7 @@ public class UniFiProtectRequestTester {
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void setHDRMode() throws Exception {
         UniFiProtectNvr nvr = new UniFiProtectNvr(config);
         nvr.init();
@@ -198,7 +198,7 @@ public class UniFiProtectRequestTester {
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void setIrMode() throws Exception {
         UniFiProtectNvr nvr = new UniFiProtectNvr(config);
         nvr.init();
@@ -211,7 +211,7 @@ public class UniFiProtectRequestTester {
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void setRecordingMode() throws Exception {
         UniFiProtectNvr nvr = new UniFiProtectNvr(config);
         nvr.init();
@@ -224,7 +224,7 @@ public class UniFiProtectRequestTester {
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void setStatusLightOn() throws Exception {
         UniFiProtectNvr nvr = new UniFiProtectNvr(config);
         nvr.init();
@@ -236,7 +236,7 @@ public class UniFiProtectRequestTester {
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void rebootCamera() throws Exception {
         UniFiProtectNvr nvr = new UniFiProtectNvr(config);
         nvr.init();

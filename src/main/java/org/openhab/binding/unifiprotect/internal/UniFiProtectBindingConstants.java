@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.openhab.core.thing.ThingTypeUID;
 
 /**
  * The {@link UniFiProtectBindingConstants} class defines common constants, which are
@@ -49,5 +49,4 @@ public class UniFiProtectBindingConstants {
     public static final String CAMERA_PROP_NAME = "name";
 
     public static final String PROPERTY_EVENT_ACTION_ADD = "EVENT_ACTION_ADD";
-
 }
