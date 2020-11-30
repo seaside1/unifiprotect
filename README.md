@@ -22,7 +22,7 @@ https://github.com/seaside1/unifiprotect/tree/main/bin and named org.openhab.bin
 OpenHAB 3.0.0Mx version is also located under https://github.com/seaside1/unifiprotect/tree/main/bin and name
 org.openhab.binding.unifiprotect-3.0.0-ALPHA7.jar
 
-Future versions of this binding will only support *OpenHAB 3.0.0*
+Future versions of this binding will only support **OpenHAB 3.0.0**
 
 
 ## Usage
