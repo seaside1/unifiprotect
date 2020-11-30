@@ -25,7 +25,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.unifiprotect.internal.model.UniFiProtectCameraChannel;
@@ -190,7 +189,7 @@ public class UniFiProtectCameraThingHandler extends BaseThingHandler {
                 }
                 break;
             case HOST:
-                if (StringUtils.isNotBlank(camera.getHost())) {
+                if (!UniFiProtectUtil.isEmpty(camera.getHost())) {
                     state = StringType.valueOf(camera.getHost());
                 }
                 break;
@@ -230,7 +229,7 @@ public class UniFiProtectCameraThingHandler extends BaseThingHandler {
                 }
                 break;
             case MAC:
-                if (StringUtils.isNotBlank(camera.getMac())) {
+                if (!UniFiProtectUtil.isEmpty(camera.getMac())) {
                     state = StringType.valueOf(camera.getMac());
                 }
                 break;
@@ -240,17 +239,17 @@ public class UniFiProtectCameraThingHandler extends BaseThingHandler {
                 }
                 break;
             case NAME:
-                if (StringUtils.isNotBlank(camera.getName())) {
+                if (!UniFiProtectUtil.isEmpty(camera.getName())) {
                     state = StringType.valueOf(camera.getName());
                 }
                 break;
             case STATE:
-                if (StringUtils.isNotBlank(camera.getState())) {
+                if (!UniFiProtectUtil.isEmpty(camera.getState())) {
                     state = StringType.valueOf(camera.getState());
                 }
                 break;
             case TYPE:
-                if (StringUtils.isNotBlank(camera.getType())) {
+                if (!UniFiProtectUtil.isEmpty(camera.getType())) {
                     state = StringType.valueOf(camera.getType());
                 }
                 break;

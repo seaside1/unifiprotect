@@ -15,7 +15,6 @@ package org.openhab.binding.unifiprotect.internal;
 import java.util.Arrays;
 import java.util.Optional;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNull;
 
 /**
@@ -30,8 +29,8 @@ public enum UniFiProtectIrMode {
     INVALID;
 
     public static UniFiProtectIrMode parse(String str) {
-        Optional<@NonNull UniFiProtectIrMode> findAny = Arrays.stream(UniFiProtectIrMode.values())
-                .filter(e -> e.name().replaceAll("_", StringUtils.EMPTY).toUpperCase().equals(str.toUpperCase()))
+        Optional<@NonNull UniFiProtectIrMode> findAny = Arrays.stream(UniFiProtectIrMode.values()).filter(e -> e.name()
+                .replaceAll("_", UniFiProtectBindingConstants.EMPTY_STRING).toUpperCase().equals(str.toUpperCase()))
                 .findAny();
         return findAny.isPresent() ? findAny.get() : UniFiProtectIrMode.INVALID;
     }

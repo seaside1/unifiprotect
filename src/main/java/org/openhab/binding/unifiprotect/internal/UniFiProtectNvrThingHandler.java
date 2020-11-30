@@ -23,7 +23,6 @@ import java.time.ZonedDateTime;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.unifiprotect.internal.model.UniFiProtectNvr;
@@ -226,18 +225,18 @@ public class UniFiProtectNvrThingHandler extends BaseBridgeHandler implements Pr
                 }
                 break;
             case FIRMWARE_VERSION:
-                if (StringUtils.isNotBlank(nvr.getNvrDevice().getFirmwareVersion())) {
+                if (UniFiProtectUtil.isNotBlank(nvr.getNvrDevice().getFirmwareVersion())) {
                     state = StringType.valueOf(nvr.getNvrDevice().getFirmwareVersion());
                 }
                 break;
             case HOST:
-                if (StringUtils.isNotBlank(nvr.getNvrDevice().getHost())) {
+                if (UniFiProtectUtil.isNotBlank(nvr.getNvrDevice().getHost())) {
                     state = StringType.valueOf(nvr.getNvrDevice().getHost());
                 }
                 break;
             case HOSTS:
                 logger.debug("HOSTS: {}", nvr.getNvrDevice().getHosts());
-                if (StringUtils.isNotBlank(nvr.getNvrDevice().getHosts())) {
+                if (UniFiProtectUtil.isNotBlank(nvr.getNvrDevice().getHosts())) {
                     state = StringType.valueOf(nvr.getNvrDevice().getHosts());
                 }
                 break;
@@ -259,7 +258,7 @@ public class UniFiProtectNvrThingHandler extends BaseBridgeHandler implements Pr
                 }
                 break;
             case NAME:
-                if (StringUtils.isNotBlank(nvr.getNvrDevice().getName())) {
+                if (UniFiProtectUtil.isNotBlank(nvr.getNvrDevice().getName())) {
                     state = StringType.valueOf(nvr.getNvrDevice().getName());
                 }
                 break;
@@ -274,12 +273,12 @@ public class UniFiProtectNvrThingHandler extends BaseBridgeHandler implements Pr
                 }
                 break;
             case VERSION:
-                if (StringUtils.isNotBlank(nvr.getNvrDevice().getVersion())) {
+                if (UniFiProtectUtil.isNotBlank(nvr.getNvrDevice().getVersion())) {
                     state = StringType.valueOf(nvr.getNvrDevice().getVersion());
                 }
                 break;
             case HOST_SHORT_NAME:
-                if (StringUtils.isNotBlank(nvr.getNvrDevice().getHostShortname())) {
+                if (UniFiProtectUtil.isNotBlank(nvr.getNvrDevice().getHostShortname())) {
                     state = StringType.valueOf(nvr.getNvrDevice().getHostShortname());
                 }
                 break;
@@ -343,7 +342,7 @@ public class UniFiProtectNvrThingHandler extends BaseBridgeHandler implements Pr
                 break;
             case STORAGE_TYPE:
                 String type = nvr.getNvrDevice().getStorageType();
-                if (type != null && StringUtils.isNotBlank(type)) {
+                if (UniFiProtectUtil.isNotBlank(type)) {
                     state = StringType.valueOf(nvr.getNvrDevice().getSystemInfo().getStorage().getType());
                 }
                 break;
