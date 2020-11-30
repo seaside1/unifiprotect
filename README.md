@@ -15,9 +15,19 @@ The Binding has a configurable refresh rate. The refresh rate will update the NV
 For Events (motion detection) starting at ALPHA6 the UniFiProtect Event API over websockets has 
 been implemented. Thus motion detection should be instant and without the need of polling.
 
+## OpenHab Version
+The binding was originally written for Openhab 2.5.x. The prebuild jar-file for OpenHAB 2.5.x is located 
+https://github.com/seaside1/unifiprotect/tree/main/bin and named org.openhab.binding.unifiprotect-2.5.x-ALPHA6.jar
+
+OpenHAB 3.0.0Mx version is also located under https://github.com/seaside1/unifiprotect/tree/main/bin and name
+org.openhab.binding.unifiprotect-3.0.0-ALPHA7.jar
+
+Future versions of this binding will only support *OpenHAB 3.0.0*
+
+
 ## Usage
 Maturity: ALPHA
-OpenHAB Version: 2.5.x 
+OpenHAB Version: 2.5.x & Openhab 3.0.0Mx 
 
 ## Example of usage
 - Detect Motion and trigger other system notifications, Alexa, Google Home, turn on lights, sound an alarm etc.
@@ -49,7 +59,7 @@ you need to update it to at least firmware 2.0.18. After 2.0.18 UCKP is running 
 UDMP and UNVR. 
 
 ## Dependencies
-
+* OH3 Map transformations ( https://www.openhab.org/addons/transformations/map/ )
 
 ## Manual setup
 * Log into UniFi Protect and create a user with admin rights that you use
@@ -283,9 +293,8 @@ https://github.com/seaside1/unifiprotect
  * Events are now fetched at the same rate as refresh 
  * Changed debug log to not be as verbose
  * Websocket Event API Support
+* OpenHAB Version 3 support
 
 ## Roadmap
-
-* OpenHAB Version 3 support
 * Support UniFi Doorbell
 * Support for multiple harddrives
