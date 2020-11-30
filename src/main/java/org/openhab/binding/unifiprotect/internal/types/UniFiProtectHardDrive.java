@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.unifiprotect.internal.types;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.unifiprotect.internal.UniFiProtectBindingConstants;
 
 /**
  * The {@link UniFiProtectHardDrive}
@@ -24,7 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class UniFiProtectHardDrive {
 
-    private String model = StringUtils.EMPTY;
+    private String model = UniFiProtectBindingConstants.EMPTY_STRING;
     private Long size = -1L;
     private @Nullable Boolean healthy = null;
 

@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.unifiprotect.internal.types;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.unifiprotect.internal.UniFiProtectBindingConstants;
 
 /**
  * The {@link UniFiProtectCamera}
@@ -28,11 +28,11 @@ public class UniFiProtectCamera {
     private @Nullable String snapshotUrl;
     private @Nullable String aSnapshotUrl;
     private @Nullable Long upSince;
-    private String mac = StringUtils.EMPTY;
-    private String host = StringUtils.EMPTY;
+    private String mac = UniFiProtectBindingConstants.EMPTY_STRING;
+    private String host = UniFiProtectBindingConstants.EMPTY_STRING;
 
     private @Nullable String type;
-    private String name = StringUtils.EMPTY;
+    private String name = UniFiProtectBindingConstants.EMPTY_STRING;
     private @Nullable String videoMode;
     private @Nullable Long lastSeen;
     private @Nullable Long connectedSince;

@@ -197,4 +197,12 @@ public class UniFiProtectUtil {
     public static File writeAnonSnapshotToFile(String imageFolder, String cameraId, byte[] content) {
         return writeFileToImageFolder(imageFolder, cameraId, content, ANON_SNAPSHOT_SUFFIX);
     }
+
+    public static boolean isNotBlank(@Nullable String string) {
+        return string != null && !string.isBlank();
+    }
+
+    public static boolean isEmpty(@Nullable String string) {
+        return string == null || !string.isEmpty();
+    }
 }
