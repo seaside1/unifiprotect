@@ -191,12 +191,7 @@ public class UniFiProtectNvr {
         }
         UniFiProtectStatus refreshBootstrap = refreshBootstrap();
         if (refreshBootstrap.getStatus() == SendStatus.SUCCESS) {
-            // TODO: FIXME
-            // UniFiProtectStatus refreshEvents = refreshEvents();
-            // if (refreshEvents.getStatus() != SendStatus.SUCCESS) {
-            // logger.debug("Failed to update events via API: {} {}", refreshEvents.getMessage(),
-            // refreshEvents.getStatus().toString());
-            // }
+            logger.debug("Successfully refreshed bootstrap");// TODO: FIXME
         }
         return refreshBootstrap;
     }

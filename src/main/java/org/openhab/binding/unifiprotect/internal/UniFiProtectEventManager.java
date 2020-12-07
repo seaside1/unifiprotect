@@ -94,4 +94,12 @@ public class UniFiProtectEventManager implements PropertyChangeListener {
             logger.debug("Failed to stop manager", e);
         }
     }
+
+    public void dispose() {
+        try {
+            wsClient.stop();
+        } catch (Exception e) {
+            logger.debug("Failed to stop websocket client on dispose", e);
+        }
+    }
 }
