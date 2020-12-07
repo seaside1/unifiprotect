@@ -169,6 +169,10 @@ public class UniFiProtectNvrThingHandler extends BaseBridgeHandler implements Pr
         logger.debug("dispose()");
         cancelRefreshJob();
         disposed = true;
+        if (eventManager != null) {
+            eventManager.removePropertyChangeListener(this);
+            eventManager.dispose();
+        }
         super.dispose();
     }
 
