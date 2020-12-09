@@ -18,6 +18,7 @@ import static org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -64,8 +65,6 @@ public class UniFiProtectCameraThingHandler extends BaseThingHandler {
 
     private UniFiProtectImageHandler imageHandler = new UniFiProtectImageHandler();
 
-    private UniFiProtectEventCache eventCache = new UniFiProtectEventCache();
-
     private final ScheduledExecutorService scheduler = ThreadPoolManager
             .getScheduledPool(ThreadPoolManager.THREAD_POOL_NAME_COMMON);
     private Map<String, CompletableFuture<UniFiProtectCamera>> futures = new HashMap<String, CompletableFuture<UniFiProtectCamera>>();
@@ -75,9 +74,7 @@ public class UniFiProtectCameraThingHandler extends BaseThingHandler {
     }
 
     protected synchronized @Nullable UniFiProtectCamera getCamera(UniFiProtectNvr nvr) {
-        UniFiProtectCamera camera = nvr.getCamera(config);
-        logger.debug("Getting camera: {}", camera != null ? camera.toString() : "NOTFOUND");
-        return camera == null ? null : camera;
+        return nvr.getCamera(config);
     }
 
     protected synchronized @Nullable UniFiProtectCamera getCamera() {
@@ -184,8 +181,8 @@ public class UniFiProtectCameraThingHandler extends BaseThingHandler {
                 break;
             case MOTION_SCORE:
                 String id = camera.getId();
-                if (id != null && eventCache.getEvent(id) != null) {
-                    state = new DecimalType(eventCache.getEvent(id).getScore());
+                if (id != null && getNvr().getLastEventFromCamera(camera) != null) {
+                    state = new DecimalType(getNvr().getLastEventFromCamera(camera).getScore());
                 }
                 break;
             case HOST:
@@ -206,9 +203,6 @@ public class UniFiProtectCameraThingHandler extends BaseThingHandler {
             case IS_MOTION_DETECTED:
                 if (camera.getIsMotionDetected() != null) {
                     state = OnOffType.from(camera.getIsMotionDetected());
-                    if (state == OnOffType.ON) {
-                        handleMotionEvent(camera, controller.getConfig().getEventsTimePeriodLength());
-                    }
                 }
                 break;
             case IS_RECORDING:
@@ -424,8 +418,8 @@ public class UniFiProtectCameraThingHandler extends BaseThingHandler {
         }
     }
 
-    private synchronized void handleMotionEvent(UniFiProtectCamera camera, int delay) {
-
+    public synchronized void handleMotionEvent(int delay, String eventId) {
+        UniFiProtectCamera camera = getCamera();
         String cameraId = camera.getId();
         if (cameraId == null) {
             logger.error("Failed to handle motion event, camera null");
@@ -433,21 +427,26 @@ public class UniFiProtectCameraThingHandler extends BaseThingHandler {
         }
         CompletableFuture<UniFiProtectCamera> future = futures.get(cameraId);
         if (future != null && !future.isDone()) {
-            return;// future.cancel(true);
+            return;
         }
         logger.debug("Scehduling completable future for camera: {} delay: {}", camera.getName(), delay);
         Supplier<CompletableFuture<UniFiProtectCamera>> asyncTask = () -> CompletableFuture.completedFuture(camera);
         future = UniFiProtectUtil.scheduleAsync(scheduler, asyncTask, delay, TimeUnit.SECONDS);
         future.thenAccept(cam -> {
-            UniFiProtectEvent event = getNvr().getLastMotionEvent(cam);
-            logger.debug("Handling future by getting event for camera: {} event: {}", cam.getName(), event);
+            UniFiProtectEvent event = getNvr().getEventFromId(eventId);
+            logger.debug("Handling future by getting event for camera: {} eventid: {} event: {}", cam.getName(),
+                    eventId, event);
             if (event != null) {
-                eventCache.put(event);
                 handleHeatmap(cam, event);
                 logger.debug("Handling future by done heatmap");
                 handleThumbnail(cam, event);
                 logger.debug("Handling future by done thumbnail");
                 futures.remove(cam.getId());
+                getNvr().refreshProtect();
+                refresh();
+            } else {
+                logger.debug("Failed to find eventId: {} Events in cache:", eventId);
+                Arrays.stream(getNvr().getEvents()).forEach(ev -> logger.debug("Event in cache: {}", ev));
             }
         });
         futures.put(cameraId, future);

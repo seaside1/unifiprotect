@@ -203,6 +203,6 @@ public class UniFiProtectUtil {
     }
 
     public static boolean isEmpty(@Nullable String string) {
-        return string == null || !string.isEmpty();
+        return string == null || string.isEmpty();
     }
 }
