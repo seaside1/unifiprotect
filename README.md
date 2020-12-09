@@ -284,6 +284,15 @@ Get jar-file from repo. Place the jar-file in the openhab-addons folder
 https://github.com/seaside1/unifiprotect
 
 ## Changelog
+  # ALPHA8
+ * Websocket connection is reconnected when closed
+ * Fetching thumbnail and heatmap more quickly and in a more stable approach
+ * Fixed Name, Status, MAC, Host channels
+  # ALPHA 7
+   * OpenHAB Version 3 support
+  # ALPHA 6
+   * Websocket Event API Support
+  # ALPHA 5
  * Removed port configuration from the binding. Port 443 and port 80 are used.
  * Renamed and added several attributes for NVR thing
  * Major refactoring for UniFiOS
@@ -292,9 +301,7 @@ https://github.com/seaside1/unifiprotect
  * Motion score added
  * Events are now fetched at the same rate as refresh 
  * Changed debug log to not be as verbose
- * Websocket Event API Support
-* OpenHAB Version 3 support
-
+ 
 ## Roadmap
 * Support UniFi Doorbell
 * Support for multiple harddrives
