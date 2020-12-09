@@ -21,6 +21,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class UniFiProtectCameraThingConfig {
+    @Override
+    public String toString() {
+        return "UniFiProtectCameraThingConfig [mac=" + mac + "]";
+    }
+
     /* Camera Id should mac address */
     private String mac = "";
 

@@ -29,6 +29,8 @@ import org.openhab.binding.unifiprotect.internal.model.UniFiProtectNvr;
 import org.openhab.binding.unifiprotect.internal.model.UniFiProtectNvrChannel;
 import org.openhab.binding.unifiprotect.internal.model.UniFiProtectStatus;
 import org.openhab.binding.unifiprotect.internal.model.UniFiProtectStatus.SendStatus;
+import org.openhab.binding.unifiprotect.internal.model.json.UniFiProtectEvent;
+import org.openhab.binding.unifiprotect.websocket.UniFiProtectAction;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -36,6 +38,7 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
@@ -56,6 +59,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class UniFiProtectNvrThingHandler extends BaseBridgeHandler implements PropertyChangeListener {
 
+    private static final int MOTION_EVENT_WAIT_TIME = 5;
     private @Nullable ScheduledFuture<?> refreshJob;
     private final Logger logger = LoggerFactory.getLogger(UniFiProtectNvrThingHandler.class);
 
@@ -407,10 +411,58 @@ public class UniFiProtectNvrThingHandler extends BaseBridgeHandler implements Pr
 
     @Override
     public void propertyChange(@Nullable PropertyChangeEvent evt) {
-        if (evt.getPropertyName() == UniFiProtectEventManager.EVENT_MOTION) {
+        if (evt.getPropertyName().equals(UniFiProtectAction.PROPERTY_EVENT_ACTION_ADD)) {
+            logger.debug("Got Property Motion Add: {}", evt.getPropertyName());
             getNvr().refreshProtect();
             getNvr().refreshEvents();
             refreshCameras();
+            return;
         }
+
+        if (evt.getPropertyName().equals(UniFiProtectAction.PROPERTY_EVENT_ACTION_UPDATE)) {
+            logger.debug("Got EventMotionUpd refreshing Protect");
+            getNvr().refreshProtect();
+            UniFiProtectAction action = (UniFiProtectAction) evt.getNewValue();
+            UniFiProtectEvent event = getNvr().getEventFromId(action.getId());
+            logger.debug("Got EventMotionUpd action: {} event: {}", action, event);
+
+            String eventId = event != null ? event.getId() : null;
+            if (event != null && eventId != null) {
+                logger.debug("Got event motion: {}", event);
+                UniFiProtectCameraThingHandler handler = getCameraThingHandlerFromEvent(event);
+                logger.debug("### Start RefreshEvents");
+                getNvr().refreshEvents();
+                logger.debug("### End RefreshEvents");
+
+                if (handler != null) {
+                    handler.handleMotionEvent(MOTION_EVENT_WAIT_TIME, eventId);
+                } else {
+                    logger.debug("Failed to handle motion event, since handler is null or score is not sufficient: {}",
+                            event);
+                }
+
+            }
+            refreshCameras();
+            return;
+        }
+
+        logger.debug("Unhandled property: {}", evt.getPropertyName());
+    }
+
+    private @Nullable UniFiProtectCameraThingHandler getCameraThingHandlerFromEvent(UniFiProtectEvent event) {
+        logger.debug("Trying to find camera for event");
+
+        for (Thing thing : getThing().getThings()) {
+            if (thing.getHandler() instanceof UniFiProtectCameraThingHandler) {
+                UniFiProtectCameraThingHandler handler = (UniFiProtectCameraThingHandler) thing.getHandler();
+                logger.debug("Handler id: {} name: {} eventCame: {}", handler.getCamera().getId(),
+                        handler.getCamera().getName(), event.getCamera());
+                if (handler.getCamera() != null && handler.getCamera().getId().equals(event.getCamera())) {
+                    return handler;
+                }
+            }
+        }
+        logger.debug("Failed to get Camera for event");
+        return null;
     }
 }

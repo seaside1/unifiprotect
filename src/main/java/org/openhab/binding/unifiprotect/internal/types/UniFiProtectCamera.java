@@ -319,8 +319,7 @@ public class UniFiProtectCamera {
         this.isDark = isDark;
     }
 
-    @Override
-    public String toString() {
+    public String toStringDetailed() {
         return "UniFiProtectCamera [thumbnailUrl=" + thumbnailUrl + ", heatmapUrl=" + heatmapUrl + ", snapshotUrl="
                 + snapshotUrl + ", aSnapshotUrl=" + aSnapshotUrl + ", upSince=" + upSince + ", mac=" + mac + ", host="
                 + host + ", type=" + type + ", name=" + name + ", lastSeen=" + lastSeen + ", connectedSince="
@@ -333,6 +332,11 @@ public class UniFiProtectCamera {
                 + isMotionDetected + ", ledSettings=" + ledSettings + ", phyRate=" + phyRate + ", id=" + id
                 + ", hdrMode=" + hdrMode + ", isProbingForWifi=" + isProbingForWifi + ", chimeDuration=" + chimeDuration
                 + ", isDark=" + isDark + "]";
+    }
+
+    @Override
+    public String toString() {
+        return "UniFiProtectCamera [name=" + name + ", id=" + id + "]";
     }
 
     public void setStatusLight(boolean status) {

@@ -22,6 +22,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.unifiprotect.internal.UniFiProtectCameraThingConfig;
+import org.openhab.binding.unifiprotect.internal.UniFiProtectEventCache;
 import org.openhab.binding.unifiprotect.internal.UniFiProtectImageHandler;
 import org.openhab.binding.unifiprotect.internal.UniFiProtectIrMode;
 import org.openhab.binding.unifiprotect.internal.UniFiProtectNvrThingConfig;
@@ -70,7 +71,7 @@ public class UniFiProtectNvr {
     private volatile String token = "";
     private volatile @Nullable UniFiProtectNvrDevice nvrDevice;
     private volatile @Nullable UniFiProtectNvrUser nvrUser;
-    private volatile UniFiProtectEvent[] events = new UniFiProtectEvent[0];
+    private volatile UniFiProtectEventCache eventCache = new UniFiProtectEventCache();
     private UniFiProtectCameraCache cameraInsightCache = new UniFiProtectCameraCache();
     private final HttpClient httpClient;
     private final Logger logger = LoggerFactory.getLogger(UniFiProtectNvr.class);
@@ -174,8 +175,15 @@ public class UniFiProtectNvr {
             return sendStatus;
         }
         String jsonContent = eventsRequest.getJsonContent();
-        events = UniFiProtectJsonParser.getEventsFromJson(gson, jsonContent);
+        UniFiProtectEvent[] events = UniFiProtectJsonParser.getEventsFromJson(gson, jsonContent);
+        getEventCache().clear();
+        getEventCache().putAll(Arrays.asList(events));
+        logger.debug("Refreshed events size: {}", events.length);
         return sendStatus;
+    }
+
+    private synchronized UniFiProtectEventCache getEventCache() {
+        return eventCache;
     }
 
     @SuppressWarnings("null")
@@ -392,8 +400,8 @@ public class UniFiProtectNvr {
 
     @SuppressWarnings("null")
     public synchronized @Nullable UniFiProtectEvent getLastMotionEvent(UniFiProtectCamera camera) {
-        Arrays.stream(getEvents()).forEach(event -> logger.debug("Events resultT: {}", event));
-        return UniFiProtectUtil.findLastMotionEventForCamera(getEvents(), camera);
+        final String id = camera != null ? camera.getId() : null;
+        return (id != null) ? eventCache.getEvent(id) : null;
     }
 
     @SuppressWarnings("null")
@@ -500,37 +508,16 @@ public class UniFiProtectNvr {
         return gson;
     }
 
-    public UniFiProtectEvent[] getEvents() {
-        return events;
+    public @Nullable UniFiProtectEvent getLastEventFromCamera(UniFiProtectCamera camera) {
+        final String cameraId = camera != null ? camera.getId() : null;
+        return cameraId != null ? eventCache.getEvent(cameraId) : null;
     }
 
-    // if(evt.getPropertyName().equals(OMaticBindingConstants.PROPERTY_COMPLETED))
-    //
-    // {
-    // storeProperty(OMaticBindingConstants.PROPERTY_TOTAL_TIME, "" + oMaticMachine.getTotalTime());
-    // storeProperty(OMaticBindingConstants.PROPERTY_TOTAL_ENERGY, "" + oMaticMachine.getTotalEnergy());
-    // storeProperty(OMaticBindingConstants.PROPERTY_TOTAL_ESTIMATED_ENERGY, "" + oMaticMachine.getEstimatedEnergy());
-    // refreshChannels();
-    // logInfo("State Machine completed time: {}, energy(measured): {}, energy(estimated): {}",
-    // oMaticMachine.getRunningTimeString(), oMaticMachine.getEnergy(), oMaticMachine.getEstimatedEnergy());
-    // return;
-    // }
-    //
-    // if(evt.getPropertyName().equals(OMaticBindingConstants.PROPERTY_LAST_KNOWN_ENERGY_VALUE))
-    // {
-    // storeProperty(OMaticBindingConstants.PROPERTY_LAST_KNOWN_ENERGY_VALUE,
-    // "" + oMaticMachine.getLastKnownEnergyValue());
-    // refreshChannels();
-    // return;
-    // }
-    //
-    // logDebug("Failed to handle property change for prop: {}", evt.getPropertyName());
-    // }
-    // }
+    public synchronized @Nullable UniFiProtectEvent getEventFromId(String id) {
+        return eventCache.getEventFromEventId(id);
+    }
 
-    // @Override
-    // public void propertyChange(PropertyChangeEvent evt) {
-    // // TODO Auto-generated method stub
-    //
-    // }
+    public UniFiProtectEvent[] getEvents() {
+        return eventCache.getEvents();
+    }
 }

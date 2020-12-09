@@ -20,7 +20,7 @@ import java.util.Properties;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.unifiprotect.internal.model.UniFiProtectCameraCache;
@@ -46,7 +46,7 @@ public class UniFiProtectRequestTester {
     private String password = "";
     private UniFiProtectNvrThingConfig config = new UniFiProtectNvrThingConfig();
 
-    @BeforeAll
+    @BeforeEach
     public void setUp() throws Exception {
         Properties properties = new Properties();
         InputStream stream = this.getClass().getResourceAsStream("credentials.test");
@@ -83,7 +83,7 @@ public class UniFiProtectRequestTester {
                 System.out.println(evt.getPropertyName());
             }
         });
-        Thread.sleep(15000);
+        Thread.sleep(40000);
         nvr.refreshProtect();
 
         UniFiProtectEvent[] events = nvr.getEvents();
@@ -247,3 +247,8 @@ public class UniFiProtectRequestTester {
         nvr.rebootCamera(cameraInsightCache.getCameras().stream().reduce((first, second) -> second).get());
     }
 }
+
+// Anon snapshot fetched on refresh, should be fetched when downloaded
+// Snapshot also fetched on refresh, should be fetched when downloaded
+// Events not downloaded correctly
+// x Name, type, host, state not updated correctly
