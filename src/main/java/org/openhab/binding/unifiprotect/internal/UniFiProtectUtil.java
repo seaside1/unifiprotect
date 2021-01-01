@@ -98,8 +98,8 @@ public class UniFiProtectUtil {
     }
 
     @Nullable
-    public static File writeThumbnailToImageFolder(String imageFolder, UniFiProtectCamera camera, byte[] content) {
-        return writeFileToImageFolder(imageFolder, camera, content, THUMBNAIL_SUFFIX);
+    public static File writeThumbnailToImageFolder(String imageFolder, String cameraId, byte[] content) {
+        return writeFileToImageFolder(imageFolder, cameraId, content, THUMBNAIL_SUFFIX);
     }
 
     public static <T> CompletableFuture<T> scheduleAsync(ScheduledExecutorService executor,
@@ -117,17 +117,15 @@ public class UniFiProtectUtil {
     }
 
     @Nullable
-    private static File writeFileToImageFolder(String imageFolder, UniFiProtectCamera camera, byte[] content,
-            String suffix) {
+    private static File writeFileToImageFolder(String imageFolder, String cameraId, byte[] content, String suffix) {
         FileOutputStream fout = null;
         File image = null;
         try {
-            image = new File(imageFolder.concat(File.separator).concat(camera.getId()).concat(suffix));
+            image = new File(imageFolder.concat(File.separator).concat(cameraId).concat(suffix));
             fout = new FileOutputStream(image);
             fout.write(content);
         } catch (IOException iox) {
-            logger.error("Failed to write to file: {} , for camera id: {} , name: {}", image.getAbsolutePath(),
-                    camera.getId(), camera.getName(), iox);
+            logger.error("Failed to write to file: {} , for camera id: {} ", image.getAbsolutePath(), cameraId, iox);
             return null;
         } finally {
             try {
@@ -173,6 +171,8 @@ public class UniFiProtectUtil {
     @Nullable
     public static UniFiProtectEvent findLastEventTypeForCamera(UniFiProtectEvent[] events, UniFiProtectCamera camera,
             String eventType) {
+        Arrays.stream(events).forEach(e -> logger.debug("FindLastEvent for camera: {} , id: {}, from e: {}",
+                camera.getName(), camera.getId(), e));
         List<UniFiProtectEvent> filteredEvents = Arrays.stream(events).filter(
                 e -> e.getCamera() != null && e.getCamera().equals(camera.getId()) && e.getType().equals(eventType))
                 .collect(Collectors.toList());
@@ -184,17 +184,25 @@ public class UniFiProtectUtil {
     }
 
     @Nullable
-    public static File writeHeatmapToFile(String imageFolder, UniFiProtectCamera camera, byte[] content) {
-        return writeFileToImageFolder(imageFolder, camera, content, HEATMAP_SUFFIX);
+    public static File writeHeatmapToFile(String imageFolder, String cameraId, byte[] content) {
+        return writeFileToImageFolder(imageFolder, cameraId, content, HEATMAP_SUFFIX);
     }
 
     @Nullable
-    public static File writeSnapshotToFile(String imageFolder, UniFiProtectCamera camera, byte[] content) {
-        return writeFileToImageFolder(imageFolder, camera, content, SNAPSHOT_SUFFIX);
+    public static File writeSnapshotToFile(String imageFolder, String cameraId, byte[] content) {
+        return writeFileToImageFolder(imageFolder, cameraId, content, SNAPSHOT_SUFFIX);
     }
 
     @Nullable
-    public static File writeAnonSnapshotToFile(String imageFolder, UniFiProtectCamera camera, byte[] content) {
-        return writeFileToImageFolder(imageFolder, camera, content, ANON_SNAPSHOT_SUFFIX);
+    public static File writeAnonSnapshotToFile(String imageFolder, String cameraId, byte[] content) {
+        return writeFileToImageFolder(imageFolder, cameraId, content, ANON_SNAPSHOT_SUFFIX);
+    }
+
+    public static boolean isNotBlank(@Nullable String string) {
+        return string != null && !string.isBlank();
+    }
+
+    public static boolean isEmpty(@Nullable String string) {
+        return string == null || string.isEmpty();
     }
 }

@@ -12,12 +12,13 @@
  */
 package org.openhab.binding.unifiprotect.internal;
 
-import static org.eclipse.smarthome.core.thing.ThingStatus.*;
-import static org.eclipse.smarthome.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
+import static org.openhab.core.thing.ThingStatus.*;
+import static org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
 
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -25,29 +26,28 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.common.ThreadPoolManager;
-import org.eclipse.smarthome.core.library.types.DateTimeType;
-import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.thing.Bridge;
-import org.eclipse.smarthome.core.thing.Channel;
-import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
-import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.State;
-import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.unifiprotect.internal.model.UniFiProtectCameraChannel;
 import org.openhab.binding.unifiprotect.internal.model.UniFiProtectImage;
 import org.openhab.binding.unifiprotect.internal.model.UniFiProtectNvr;
 import org.openhab.binding.unifiprotect.internal.model.json.UniFiProtectEvent;
 import org.openhab.binding.unifiprotect.internal.types.UniFiProtectCamera;
+import org.openhab.core.common.ThreadPoolManager;
+import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.types.Command;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,8 +65,6 @@ public class UniFiProtectCameraThingHandler extends BaseThingHandler {
 
     private UniFiProtectImageHandler imageHandler = new UniFiProtectImageHandler();
 
-    private UniFiProtectEventCache eventCache = new UniFiProtectEventCache();
-
     private final ScheduledExecutorService scheduler = ThreadPoolManager
             .getScheduledPool(ThreadPoolManager.THREAD_POOL_NAME_COMMON);
     private Map<String, CompletableFuture<UniFiProtectCamera>> futures = new HashMap<String, CompletableFuture<UniFiProtectCamera>>();
@@ -76,9 +74,7 @@ public class UniFiProtectCameraThingHandler extends BaseThingHandler {
     }
 
     protected synchronized @Nullable UniFiProtectCamera getCamera(UniFiProtectNvr nvr) {
-        UniFiProtectCamera camera = nvr.getCamera(config);
-        logger.debug("Getting camera: {}", camera != null ? camera.toString() : "NOTFOUND");
-        return camera == null ? null : camera;
+        return nvr.getCamera(config);
     }
 
     protected synchronized @Nullable UniFiProtectCamera getCamera() {
@@ -185,12 +181,12 @@ public class UniFiProtectCameraThingHandler extends BaseThingHandler {
                 break;
             case MOTION_SCORE:
                 String id = camera.getId();
-                if (id != null && eventCache.getEvent(id) != null) {
-                    state = new DecimalType(eventCache.getEvent(id).getScore());
+                if (id != null && getNvr().getLastEventFromCamera(camera) != null) {
+                    state = new DecimalType(getNvr().getLastEventFromCamera(camera).getScore());
                 }
                 break;
             case HOST:
-                if (StringUtils.isNotBlank(camera.getHost())) {
+                if (!UniFiProtectUtil.isEmpty(camera.getHost())) {
                     state = StringType.valueOf(camera.getHost());
                 }
                 break;
@@ -207,9 +203,6 @@ public class UniFiProtectCameraThingHandler extends BaseThingHandler {
             case IS_MOTION_DETECTED:
                 if (camera.getIsMotionDetected() != null) {
                     state = OnOffType.from(camera.getIsMotionDetected());
-                    if (state == OnOffType.ON) {
-                        handleMotionEvent(camera, controller.getConfig().getEventsTimePeriodLength());
-                    }
                 }
                 break;
             case IS_RECORDING:
@@ -230,7 +223,7 @@ public class UniFiProtectCameraThingHandler extends BaseThingHandler {
                 }
                 break;
             case MAC:
-                if (StringUtils.isNotBlank(camera.getMac())) {
+                if (!UniFiProtectUtil.isEmpty(camera.getMac())) {
                     state = StringType.valueOf(camera.getMac());
                 }
                 break;
@@ -240,17 +233,17 @@ public class UniFiProtectCameraThingHandler extends BaseThingHandler {
                 }
                 break;
             case NAME:
-                if (StringUtils.isNotBlank(camera.getName())) {
+                if (!UniFiProtectUtil.isEmpty(camera.getName())) {
                     state = StringType.valueOf(camera.getName());
                 }
                 break;
             case STATE:
-                if (StringUtils.isNotBlank(camera.getState())) {
+                if (!UniFiProtectUtil.isEmpty(camera.getState())) {
                     state = StringType.valueOf(camera.getState());
                 }
                 break;
             case TYPE:
-                if (StringUtils.isNotBlank(camera.getType())) {
+                if (!UniFiProtectUtil.isEmpty(camera.getType())) {
                     state = StringType.valueOf(camera.getType());
                 }
                 break;
@@ -317,7 +310,6 @@ public class UniFiProtectCameraThingHandler extends BaseThingHandler {
 
     public static boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return UniFiProtectBindingConstants.THING_TYPE_CAMERA.equals(thingTypeUID);
-
     }
 
     @Override
@@ -426,8 +418,8 @@ public class UniFiProtectCameraThingHandler extends BaseThingHandler {
         }
     }
 
-    private synchronized void handleMotionEvent(UniFiProtectCamera camera, int delay) {
-
+    public synchronized void handleMotionEvent(int delay, String eventId) {
+        UniFiProtectCamera camera = getCamera();
         String cameraId = camera.getId();
         if (cameraId == null) {
             logger.error("Failed to handle motion event, camera null");
@@ -435,21 +427,26 @@ public class UniFiProtectCameraThingHandler extends BaseThingHandler {
         }
         CompletableFuture<UniFiProtectCamera> future = futures.get(cameraId);
         if (future != null && !future.isDone()) {
-            return;// future.cancel(true);
+            return;
         }
         logger.debug("Scehduling completable future for camera: {} delay: {}", camera.getName(), delay);
         Supplier<CompletableFuture<UniFiProtectCamera>> asyncTask = () -> CompletableFuture.completedFuture(camera);
         future = UniFiProtectUtil.scheduleAsync(scheduler, asyncTask, delay, TimeUnit.SECONDS);
         future.thenAccept(cam -> {
-            UniFiProtectEvent event = getNvr().getLastMotionEvent(cam);
-            logger.debug("Handling future by getting event for camera: {} event: {}", cam.getName(), event);
+            UniFiProtectEvent event = getNvr().getEventFromId(eventId);
+            logger.debug("Handling future by getting event for camera: {} eventid: {} event: {}", cam.getName(),
+                    eventId, event);
             if (event != null) {
-                eventCache.put(event);
                 handleHeatmap(cam, event);
                 logger.debug("Handling future by done heatmap");
                 handleThumbnail(cam, event);
                 logger.debug("Handling future by done thumbnail");
                 futures.remove(cam.getId());
+                getNvr().refreshProtect();
+                refresh();
+            } else {
+                logger.debug("Failed to find eventId: {} Events in cache:", eventId);
+                Arrays.stream(getNvr().getEvents()).forEach(ev -> logger.debug("Event in cache: {}", ev));
             }
         });
         futures.put(cameraId, future);
@@ -466,7 +463,6 @@ public class UniFiProtectCameraThingHandler extends BaseThingHandler {
         logger.info("Setting High FPS Mode: {}  camera: {}, ip: {}", command == OnOffType.ON, camera.getName(),
                 camera.getHost());
         getNvr().turnOnOrOffHighFpsMode(camera, command == OnOffType.ON);
-
     }
 
     @SuppressWarnings("null")
@@ -480,7 +476,6 @@ public class UniFiProtectCameraThingHandler extends BaseThingHandler {
         logger.info("Setting HDR Mode: {}  camera: {}, ip: {}", command == OnOffType.ON, camera.getName(),
                 camera.getHost());
         getNvr().turnOnOrOffHdrMode(camera, command == OnOffType.ON);
-
     }
 
     @SuppressWarnings("null")
@@ -494,7 +489,6 @@ public class UniFiProtectCameraThingHandler extends BaseThingHandler {
         long value = irMode.longValue();
         logger.info("Setting IR mode = {} camera: {}, ip: {}", value, camera.getName(), camera.getHost());
         getNvr().setIrMode(camera, UniFiProtectIrMode.create(value));
-
     }
 
     @SuppressWarnings("null")

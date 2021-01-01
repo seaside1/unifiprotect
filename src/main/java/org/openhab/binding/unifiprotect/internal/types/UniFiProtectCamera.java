@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.unifiprotect.internal.types;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.unifiprotect.internal.UniFiProtectBindingConstants;
 
 /**
  * The {@link UniFiProtectCamera}
@@ -28,11 +28,11 @@ public class UniFiProtectCamera {
     private @Nullable String snapshotUrl;
     private @Nullable String aSnapshotUrl;
     private @Nullable Long upSince;
-    private String mac = StringUtils.EMPTY;
-    private String host = StringUtils.EMPTY;
+    private String mac = UniFiProtectBindingConstants.EMPTY_STRING;
+    private String host = UniFiProtectBindingConstants.EMPTY_STRING;
 
     private @Nullable String type;
-    private String name = StringUtils.EMPTY;
+    private String name = UniFiProtectBindingConstants.EMPTY_STRING;
     private @Nullable String videoMode;
     private @Nullable Long lastSeen;
     private @Nullable Long connectedSince;
@@ -319,8 +319,7 @@ public class UniFiProtectCamera {
         this.isDark = isDark;
     }
 
-    @Override
-    public String toString() {
+    public String toStringDetailed() {
         return "UniFiProtectCamera [thumbnailUrl=" + thumbnailUrl + ", heatmapUrl=" + heatmapUrl + ", snapshotUrl="
                 + snapshotUrl + ", aSnapshotUrl=" + aSnapshotUrl + ", upSince=" + upSince + ", mac=" + mac + ", host="
                 + host + ", type=" + type + ", name=" + name + ", lastSeen=" + lastSeen + ", connectedSince="
@@ -335,8 +334,12 @@ public class UniFiProtectCamera {
                 + ", isDark=" + isDark + "]";
     }
 
-    public void setStatusLight(boolean status) {
+    @Override
+    public String toString() {
+        return "UniFiProtectCamera [name=" + name + ", id=" + id + "]";
+    }
 
+    public void setStatusLight(boolean status) {
     }
 
     public @Nullable String getId() {

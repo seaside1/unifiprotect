@@ -46,10 +46,11 @@ public class UniFiProtectJsonParser {
     }
 
     public static UniFiProtectCamera[] getCamerasFromJson(Gson gson, JsonObject jsonObject) {
+        UniFiProtectCamera[] cameras = null;
         if (jsonObject.has(PROPERTY_JSON_CAMERA) && jsonObject.get(PROPERTY_JSON_CAMERA).isJsonArray()) {
-            return gson.fromJson(jsonObject.getAsJsonArray(PROPERTY_JSON_CAMERA), UniFiProtectCamera[].class);
+            cameras = gson.fromJson(jsonObject.getAsJsonArray(PROPERTY_JSON_CAMERA), UniFiProtectCamera[].class);
         }
-        return new UniFiProtectCamera[0];
+        return cameras == null ? new UniFiProtectCamera[0] : cameras;
     }
 
     public static @Nullable UniFiProtectNvrDevice getNvrDeviceFromJson(Gson gson, JsonObject jsonObject) {
@@ -59,16 +60,19 @@ public class UniFiProtectJsonParser {
         return null;
     }
 
-    public static @Nullable UniFiProtectNvrUser[] getNvrUsersFromJson(Gson gson, JsonObject jsonObject) {
+    public static UniFiProtectNvrUser[] getNvrUsersFromJson(Gson gson, JsonObject jsonObject) {
+        UniFiProtectNvrUser[] users = null;
         if (jsonObject.has(PROPERTY_JSON_NVR_USERS)) {
-            return gson.fromJson(jsonObject.getAsJsonArray(PROPERTY_JSON_NVR_USERS), UniFiProtectNvrUser[].class);
+            users = gson.fromJson(jsonObject.getAsJsonArray(PROPERTY_JSON_NVR_USERS), UniFiProtectNvrUser[].class);
         }
-        return new UniFiProtectNvrUser[0];
+        return users == null ? new UniFiProtectNvrUser[0] : users;
     }
 
     public static UniFiProtectEvent[] getEventsFromJson(Gson gson, String jsonContent) {
+        UniFiProtectEvent[] events = null;
         JsonArray asJsonArray = new JsonParser().parse(jsonContent).getAsJsonArray();
-        return gson.fromJson(asJsonArray, UniFiProtectEvent[].class);
+        events = gson.fromJson(asJsonArray, UniFiProtectEvent[].class);
+        return events == null ? new UniFiProtectEvent[0] : events;
     }
 
     public static @Nullable UniFiProtectAction getActionFromJson(Gson gson, String jsonContent) {

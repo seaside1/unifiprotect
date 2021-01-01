@@ -14,8 +14,8 @@ package org.openhab.binding.unifiprotect.internal.model;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 
-import org.apache.commons.io.FileUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +44,7 @@ public class UniFiProtectImage {
 
     public byte[] getData() {
         try {
-            return FileUtils.readFileToByteArray(file);
+            return Files.readAllBytes(file.toPath());
         } catch (IOException e) {
             logger.error("Failed to read file on disk: {}", file.getAbsolutePath());
             return new byte[0];

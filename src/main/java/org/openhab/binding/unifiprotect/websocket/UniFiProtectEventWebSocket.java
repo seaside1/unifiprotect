@@ -64,12 +64,16 @@ public class UniFiProtectEventWebSocket {
         logger.debug("Connection closed: {} - {}", statusCode, reason);
         this.session = null;
         this.closeLatch.countDown(); // trigger latch
+        propertyChangeSupport.firePropertyChange(UniFiProtectAction.PROPERTY_SOCKET_CLOSED, null,
+                "statusCode: " + statusCode + " reason: " + reason);
     }
 
     @OnWebSocketConnect
     public void onConnect(Session session) {
         logger.debug("Got connect: {}", session);
         this.session = session;
+        propertyChangeSupport.firePropertyChange(UniFiProtectAction.PROPERTY_SOCKET_CONNECTED, null,
+                session.toString());
     }
 
     @OnWebSocketMessage
@@ -97,7 +101,6 @@ public class UniFiProtectEventWebSocket {
             }
             UniFiProtectAction action = UniFiProtectJsonParser.getActionFromJson(gson, jsonContent);
             if (action == null) {
-                logger.debug("Got non action frame ignored: {}", upFrame);
                 return;
             }
             if (action.getModelKey().equals(UniFiProtectAction.MODEL_KEY_EVENT)) {
@@ -109,17 +112,13 @@ public class UniFiProtectEventWebSocket {
                     propertyChangeSupport.firePropertyChange(UniFiProtectAction.PROPERTY_EVENT_ACTION_UPDATE, null,
                             action);
                 }
-            } else {
-                logger.debug("Got non action frame ignored: {}", upFrame);
             }
-        } else {
-            logger.debug("Got non action/json frame ignored: {}", upFrame);
         }
     }
 
     @OnWebSocketError
     public void onError(Throwable cause) {
-        logger.debug("Error in websocket: {}", cause.getMessage());
+        logger.debug("Error in websocket: {}", cause.getMessage(), cause);
     }
 
     public void addPropertyChangeListener(PropertyChangeListener pcl) {

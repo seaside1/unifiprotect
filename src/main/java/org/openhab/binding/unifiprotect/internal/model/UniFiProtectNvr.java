@@ -22,6 +22,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.unifiprotect.internal.UniFiProtectCameraThingConfig;
+import org.openhab.binding.unifiprotect.internal.UniFiProtectEventCache;
 import org.openhab.binding.unifiprotect.internal.UniFiProtectImageHandler;
 import org.openhab.binding.unifiprotect.internal.UniFiProtectIrMode;
 import org.openhab.binding.unifiprotect.internal.UniFiProtectNvrThingConfig;
@@ -70,7 +71,7 @@ public class UniFiProtectNvr {
     private volatile String token = "";
     private volatile @Nullable UniFiProtectNvrDevice nvrDevice;
     private volatile @Nullable UniFiProtectNvrUser nvrUser;
-    private volatile UniFiProtectEvent[] events = new UniFiProtectEvent[0];
+    private volatile UniFiProtectEventCache eventCache = new UniFiProtectEventCache();
     private UniFiProtectCameraCache cameraInsightCache = new UniFiProtectCameraCache();
     private final HttpClient httpClient;
     private final Logger logger = LoggerFactory.getLogger(UniFiProtectNvr.class);
@@ -100,7 +101,6 @@ public class UniFiProtectNvr {
             return false;
         }
         return true;
-
     }
 
     public synchronized UniFiProtectStatus login() {
@@ -175,8 +175,15 @@ public class UniFiProtectNvr {
             return sendStatus;
         }
         String jsonContent = eventsRequest.getJsonContent();
-        events = UniFiProtectJsonParser.getEventsFromJson(gson, jsonContent);
+        UniFiProtectEvent[] events = UniFiProtectJsonParser.getEventsFromJson(gson, jsonContent);
+        getEventCache().clear();
+        getEventCache().putAll(Arrays.asList(events));
+        logger.debug("Refreshed events size: {}", events.length);
         return sendStatus;
+    }
+
+    private synchronized UniFiProtectEventCache getEventCache() {
+        return eventCache;
     }
 
     @SuppressWarnings("null")
@@ -192,12 +199,7 @@ public class UniFiProtectNvr {
         }
         UniFiProtectStatus refreshBootstrap = refreshBootstrap();
         if (refreshBootstrap.getStatus() == SendStatus.SUCCESS) {
-            // TODO: FIXME
-            // UniFiProtectStatus refreshEvents = refreshEvents();
-            // if (refreshEvents.getStatus() != SendStatus.SUCCESS) {
-            // logger.debug("Failed to update events via API: {} {}", refreshEvents.getMessage(),
-            // refreshEvents.getStatus().toString());
-            // }
+            logger.debug("Successfully refreshed bootstrap");// TODO: FIXME
         }
         return refreshBootstrap;
     }
@@ -227,7 +229,12 @@ public class UniFiProtectNvr {
     }
 
     public synchronized void setStatusLightOn(UniFiProtectCamera camera, boolean enabled) {
-        UniFiProtectStatusLightRequest request = new UniFiProtectStatusLightRequest(httpClient, camera, getConfig(),
+        String cameraId = camera != null ? camera.getId() : null;
+        if (cameraId == null) {
+            logger.error("Failed to set status light on, camera has null fields: {}", camera);
+            return;
+        }
+        UniFiProtectStatusLightRequest request = new UniFiProtectStatusLightRequest(httpClient, cameraId, getConfig(),
                 token, enabled);
         if (!requestSuccessFullySent(request.sendRequest())) {
             return;
@@ -237,7 +244,12 @@ public class UniFiProtectNvr {
     }
 
     public synchronized void rebootCamera(UniFiProtectCamera camera) {
-        UniFiProtectRebootCameraRequest request = new UniFiProtectRebootCameraRequest(httpClient, camera, getConfig(),
+        String cameraId = camera != null ? camera.getId() : null;
+        if (cameraId == null) {
+            logger.error("Failed to reoobt camera since fields are null: {}", camera);
+            return;
+        }
+        UniFiProtectRebootCameraRequest request = new UniFiProtectRebootCameraRequest(httpClient, cameraId, getConfig(),
                 token);
         if (!requestSuccessFullySent(request.sendRequest())) {
             return;
@@ -252,8 +264,14 @@ public class UniFiProtectNvr {
             return;
         }
 
-        UniFiProtectRecordingModeRequest request = new UniFiProtectRecordingModeRequest(httpClient, camera, getConfig(),
-                token, recordingMode);
+        String cameraId = camera != null ? camera.getId() : null;
+        if (cameraId == null) {
+            logger.error("Failed to set Recording mode since camera field is null: {}", camera);
+            return;
+        }
+
+        UniFiProtectRecordingModeRequest request = new UniFiProtectRecordingModeRequest(httpClient, cameraId,
+                getConfig(), token, recordingMode);
         if (!requestSuccessFullySent(request.sendRequest())) {
             return;
         }
@@ -284,9 +302,15 @@ public class UniFiProtectNvr {
             logger.error("Invalid recording mode, ignored");
             return;
         }
+        String cameraId = camera != null ? camera.getId() : null;
+        if (cameraId == null) {
+            logger.error("Failed to set ir mode camera field is null: {}", camera);
+            return;
+        }
 
-        UniFiProtectIrModeRequest request = new UniFiProtectIrModeRequest(httpClient, camera, getConfig(), token,
+        UniFiProtectIrModeRequest request = new UniFiProtectIrModeRequest(httpClient, cameraId, getConfig(), token,
                 irMode);
+
         if (!requestSuccessFullySent(request.sendRequest())) {
             return;
         }
@@ -295,7 +319,12 @@ public class UniFiProtectNvr {
     }
 
     public synchronized void turnOnOrOffHdrMode(UniFiProtectCamera camera, boolean enable) {
-        UniFiProtectHdrModeRequest request = new UniFiProtectHdrModeRequest(httpClient, camera, getConfig(), token,
+        final String cameraId = camera.getId();
+        if (cameraId == null) {
+            logger.error("Failed to set hdr mode, camera field is missing: {}", camera);
+            return;
+        }
+        UniFiProtectHdrModeRequest request = new UniFiProtectHdrModeRequest(httpClient, cameraId, getConfig(), token,
                 enable);
         if (!requestSuccessFullySent(request.sendRequest())) {
             return;
@@ -305,7 +334,12 @@ public class UniFiProtectNvr {
     }
 
     public synchronized void turnOnOrOffHighFpsMode(UniFiProtectCamera camera, boolean enable) {
-        UniFiProtectHighFpsModeRequest request = new UniFiProtectHighFpsModeRequest(httpClient, camera, getConfig(),
+        String cameraId = camera != null ? camera.getId() : null;
+        if (cameraId == null) {
+            logger.error("Failed to turn on high Fps mode, camera field is null: {}", camera);
+            return;
+        }
+        UniFiProtectHighFpsModeRequest request = new UniFiProtectHighFpsModeRequest(httpClient, cameraId, getConfig(),
                 token, enable);
         if (!requestSuccessFullySent(request.sendRequest())) {
             return;
@@ -330,7 +364,12 @@ public class UniFiProtectNvr {
         if (UniFiProtectUtil.requestHasContentOfSize(request, IMAGE_MIN_SIZE)) {
             byte[] data = request.getResponse().getContent();
             logger.debug("Content size for thumbnail request: {}", data.length);
-            File thumbnailFile = UniFiProtectUtil.writeThumbnailToImageFolder(getConfig().getImageFolder(), camera,
+            final String cameraId = camera.getId();
+            if (cameraId == null) {
+                logger.error("CameraId is null, cannot download thumbnail: {}", camera);
+                return null;
+            }
+            File thumbnailFile = UniFiProtectUtil.writeThumbnailToImageFolder(getConfig().getImageFolder(), cameraId,
                     request.getResponse().getContent());
             if (thumbnailFile != null) {
                 thumbnailImage = new UniFiProtectImage(UniFiProtectImageHandler.IMAGE_JPEG, thumbnailFile);
@@ -361,27 +400,31 @@ public class UniFiProtectNvr {
 
     @SuppressWarnings("null")
     public synchronized @Nullable UniFiProtectEvent getLastMotionEvent(UniFiProtectCamera camera) {
-        Arrays.stream(getEvents()).forEach(event -> logger.debug("Events resultT: {}", event));
-        return UniFiProtectUtil.findLastMotionEventForCamera(getEvents(), camera);
+        final String id = camera != null ? camera.getId() : null;
+        return (id != null) ? eventCache.getEvent(id) : null;
     }
 
     @SuppressWarnings("null")
     public synchronized @Nullable UniFiProtectImage getHeatmap(UniFiProtectCamera camera, UniFiProtectEvent event) {
         String heatmap = event != null ? event.getHeatmap() : null;
+        final String cameraId = camera.getId();
+        if (cameraId == null) {
+            logger.error("CameraId is null: {}", camera);
+            return null;
+        }
         if (heatmap == null || heatmap.isEmpty()) {
-            logger.debug("Could not find any heatMap in events for camera: {}", camera.getId());
+            logger.debug("Could not find any heatMap in events for camera: {}", cameraId);
             return null;
         }
         UniFiProtectImage heatmapImage = null;
-        UniFiProtectHeatmapRequest request = new UniFiProtectHeatmapRequest(httpClient, camera, token, heatmap,
-                getConfig());
+        UniFiProtectHeatmapRequest request = new UniFiProtectHeatmapRequest(httpClient, token, heatmap, getConfig());
         if (!requestSuccessFullySent(request.sendRequest())) {
             return null;
         }
 
         if (UniFiProtectUtil.requestHasContentOfSize(request, IMAGE_MIN_SIZE)) {
             byte[] data = request.getResponse().getContent();
-            File heatmapFile = UniFiProtectUtil.writeHeatmapToFile(getConfig().getImageFolder(), camera, data);
+            File heatmapFile = UniFiProtectUtil.writeHeatmapToFile(getConfig().getImageFolder(), cameraId, data);
             logger.debug("Content size for heatmap request: {}", data.length);
             if (heatmapFile != null) {
                 heatmapImage = new UniFiProtectImage(UniFiProtectImageHandler.IMAGE_PNG, heatmapFile);
@@ -394,14 +437,21 @@ public class UniFiProtectNvr {
 
     @SuppressWarnings("null")
     public synchronized @Nullable UniFiProtectImage getSnapshot(UniFiProtectCamera camera) {
+        final String cameraId = camera.getId();
+        final String cameraType = camera.getType();
+        if (cameraId == null || cameraType == null) {
+            logger.error("Failed to get snapshot, camera field null: {}", camera);
+            return null;
+        }
         UniFiProtectImage snapshot = null;
-        UniFiProtectSnapshotRequest request = new UniFiProtectSnapshotRequest(httpClient, camera, token, getConfig());
+        UniFiProtectSnapshotRequest request = new UniFiProtectSnapshotRequest(httpClient, cameraId, cameraType, token,
+                getConfig());
         if (!requestSuccessFullySent(request.sendRequest())) {
             return null;
         }
         if (UniFiProtectUtil.requestHasContentOfSize(request, IMAGE_MIN_SIZE)) {
             logger.debug("Content size for snapshot request: {}", request.getResponse().getContent().length);
-            File file = UniFiProtectUtil.writeSnapshotToFile(getConfig().getImageFolder(), camera,
+            File file = UniFiProtectUtil.writeSnapshotToFile(getConfig().getImageFolder(), cameraId,
                     request.getResponse().getContent());
             if (file != null) {
                 logger.debug("Wrote snapshot file: {} size: {}", file.getAbsolutePath(), file.length());
@@ -418,8 +468,14 @@ public class UniFiProtectNvr {
         if (camera == null) {
             return null;
         }
+        final String cameraHost = camera.getHost();
+        final String cameraId = camera.getId();
+        if (cameraHost == null || cameraId == null) {
+            logger.error("Failed to get anon snapshot, camera fields null: {}", camera);
+            return null;
+        }
         UniFiProtectImage anonSnapshotImage = null;
-        UniFiProtectAnonymousSnapshotRequest request = new UniFiProtectAnonymousSnapshotRequest(httpClient, camera,
+        UniFiProtectAnonymousSnapshotRequest request = new UniFiProtectAnonymousSnapshotRequest(httpClient, cameraHost,
                 token, getConfig());
         if (!requestSuccessFullySent(request.sendRequest())) {
             return null;
@@ -427,7 +483,7 @@ public class UniFiProtectNvr {
         if (UniFiProtectUtil.requestHasContentOfSize(request, IMAGE_MIN_SIZE)) {
             logger.debug("Content size for anon snapshot request: {}", request.getResponse().getContent().length);
             final byte[] data = request.getResponse().getContent();
-            File file = UniFiProtectUtil.writeAnonSnapshotToFile(getConfig().getImageFolder(), camera, data);
+            File file = UniFiProtectUtil.writeAnonSnapshotToFile(getConfig().getImageFolder(), cameraId, data);
             if (file != null) {
                 anonSnapshotImage = new UniFiProtectImage(UniFiProtectImageHandler.IMAGE_JPEG, file);
                 logger.debug("Wrote anon snapshot file: {} size: {}", file.getAbsolutePath(), data.length);
@@ -452,37 +508,16 @@ public class UniFiProtectNvr {
         return gson;
     }
 
-    public UniFiProtectEvent[] getEvents() {
-        return events;
+    public @Nullable UniFiProtectEvent getLastEventFromCamera(UniFiProtectCamera camera) {
+        final String cameraId = camera != null ? camera.getId() : null;
+        return cameraId != null ? eventCache.getEvent(cameraId) : null;
     }
 
-    // if(evt.getPropertyName().equals(OMaticBindingConstants.PROPERTY_COMPLETED))
-    //
-    // {
-    // storeProperty(OMaticBindingConstants.PROPERTY_TOTAL_TIME, "" + oMaticMachine.getTotalTime());
-    // storeProperty(OMaticBindingConstants.PROPERTY_TOTAL_ENERGY, "" + oMaticMachine.getTotalEnergy());
-    // storeProperty(OMaticBindingConstants.PROPERTY_TOTAL_ESTIMATED_ENERGY, "" + oMaticMachine.getEstimatedEnergy());
-    // refreshChannels();
-    // logInfo("State Machine completed time: {}, energy(measured): {}, energy(estimated): {}",
-    // oMaticMachine.getRunningTimeString(), oMaticMachine.getEnergy(), oMaticMachine.getEstimatedEnergy());
-    // return;
-    // }
-    //
-    // if(evt.getPropertyName().equals(OMaticBindingConstants.PROPERTY_LAST_KNOWN_ENERGY_VALUE))
-    // {
-    // storeProperty(OMaticBindingConstants.PROPERTY_LAST_KNOWN_ENERGY_VALUE,
-    // "" + oMaticMachine.getLastKnownEnergyValue());
-    // refreshChannels();
-    // return;
-    // }
-    //
-    // logDebug("Failed to handle property change for prop: {}", evt.getPropertyName());
-    // }
-    // }
+    public synchronized @Nullable UniFiProtectEvent getEventFromId(String id) {
+        return eventCache.getEventFromEventId(id);
+    }
 
-    // @Override
-    // public void propertyChange(PropertyChangeEvent evt) {
-    // // TODO Auto-generated method stub
-    //
-    // }
+    public UniFiProtectEvent[] getEvents() {
+        return eventCache.getEvents();
+    }
 }

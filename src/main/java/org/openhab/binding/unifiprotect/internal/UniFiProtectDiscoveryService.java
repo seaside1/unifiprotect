@@ -13,13 +13,13 @@
 package org.openhab.binding.unifiprotect.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
-import org.eclipse.smarthome.config.discovery.DiscoveryResult;
-import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.unifiprotect.internal.types.UniFiProtectCamera;
+import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.DiscoveryResult;
+import org.openhab.core.config.discovery.DiscoveryResultBuilder;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,7 +44,6 @@ public class UniFiProtectDiscoveryService extends AbstractDiscoveryService {
         new UniFiProtectScan();
         logger.debug("Initializing UniFiProtect Discovery Nvr: {}", bridge);
         activate(null);
-
     }
 
     @SuppressWarnings({ "null", "unused" })

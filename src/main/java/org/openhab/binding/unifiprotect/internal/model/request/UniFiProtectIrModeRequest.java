@@ -16,7 +16,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.unifiprotect.internal.UniFiProtectIrMode;
 import org.openhab.binding.unifiprotect.internal.UniFiProtectNvrThingConfig;
-import org.openhab.binding.unifiprotect.internal.types.UniFiProtectCamera;
 
 /**
  * The {@link UniFiProtectIrModeRequest}
@@ -26,10 +25,10 @@ import org.openhab.binding.unifiprotect.internal.types.UniFiProtectCamera;
 @NonNullByDefault
 public class UniFiProtectIrModeRequest extends UniFiProtectRequest {
 
-    public UniFiProtectIrModeRequest(HttpClient httpClient, UniFiProtectCamera camera,
-            UniFiProtectNvrThingConfig config, String token, UniFiProtectIrMode irMode) {
+    public UniFiProtectIrModeRequest(HttpClient httpClient, String cameraId, UniFiProtectNvrThingConfig config,
+            String token, UniFiProtectIrMode irMode) {
         super(httpClient, config);
-        setPath(API_CAMERAS.concat(camera.getId()));
+        setPath(API_CAMERAS.concat(cameraId));
         setHeader(UniFiProtectRequest.HEADER_X_CSRF_TOKEN, token);
         setJsonRaw(irMode.getJsonRaw());
     }
