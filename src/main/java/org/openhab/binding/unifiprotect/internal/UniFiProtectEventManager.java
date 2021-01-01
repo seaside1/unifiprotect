@@ -34,8 +34,6 @@ import com.google.gson.Gson;
  * @author Joseph Hagberg - Initial contribution
  */
 public class UniFiProtectEventManager implements PropertyChangeListener {
-
-    public static final String EVENT_MOTION = "EVENT_MOTION";
     private final Logger logger = LoggerFactory.getLogger(UniFiProtectEventManager.class);
     private final UniFiProtectEventWsClient wsClient;
     private UniFiProtectEventWebSocket socket;
@@ -48,6 +46,7 @@ public class UniFiProtectEventManager implements PropertyChangeListener {
 
     public void start() {
         try {
+            logger.debug("Trying to start new websocket");
             socket = wsClient.start();
             socket.addPropertyChangeListener(this);
         } catch (Exception e) {
@@ -58,25 +57,29 @@ public class UniFiProtectEventManager implements PropertyChangeListener {
     @Override
     public void propertyChange(@Nullable PropertyChangeEvent evt) {
         logger.debug("Property Changed: {}", evt.getPropertyName());
-        if (evt.getPropertyName() == UniFiProtectAction.PROPERTY_EVENT_ACTION_ADD) {
+        if (evt.getPropertyName().equals(UniFiProtectAction.PROPERTY_EVENT_ACTION_ADD)) {
             UniFiProtectAction action = (UniFiProtectAction) evt.getNewValue();
             logger.debug("Got action property add change: {}", action);
-            motionDetected(action);
+            motionDetected(action, UniFiProtectAction.PROPERTY_EVENT_ACTION_ADD);
             String eventId = action.getId();
-        } else if (evt.getPropertyName() == UniFiProtectAction.PROPERTY_EVENT_ACTION_UPDATE) {
+        } else if (evt.getPropertyName().equals(UniFiProtectAction.PROPERTY_EVENT_ACTION_UPDATE)) {
             UniFiProtectAction action = (UniFiProtectAction) evt.getNewValue();
             logger.debug("Got action property upd change: {}", action);
-            motionDetected(action);
+            motionDetected(action, UniFiProtectAction.PROPERTY_EVENT_ACTION_UPDATE);
             String eventId = action.getId();
+        } else if (evt.getPropertyName().equals(UniFiProtectAction.PROPERTY_SOCKET_CONNECTED)) {
+            logger.debug("Socket connected!");
+        } else if (evt.getPropertyName().equals(UniFiProtectAction.PROPERTY_SOCKET_CLOSED)) {
+            logger.debug("Socket disconnected!");
+            socket.removePropertyChangeListener(this);
+            start();
+        } else {
+            logger.debug("Unhandled Property change in UniFiProtectEventManager: {}", evt.getPropertyName());
         }
     }
 
-    private synchronized void motionDetected(UniFiProtectAction action) {
-        propertyChangeSupport.firePropertyChange(EVENT_MOTION, null, action);
-        // nvrHandler.refresh();
-        // nvrHandler.getNvr().refreshProtect();
-        // nvrHandler.getNvr().refreshEvents();
-        // nvrHandler.refreshCameras();
+    private void motionDetected(UniFiProtectAction action, String property) {
+        propertyChangeSupport.firePropertyChange(property, null, action);
     }
 
     public void addPropertyChangeListener(PropertyChangeListener pcl) {
@@ -89,9 +92,19 @@ public class UniFiProtectEventManager implements PropertyChangeListener {
 
     public void stop() {
         try {
+            socket.removePropertyChangeListener(this);
             wsClient.stop();
+            socket = null;
         } catch (Exception e) {
             logger.debug("Failed to stop manager", e);
+        }
+    }
+
+    public void dispose() {
+        try {
+            stop();
+        } catch (Exception e) {
+            logger.debug("Failed to stop websocket client on dispose", e);
         }
     }
 }

@@ -16,7 +16,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpScheme;
 import org.openhab.binding.unifiprotect.internal.UniFiProtectNvrThingConfig;
-import org.openhab.binding.unifiprotect.internal.types.UniFiProtectCamera;
 
 /**
  * The {@link UniFiProtectAnonymousSnapshotRequest}
@@ -29,11 +28,10 @@ public class UniFiProtectAnonymousSnapshotRequest extends UniFiProtectRequest {
     private static final String API_SNAP_JPEG = "/snap.jpeg";
     private static final int PORT_80 = 80;
 
-    public UniFiProtectAnonymousSnapshotRequest(HttpClient httpClient, UniFiProtectCamera camera, String token,
+    public UniFiProtectAnonymousSnapshotRequest(HttpClient httpClient, String cameraHost, String token,
             UniFiProtectNvrThingConfig config) {
         super(httpClient, config);
-        String host = camera.getHost();
-        setHost(host == null ? "" : host);
+        setHost(cameraHost);
         setPath(API_SNAP_JPEG);
     }
 

@@ -53,5 +53,4 @@ public class UniFiProtectSystemInfo {
     public void setStorage(UniFiProtectStorageInfo storage) {
         this.storage = storage;
     }
-
 }

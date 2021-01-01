@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.unifiprotect.internal;
 
-import static org.eclipse.smarthome.core.thing.ThingStatus.*;
-import static org.eclipse.smarthome.core.thing.ThingStatusDetail.COMMUNICATION_ERROR;
+import static org.openhab.core.thing.ThingStatus.*;
+import static org.openhab.core.thing.ThingStatusDetail.COMMUNICATION_ERROR;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -23,29 +23,31 @@ import java.time.ZonedDateTime;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.library.types.DateTimeType;
-import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.thing.Bridge;
-import org.eclipse.smarthome.core.thing.Channel;
-import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.thing.ThingStatusInfo;
-import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
-import org.eclipse.smarthome.core.thing.binding.builder.ThingStatusInfoBuilder;
-import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.State;
-import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.unifiprotect.internal.model.UniFiProtectNvr;
 import org.openhab.binding.unifiprotect.internal.model.UniFiProtectNvrChannel;
 import org.openhab.binding.unifiprotect.internal.model.UniFiProtectStatus;
 import org.openhab.binding.unifiprotect.internal.model.UniFiProtectStatus.SendStatus;
+import org.openhab.binding.unifiprotect.internal.model.json.UniFiProtectEvent;
+import org.openhab.binding.unifiprotect.websocket.UniFiProtectAction;
+import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
+import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.builder.ThingStatusInfoBuilder;
+import org.openhab.core.types.Command;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,6 +59,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class UniFiProtectNvrThingHandler extends BaseBridgeHandler implements PropertyChangeListener {
 
+    private static final int MOTION_EVENT_WAIT_TIME = 5;
     private @Nullable ScheduledFuture<?> refreshJob;
     private final Logger logger = LoggerFactory.getLogger(UniFiProtectNvrThingHandler.class);
 
@@ -170,6 +173,10 @@ public class UniFiProtectNvrThingHandler extends BaseBridgeHandler implements Pr
         logger.debug("dispose()");
         cancelRefreshJob();
         disposed = true;
+        if (eventManager != null) {
+            eventManager.removePropertyChangeListener(this);
+            eventManager.dispose();
+        }
         super.dispose();
     }
 
@@ -226,18 +233,18 @@ public class UniFiProtectNvrThingHandler extends BaseBridgeHandler implements Pr
                 }
                 break;
             case FIRMWARE_VERSION:
-                if (StringUtils.isNotBlank(nvr.getNvrDevice().getFirmwareVersion())) {
+                if (UniFiProtectUtil.isNotBlank(nvr.getNvrDevice().getFirmwareVersion())) {
                     state = StringType.valueOf(nvr.getNvrDevice().getFirmwareVersion());
                 }
                 break;
             case HOST:
-                if (StringUtils.isNotBlank(nvr.getNvrDevice().getHost())) {
+                if (UniFiProtectUtil.isNotBlank(nvr.getNvrDevice().getHost())) {
                     state = StringType.valueOf(nvr.getNvrDevice().getHost());
                 }
                 break;
             case HOSTS:
                 logger.debug("HOSTS: {}", nvr.getNvrDevice().getHosts());
-                if (StringUtils.isNotBlank(nvr.getNvrDevice().getHosts())) {
+                if (UniFiProtectUtil.isNotBlank(nvr.getNvrDevice().getHosts())) {
                     state = StringType.valueOf(nvr.getNvrDevice().getHosts());
                 }
                 break;
@@ -259,7 +266,7 @@ public class UniFiProtectNvrThingHandler extends BaseBridgeHandler implements Pr
                 }
                 break;
             case NAME:
-                if (StringUtils.isNotBlank(nvr.getNvrDevice().getName())) {
+                if (UniFiProtectUtil.isNotBlank(nvr.getNvrDevice().getName())) {
                     state = StringType.valueOf(nvr.getNvrDevice().getName());
                 }
                 break;
@@ -274,12 +281,12 @@ public class UniFiProtectNvrThingHandler extends BaseBridgeHandler implements Pr
                 }
                 break;
             case VERSION:
-                if (StringUtils.isNotBlank(nvr.getNvrDevice().getVersion())) {
+                if (UniFiProtectUtil.isNotBlank(nvr.getNvrDevice().getVersion())) {
                     state = StringType.valueOf(nvr.getNvrDevice().getVersion());
                 }
                 break;
             case HOST_SHORT_NAME:
-                if (StringUtils.isNotBlank(nvr.getNvrDevice().getHostShortname())) {
+                if (UniFiProtectUtil.isNotBlank(nvr.getNvrDevice().getHostShortname())) {
                     state = StringType.valueOf(nvr.getNvrDevice().getHostShortname());
                 }
                 break;
@@ -343,7 +350,7 @@ public class UniFiProtectNvrThingHandler extends BaseBridgeHandler implements Pr
                 break;
             case STORAGE_TYPE:
                 String type = nvr.getNvrDevice().getStorageType();
-                if (type != null && StringUtils.isNotBlank(type)) {
+                if (UniFiProtectUtil.isNotBlank(type)) {
                     state = StringType.valueOf(nvr.getNvrDevice().getSystemInfo().getStorage().getType());
                 }
                 break;
@@ -404,11 +411,58 @@ public class UniFiProtectNvrThingHandler extends BaseBridgeHandler implements Pr
 
     @Override
     public void propertyChange(@Nullable PropertyChangeEvent evt) {
-        if (evt.getPropertyName() == UniFiProtectEventManager.EVENT_MOTION) {
+        if (evt.getPropertyName().equals(UniFiProtectAction.PROPERTY_EVENT_ACTION_ADD)) {
+            logger.debug("Got Property Motion Add: {}", evt.getPropertyName());
             getNvr().refreshProtect();
             getNvr().refreshEvents();
             refreshCameras();
+            return;
         }
+
+        if (evt.getPropertyName().equals(UniFiProtectAction.PROPERTY_EVENT_ACTION_UPDATE)) {
+            logger.debug("Got EventMotionUpd refreshing Protect");
+            getNvr().refreshProtect();
+            UniFiProtectAction action = (UniFiProtectAction) evt.getNewValue();
+            UniFiProtectEvent event = getNvr().getEventFromId(action.getId());
+            logger.debug("Got EventMotionUpd action: {} event: {}", action, event);
+
+            String eventId = event != null ? event.getId() : null;
+            if (event != null && eventId != null) {
+                logger.debug("Got event motion: {}", event);
+                UniFiProtectCameraThingHandler handler = getCameraThingHandlerFromEvent(event);
+                logger.debug("### Start RefreshEvents");
+                getNvr().refreshEvents();
+                logger.debug("### End RefreshEvents");
+
+                if (handler != null) {
+                    handler.handleMotionEvent(MOTION_EVENT_WAIT_TIME, eventId);
+                } else {
+                    logger.debug("Failed to handle motion event, since handler is null or score is not sufficient: {}",
+                            event);
+                }
+
+            }
+            refreshCameras();
+            return;
+        }
+
+        logger.debug("Unhandled property: {}", evt.getPropertyName());
     }
 
+    private @Nullable UniFiProtectCameraThingHandler getCameraThingHandlerFromEvent(UniFiProtectEvent event) {
+        logger.debug("Trying to find camera for event");
+
+        for (Thing thing : getThing().getThings()) {
+            if (thing.getHandler() instanceof UniFiProtectCameraThingHandler) {
+                UniFiProtectCameraThingHandler handler = (UniFiProtectCameraThingHandler) thing.getHandler();
+                logger.debug("Handler id: {} name: {} eventCame: {}", handler.getCamera().getId(),
+                        handler.getCamera().getName(), event.getCamera());
+                if (handler.getCamera() != null && handler.getCamera().getId().equals(event.getCamera())) {
+                    return handler;
+                }
+            }
+        }
+        logger.debug("Failed to get Camera for event");
+        return null;
+    }
 }

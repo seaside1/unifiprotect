@@ -75,8 +75,7 @@ public abstract class UniFiProtectRequest {
 
     protected final HttpClient httpClient;
 
-    @Nullable
-    private String host;
+    private String host = "";
 
     private String path = "/";
 
@@ -149,7 +148,6 @@ public abstract class UniFiProtectRequest {
             default:
                 return "Unknown HTTP status code: " + status;
         }
-
     }
 
     @SuppressWarnings("null")
@@ -243,7 +241,8 @@ public abstract class UniFiProtectRequest {
     }
 
     public void setHost(String host) {
-        this.host = host;
+        if (host != null) {
+            this.host = host;
+        }
     }
-
 }

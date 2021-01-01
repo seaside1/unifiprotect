@@ -16,9 +16,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.unifiprotect.internal.UniFiProtectBindingConstants;
 
 /**
  * The {@link UniFiProtectNvrDevice}
@@ -29,15 +29,15 @@ import org.eclipse.jdt.annotation.Nullable;
 public class UniFiProtectNvrDevice {
 
     private static final String LEFT_RIGHT_B_REGEX = "\\]|\\[";
-    private String mac = StringUtils.EMPTY;
-    private String host = StringUtils.EMPTY;
-    private String name = StringUtils.EMPTY;
+    private String mac = UniFiProtectBindingConstants.EMPTY_STRING;
+    private String host = UniFiProtectBindingConstants.EMPTY_STRING;
+    private String name = UniFiProtectBindingConstants.EMPTY_STRING;
     private Boolean canAutoUpdate = Boolean.FALSE;
     private Boolean isStatsGatheringEnabled = Boolean.FALSE;
-    private String timezone = StringUtils.EMPTY;
-    private String version = StringUtils.EMPTY;
-    private String firmwareVersion = StringUtils.EMPTY;
-    private String hardwarePlatform = StringUtils.EMPTY;
+    private String timezone = UniFiProtectBindingConstants.EMPTY_STRING;
+    private String version = UniFiProtectBindingConstants.EMPTY_STRING;
+    private String firmwareVersion = UniFiProtectBindingConstants.EMPTY_STRING;
+    private String hardwarePlatform = UniFiProtectBindingConstants.EMPTY_STRING;
     private Map<String, Integer> ports = new HashMap<>();
     private Long uptime = new Long(-1);
     private Long lastSeen = new Long(-1);
@@ -48,14 +48,14 @@ public class UniFiProtectNvrDevice {
     private Boolean enableAutomaticBackups = Boolean.FALSE;
     private Boolean enableStatsReporting = Boolean.FALSE;
     private Boolean isSshEnabled = Boolean.FALSE;
-    private String releaseChannel = StringUtils.EMPTY;
+    private String releaseChannel = UniFiProtectBindingConstants.EMPTY_STRING;
     private String[] hosts = new String[0];
-    private String hardwareId = StringUtils.EMPTY;
-    private String hardwareRevision = StringUtils.EMPTY;
+    private String hardwareId = UniFiProtectBindingConstants.EMPTY_STRING;
+    private String hardwareRevision = UniFiProtectBindingConstants.EMPTY_STRING;
     private Integer hostType = new Integer(-1);
-    private String hostShortname = StringUtils.EMPTY;
+    private String hostShortname = UniFiProtectBindingConstants.EMPTY_STRING;
     private Boolean isHardware = Boolean.FALSE;
-    private String timeFormat = StringUtils.EMPTY;
+    private String timeFormat = UniFiProtectBindingConstants.EMPTY_STRING;
     private Long recordingRetentionDurationMs = new Long(-1);
     private Boolean enableCrashReporting = Boolean.FALSE;
     private Boolean disableAudio = Boolean.FALSE;
@@ -239,9 +239,9 @@ public class UniFiProtectNvrDevice {
 
     public String getHosts() {
         if (hosts.length > 0) {
-            return Arrays.toString(hosts).replaceAll(LEFT_RIGHT_B_REGEX, StringUtils.EMPTY);
+            return Arrays.toString(hosts).replaceAll(LEFT_RIGHT_B_REGEX, UniFiProtectBindingConstants.EMPTY_STRING);
         }
-        return StringUtils.EMPTY;
+        return UniFiProtectBindingConstants.EMPTY_STRING;
     }
 
     public void setHosts(String[] hosts) {
@@ -378,28 +378,28 @@ public class UniFiProtectNvrDevice {
     public Double getCpuTemperature() {
         return getSystemInfo() != null && getSystemInfo().getCpu() != null ? getSystemInfo().getCpu().getTemperature()
                 : null;
-
     }
 
     public Double getCpuAverageLoad() {
         return getSystemInfo() != null && getSystemInfo().getCpu() != null ? getSystemInfo().getCpu().getAverageLoad()
                 : null;
-
     }
 
     // public String getHardDrive0Name() {
-    // return hardDrive0isPresent() ? systemInfo.getStorage().getDevices()[0].getModel() : StringUtils.EMPTY;
+    // return hardDrive0isPresent() ? systemInfo.getStorage().getDevices()[0].getModel() :
+    // UniFiProtectBindingConstants.EMPTY_STRING;
     // }
     //
     // public String getHardDrive0Health() {
-    // return hardDrive0isPresent() ? systemInfo.getHardDrives()[0].getHealth() : StringUtils.EMPTY;
+    // return hardDrive0isPresent() ? systemInfo.getHardDrives()[0].getHealth() :
+    // UniFiProtectBindingConstants.EMPTY_STRING;
     // }
     //
     // public String getHardDrive0Status() {
     // if (hardDrive0isPresent()) {
     // return systemInfo.getStorage().getDevices()[0].getHealthy() ? "Healthy" : "Not Healthy";
     // }
-    // return StringUtils.EMPTY;
+    // return UniFiProtectBindingConstants.EMPTY_STRING;
     // }
     //
     @SuppressWarnings("null")

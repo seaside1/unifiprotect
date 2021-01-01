@@ -23,6 +23,8 @@ public class UniFiProtectAction {
     public static final String ACTION_UPDATE = "update";
     public static final String PROPERTY_EVENT_ACTION_UPDATE = "EVENT_ACTION_UPDATE";
     public static final String PROPERTY_EVENT_ACTION_ADD = "EVENT_ACTION_ADD";
+    public static final String PROPERTY_SOCKET_CLOSED = "SOCKET_CLOSED";
+    public static final String PROPERTY_SOCKET_CONNECTED = "SOCKET_CONNECTED";
 
     private String action;
     private String modelKey;
@@ -56,5 +58,4 @@ public class UniFiProtectAction {
     public void setId(String id) {
         this.id = id;
     }
-
 }

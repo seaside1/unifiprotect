@@ -30,7 +30,7 @@ public class UniFiProtectNvrThingConfig {
     private int eventsTimePeriodLength = 40;
     private double thumbnailWidth = 640;
     private static final String TEMP_DIR_PROPERTY = "java.io.tmpdir";
-    private String imageFolder = System.getProperty(TEMP_DIR_PROPERTY);
+    private String imageFolder;
     private int g4SnapshotWidth = 3840;
     private int g4SnapshotHeight = 2160;
     private int defaultSnapshotWidth = 1920;
@@ -42,6 +42,8 @@ public class UniFiProtectNvrThingConfig {
     public @Nullable String defaultSnapshotHeightAsString;
 
     public UniFiProtectNvrThingConfig() {
+        final String tmpDir = System.getProperty(TEMP_DIR_PROPERTY);
+        imageFolder = tmpDir == null ? "/tmp" : tmpDir;
         setDefaultSnapshotHeight(defaultSnapshotHeight);
         setDefaultSnapshotWidth(defaultSnapshotWidth);
         setG4SnapshotHeight(g4SnapshotHeight);

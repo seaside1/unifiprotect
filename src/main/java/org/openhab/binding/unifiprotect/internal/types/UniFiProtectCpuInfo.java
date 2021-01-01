@@ -45,5 +45,4 @@ public class UniFiProtectCpuInfo {
     public void setTemperature(Double temperature) {
         this.temperature = temperature;
     }
-
 }

@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.unifiprotect.internal.model.request;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
+import org.openhab.binding.unifiprotect.internal.UniFiProtectBindingConstants;
 import org.openhab.binding.unifiprotect.internal.UniFiProtectNvrThingConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +42,6 @@ public class UniFiProtectTokenRequest extends UniFiProtectRequest {
         return response != null && response.getHeaders() != null
                 && response.getHeaders().get(HEADER_X_CSRF_TOKEN) != null
                         ? response.getHeaders().get(HEADER_X_CSRF_TOKEN)
-                        : StringUtils.EMPTY;
+                        : UniFiProtectBindingConstants.EMPTY_STRING;
     }
 }

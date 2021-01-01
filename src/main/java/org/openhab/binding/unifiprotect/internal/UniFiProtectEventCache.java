@@ -19,6 +19,8 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.unifiprotect.internal.model.json.UniFiProtectEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link UniFiProtectEventCache} is a specific cache for caching clients.
@@ -31,24 +33,41 @@ import org.openhab.binding.unifiprotect.internal.model.json.UniFiProtectEvent;
 public class UniFiProtectEventCache {
 
     private final Map<String, UniFiProtectEvent> cameraToEvent = new HashMap<>();
+    private final Map<String, UniFiProtectEvent> eventIdToEvent = new HashMap<>();
+    private final Logger logger = LoggerFactory.getLogger(UniFiProtectEventCache.class);
 
     public void put(UniFiProtectEvent event) {
-        cameraToEvent.put(generateKey(event), event);
+        logger.debug("Adding event to cache: {}", event);
+        cameraToEvent.put(generateCameraKey(event), event);
+        eventIdToEvent.put(generateEventKey(event), event);
     }
 
-    private String generateKey(UniFiProtectEvent event) {
+    private String generateEventKey(UniFiProtectEvent event) {
+        return event.getId().toLowerCase();
+    }
+
+    private String generateCameraKey(UniFiProtectEvent event) {
         return event.getCamera().toLowerCase();
     }
 
-    public @Nullable UniFiProtectEvent getEvent(String camera) {
-        return cameraToEvent.get(camera);
+    public @Nullable UniFiProtectEvent getEvent(String cameraId) {
+        return cameraToEvent.get(cameraId);
     }
 
     public void clear() {
         cameraToEvent.clear();
+        eventIdToEvent.clear();
     }
 
     public void putAll(List<UniFiProtectEvent> events) {
         events.stream().forEach(event -> put(event));
+    }
+
+    public @Nullable UniFiProtectEvent getEventFromEventId(String id) {
+        return eventIdToEvent.get(id.toLowerCase());
+    }
+
+    public UniFiProtectEvent[] getEvents() {
+        return (UniFiProtectEvent[]) eventIdToEvent.values().toArray();
     }
 }
