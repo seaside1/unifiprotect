@@ -8,31 +8,31 @@
 		<label>UniFi Protect NVR</label>
 		<description>The UniFi NVR Handles the cameras as well as settings and storing recordings</description>
 		<channels>
-			<channel id="name" typeId="name" />
-			<channel id="host" typeId="host" />
-			<channel id="version" typeId="version" />
-			<channel id="firmware-version" typeId="firmware-version" />
-			<channel id="uptime" typeId="uptime" />
-			<channel id="last-seen" typeId="last-seen" />
-			<channel id="last-updated-at" typeId="last-updated-at" />
-			<channel id="is-connected-to-cloud" typeId="is-connected-to-cloud" />
-			<channel id="enable-automatic-backups" typeId="enable-automatic-backups" />
-			<channel id="hosts" typeId="hosts" />
-			<channel id="host-short-name" typeId="host-short-name" />
-			<channel id="recording-retention-duration" typeId="recording-retention-duration" />
-			<channel id="storage-total-size" typeId="storage-total-size" />
-			<channel id="storage-type" typeId="storage-type" />
-			<channel id="storage-used" typeId="storage-used" />
-			<channel id="storage-available" typeId="storage-available" />
-			<channel id="cpu-average-load" typeId="cpu-average-load" />
-			<channel id="cpu-temperature" typeId="cpu-temperature" />
-			<channel id="mem-available" typeId="mem-available" />
-			<channel id="mem-free" typeId="mem-free" />
-			<channel id="mem-total" typeId="mem-total" />
-			<channel id="device-0-model" typeId="device-0-model" />
-			<channel id="device-0-size" typeId="device-0-size" />
-			<channel id="device-0-healthy" typeId="device-0-healthy" />
-			<channel id="alerts" typeId="alerts" />
+			<channel id="name" typeId="name"/>
+			<channel id="host" typeId="host"/>
+			<channel id="version" typeId="version"/>
+			<channel id="firmware-version" typeId="firmware-version"/>
+			<channel id="uptime" typeId="uptime"/>
+			<channel id="last-seen" typeId="last-seen"/>
+			<channel id="last-updated-at" typeId="last-updated-at"/>
+			<channel id="is-connected-to-cloud" typeId="is-connected-to-cloud"/>
+			<channel id="enable-automatic-backups" typeId="enable-automatic-backups"/>
+			<channel id="hosts" typeId="hosts"/>
+			<channel id="host-short-name" typeId="host-short-name"/>
+			<channel id="recording-retention-duration" typeId="recording-retention-duration"/>
+			<channel id="storage-total-size" typeId="storage-total-size"/>
+			<channel id="storage-type" typeId="storage-type"/>
+			<channel id="storage-used" typeId="storage-used"/>
+			<channel id="storage-available" typeId="storage-available"/>
+			<channel id="cpu-average-load" typeId="cpu-average-load"/>
+			<channel id="cpu-temperature" typeId="cpu-temperature"/>
+			<channel id="mem-available" typeId="mem-available"/>
+			<channel id="mem-free" typeId="mem-free"/>
+			<channel id="mem-total" typeId="mem-total"/>
+			<channel id="device-0-model" typeId="device-0-model"/>
+			<channel id="device-0-size" typeId="device-0-size"/>
+			<channel id="device-0-healthy" typeId="device-0-healthy"/>
+			<channel id="alerts" typeId="alerts"/>
 		</channels>
 		<config-description>
 			<parameter name="host" type="text" required="true">
@@ -73,37 +73,37 @@
 	</bridge-type>
 	<thing-type id="camera">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="nvr" />
+			<bridge-type-ref id="nvr"/>
 		</supported-bridge-type-refs>
 		<label>UniFi Protect Camera</label>
 		<description>The UniFi Protect Camera connected to the UniFi Protect NVR</description>
 		<channels>
-			<channel id="name" typeId="name" />
-			<channel id="type" typeId="type" />
-			<channel id="state" typeId="state" />
-			<channel id="host" typeId="host" />
-			<channel id="is-dark" typeId="is-dark" />
-			<channel id="status-light" typeId="status-light" />
-			<channel id="reboot" typeId="reboot" />
-			<channel id="motion-thumbnail" typeId="motion-thumbnail" />
-			<channel id="motion-heatmap" typeId="motion-heatmap" />
-			<channel id="motion-score" typeId="motion-score" />
-			<channel id="snapshot" typeId="snapshot" />
-			<channel id="snapshot-img" typeId="snapshot-img" />
-			<channel id="a-snapshot" typeId="a-snapshot" />
-			<channel id="a-snapshot-img" typeId="a-snapshot-img" />
-			<channel id="ir-mode" typeId="ir-mode" />
-			<channel id="hdr-mode" typeId="hdr-mode" />
-			<channel id="high-fps-mode" typeId="high-fps-mode" />
-			<channel id="recording-mode" typeId="recording-mode" />
-			<channel id="is-motion-detected" typeId="is-motion-detected" />
-			<channel id="is-mic-enabled" typeId="is-mic-enabled" />
-			<channel id="is-recording" typeId="is-recording" />
-			<channel id="up-since" typeId="up-since" />
-			<channel id="connected-since" typeId="connected-since" />
-			<channel id="last-seen" typeId="last-seen" />
-			<channel id="last-motion" typeId="last-motion" />
-			<channel id="mic-volume" typeId="mic-volume" />
+			<channel id="name" typeId="name"/>
+			<channel id="type" typeId="type"/>
+			<channel id="state" typeId="state"/>
+			<channel id="host" typeId="host"/>
+			<channel id="is-dark" typeId="is-dark"/>
+			<channel id="status-light" typeId="status-light"/>
+			<channel id="reboot" typeId="reboot"/>
+			<channel id="motion-thumbnail" typeId="motion-thumbnail"/>
+			<channel id="motion-heatmap" typeId="motion-heatmap"/>
+			<channel id="motion-score" typeId="motion-score"/>
+			<channel id="snapshot" typeId="snapshot"/>
+			<channel id="snapshot-img" typeId="snapshot-img"/>
+			<channel id="a-snapshot" typeId="a-snapshot"/>
+			<channel id="a-snapshot-img" typeId="a-snapshot-img"/>
+			<channel id="ir-mode" typeId="ir-mode"/>
+			<channel id="hdr-mode" typeId="hdr-mode"/>
+			<channel id="high-fps-mode" typeId="high-fps-mode"/>
+			<channel id="recording-mode" typeId="recording-mode"/>
+			<channel id="is-motion-detected" typeId="is-motion-detected"/>
+			<channel id="is-mic-enabled" typeId="is-mic-enabled"/>
+			<channel id="is-recording" typeId="is-recording"/>
+			<channel id="up-since" typeId="up-since"/>
+			<channel id="connected-since" typeId="connected-since"/>
+			<channel id="last-seen" typeId="last-seen"/>
+			<channel id="last-motion" typeId="last-motion"/>
+			<channel id="mic-volume" typeId="mic-volume"/>
 		</channels>
 		<representation-property>mac</representation-property>
 		<config-description>

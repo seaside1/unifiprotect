@@ -18,11 +18,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
  * The {@link UniFiProtectBindingConstants} class defines common constants, which are
- * used across the Ruckus unifiprotect binding.
+ * used across the unifiprotect binding.
  *
  * @author Joseph (Seaside) Hagberg - Initial contribution
  */

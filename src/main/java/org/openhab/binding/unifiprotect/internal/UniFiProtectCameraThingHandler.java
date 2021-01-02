@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.unifiprotect.internal;
 
-import static org.openhab.core.thing.ThingStatus.*;
-import static org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
+import static org.eclipse.smarthome.core.thing.ThingStatus.*;
+import static org.eclipse.smarthome.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
 
 import java.time.Instant;
 import java.time.ZoneId;
@@ -28,26 +28,26 @@ import java.util.function.Supplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.common.ThreadPoolManager;
+import org.eclipse.smarthome.core.library.types.DateTimeType;
+import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.thing.Bridge;
+import org.eclipse.smarthome.core.thing.Channel;
+import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.unifiprotect.internal.model.UniFiProtectCameraChannel;
 import org.openhab.binding.unifiprotect.internal.model.UniFiProtectImage;
 import org.openhab.binding.unifiprotect.internal.model.UniFiProtectNvr;
 import org.openhab.binding.unifiprotect.internal.model.json.UniFiProtectEvent;
 import org.openhab.binding.unifiprotect.internal.types.UniFiProtectCamera;
-import org.openhab.core.common.ThreadPoolManager;
-import org.openhab.core.library.types.DateTimeType;
-import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.StringType;
-import org.openhab.core.thing.Bridge;
-import org.openhab.core.thing.Channel;
-import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.core.thing.binding.BaseThingHandler;
-import org.openhab.core.types.Command;
-import org.openhab.core.types.State;
-import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

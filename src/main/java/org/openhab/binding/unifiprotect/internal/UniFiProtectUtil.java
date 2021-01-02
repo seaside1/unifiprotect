@@ -199,7 +199,7 @@ public class UniFiProtectUtil {
     }
 
     public static boolean isNotBlank(@Nullable String string) {
-        return string != null && !string.isBlank();
+        return string != null && !string.isEmpty();
     }
 
     public static boolean isEmpty(@Nullable String string) {
