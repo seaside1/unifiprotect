@@ -310,7 +310,7 @@
 		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="snapshot-img">
-		<item-type>String</item-type>
+		<item-type>Image</item-type>
 		<label>Snapshot Image</label>
 		<description>Image to snapshot</description>
 		<state readOnly="true"></state>
