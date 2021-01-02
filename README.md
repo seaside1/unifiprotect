@@ -17,13 +17,13 @@ been implemented. Thus motion detection should be instant and without the need o
 
 ## OpenHab Version
 The binding was originally written for Openhab 2.5.x. The prebuild jar-file for OpenHAB 2.5.x is located 
-https://github.com/seaside1/unifiprotect/tree/main/bin and named org.openhab.binding.unifiprotect-2.5.x-ALPHA6.jar
+https://github.com/seaside1/unifiprotect/tree/main/bin and named org.openhab.binding.unifiprotect-2.5.x-ALPHAXX.jar
 
 OpenHAB 3.0.0Mx version is also located under https://github.com/seaside1/unifiprotect/tree/main/bin and name
-org.openhab.binding.unifiprotect-3.0.0-ALPHA7.jar
+org.openhab.binding.unifiprotect-3.0.0-ALPHAXX.jar
 
-Future versions of this binding will only support **OpenHAB 3.0.0**
-
+Future versions of this binding will mainly support **OpenHAB 3.0.0**
+I'll build 2.5.x version if there is need.
 
 ## Usage
 Maturity: ALPHA
@@ -57,6 +57,8 @@ OpenHAB Version: 2.5.x & Openhab 3.0.0Mx
 The binding has been rewritten to support UniFi OS only. That means if you have a UCKP (Cloudkey gen2+)
 you need to update it to at least firmware 2.0.18. After 2.0.18 UCKP is running UniFiOs just like the
 UDMP and UNVR. 
+***Please note that the UniFi Network binding currently is not working with firmware >= 2.0.18.***
+***If you are using the UniFi binding think twice before upgrading.***
 
 ## Dependencies
 * OH3 Map transformations ( https://www.openhab.org/addons/transformations/map/ )
@@ -64,12 +66,19 @@ UDMP and UNVR.
 ## Manual setup
 * Log into UniFi Protect and create a user with admin rights that you use
 * Manually log into all cameras where you want to use anonymous-snapshots, you have to
-enable it yourself.
-
+enable it yourself.  (See next section for a detailed description)
 See https://github.com/briis/unifiprotect for instructions on how to add a user.
+
 A quirk is that there is a bug in firmware 2.0.18 which does not display the local user name
 when calling the API. Therefor you need to have the same First Name as user name in order for the binding to pick
 up the correct user.
+
+## Step by step setup Anonymous Snapshots (creds @largepills) 
+To use the Anonymous Snapshot, you must ensure that each Camera is configured to allow this. This cannot be done in the UniFi Protect Controller, but has to be done on each individual Camera.
+1. Login to each of your Cameras by going to http://CAMERA_IP. The Username is ubnt and the Camera Password can be found in Unifi Protect under Settings.
+2. If you have never logged in to the Camera before, it might take you through a Setup procedure - just make sure to keep it in Unifi Video mode, so that it is managed by Unifi Protect.
+3. Once you are logged in, you will see an option on the Front page for enabling Anonymous Snapshots. Make sure this is checked, and then press the Save Changes button.
+4. Repeat step 3 for each of your Cameras.
 
 ## Supported Things
 
@@ -284,15 +293,17 @@ Get jar-file from repo. Place the jar-file in the openhab-addons folder
 https://github.com/seaside1/unifiprotect
 
 ## Changelog
-  # ALPHA8
+  ### ALPHA9
+ * Fixed Image type for snapshot
+  ### ALPHA8
  * Websocket connection is reconnected when closed
  * Fetching thumbnail and heatmap more quickly and in a more stable approach
  * Fixed Name, Status, MAC, Host channels
-  # ALPHA 7
+  ### ALPHA 7
    * OpenHAB Version 3 support
-  # ALPHA 6
+  ### ALPHA 6
    * Websocket Event API Support
-  # ALPHA 5
+  ### ALPHA 5
  * Removed port configuration from the binding. Port 443 and port 80 are used.
  * Renamed and added several attributes for NVR thing
  * Major refactoring for UniFiOS
@@ -305,3 +316,4 @@ https://github.com/seaside1/unifiprotect
 ## Roadmap
 * Support UniFi Doorbell
 * Support for multiple harddrives
+* Live view of cameras
