@@ -193,9 +193,20 @@ Make sure you replace the ids in the items below (NVRID and MACADDRESS)
 
 Things
 Use paper UI to either discovery or add things
+If you want to create Things manually use below example (although this is not encouraged)
 
 items/unifiprotect.items
 
+```
+Bridge unifiprotect:nvr:NVRID "UniFi Protect NVR" [ host="...", username="...", password="...", refresh=60 ] {
+   Thing camera frontDoorCamera [name="Front door camera", mac="xx:xx:xx:xx:xx:xx"]
+}
+```
+
+The String NVRID refers to the Thing Id of the bridge. It will be something random if you create it 
+using the GUI.
+
+items/unifiprotect.items
 ```
 Group    gUniFiProtect        "UniFi Protect"
 Group    sUniFiProtect        "Sitemap UniFiProtect"
