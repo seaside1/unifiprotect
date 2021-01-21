@@ -190,6 +190,8 @@ You need to configure the alerts yourself by logging into the controller.
 
 ## Full Example
 Make sure you replace the ids in the items below (NVRID and MACADDRESS)
+The String NVRID refers to the Thing Id of the bridge. It will be something random if you create it 
+using the GUI.
 
 Things
 Use paper UI to either discovery or add things
@@ -202,9 +204,6 @@ Bridge unifiprotect:nvr:NVRID "UniFi Protect NVR" [ host="...", username="...", 
    Thing camera frontDoorCamera [name="Front door camera", mac="xx:xx:xx:xx:xx:xx"]
 }
 ```
-
-The String NVRID refers to the Thing Id of the bridge. It will be something random if you create it 
-using the GUI.
 
 items/unifiprotect.items
 ```
