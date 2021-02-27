@@ -58,6 +58,7 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link UniFiProtectNvr}
@@ -137,8 +138,18 @@ public class UniFiProtectNvr {
             }
         }
         logger.debug("Request is ok, parsing cameras");
-        String jsonContent = request.getJsonContent();
-        JsonObject jsonObject = UniFiProtectJsonParser.parseJson(gson, jsonContent);
+        final String jsonContent = request.getJsonContent();
+        if (jsonContent == null) {
+            logger.error("Got null response when refreshing bootstrap");
+            return UniFiProtectStatus.STATUS_EXECUTION_FAULT;
+        }
+        JsonObject jsonObject = null;
+        try {
+            jsonObject = UniFiProtectJsonParser.parseJson(gson, jsonContent);
+        } catch (JsonSyntaxException x) {
+            logger.error("Failed to refresh bootstrap due to jsonexception: {}", x.getMessage());
+            return UniFiProtectStatus.STATUS_EXECUTION_FAULT;
+        }
         UniFiProtectCamera[] cameras = UniFiProtectJsonParser.getCamerasFromJson(gson, jsonObject);
         Arrays.stream(cameras).forEach(camera -> logger.debug("Camera: {}", camera));
         logger.debug("Got Cameras size: {}", cameras.length);
@@ -174,8 +185,12 @@ public class UniFiProtectNvr {
         if (!requestSuccessFullySent(sendStatus)) {
             return sendStatus;
         }
-        String jsonContent = eventsRequest.getJsonContent();
-        UniFiProtectEvent[] events = UniFiProtectJsonParser.getEventsFromJson(gson, jsonContent);
+        final String jsonContent = eventsRequest.getJsonContent();
+        if (jsonContent == null) {
+            logger.error("Failed to refresh events, since request resulted in null response");
+            return UniFiProtectStatus.STATUS_EXECUTION_FAULT;
+        }
+        final UniFiProtectEvent[] events = UniFiProtectJsonParser.getEventsFromJson(gson, jsonContent);
         getEventCache().clear();
         getEventCache().putAll(Arrays.asList(events));
         logger.debug("Refreshed events size: {}", events.length);

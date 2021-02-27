@@ -27,6 +27,7 @@ public class UniFiProtectStatus {
 
     public static final UniFiProtectStatus STATUS_NOT_SENT = new UniFiProtectStatus(SendStatus.NOT_SENT);
     public static final UniFiProtectStatus STATUS_TOKEN_MISSING = new UniFiProtectStatus(SendStatus.TOKEN_MISSING);
+    public static final UniFiProtectStatus STATUS_EXECUTION_FAULT = new UniFiProtectStatus(SendStatus.EXECUTION_FAULT);
 
     private static final String MSG_EXECUTION_FAULT = "Execution fault when sending request to UniFi Protect";
     private static final String MSG_INTERRUPTED = "Interrupted while transmitting request to UniFi Protect";

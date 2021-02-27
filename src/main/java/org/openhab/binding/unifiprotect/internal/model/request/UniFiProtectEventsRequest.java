@@ -42,6 +42,6 @@ public class UniFiProtectEventsRequest extends UniFiProtectRequest {
         long start = UniFiProtectUtil.calculateStartTimeForEvent(config.getEventsTimePeriodLength());
         setQueryParameter(START, start);
         setQueryParameter(END, now + TIME_DELAY_SECONDS_MILLIS);
-        logger.info("Requesting events start seconds: {}s end seconds: {}s", (now - start), TIME_DELAY_SECONDS_MILLIS);
+        logger.debug("Requesting events start seconds: {}s end seconds: {}s", (now - start), TIME_DELAY_SECONDS_MILLIS);
     }
 }
