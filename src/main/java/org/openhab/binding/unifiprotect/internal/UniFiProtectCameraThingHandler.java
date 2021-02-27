@@ -378,6 +378,7 @@ public class UniFiProtectCameraThingHandler extends BaseThingHandler {
             if (anonSnapshot != null) {
                 camera.setaSnapshotUrl(anonSnapshot.getFile().getAbsolutePath());
                 imageHandler.setAnonSnapshot(camera, anonSnapshot);
+                refresh();
             }
         }
     }
