@@ -303,6 +303,9 @@ Get jar-file from repo. Place the jar-file in the openhab-addons folder
 https://github.com/seaside1/unifiprotect
 
 ## Changelog
+  ### ALPHA10
+  * Removed info logging, changed to debug
+  * Eventlistener will now be retarted in case the NVR is rebooted
   ### ALPHA9
  * Fixed Image type for snapshot
   ### ALPHA8
