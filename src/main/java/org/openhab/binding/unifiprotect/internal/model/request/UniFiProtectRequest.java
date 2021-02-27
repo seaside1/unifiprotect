@@ -150,9 +150,10 @@ public abstract class UniFiProtectRequest {
         }
     }
 
-    @SuppressWarnings("null")
+    @Nullable
     public synchronized String getJsonContent() {
-        return getResponse().getContentAsString();
+        final ContentResponse response = getResponse();
+        return response != null ? response.getContentAsString() : null;
     }
 
     private synchronized UniFiProtectStatus sendRequestGetResponse() {

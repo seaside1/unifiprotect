@@ -368,7 +368,7 @@ public class UniFiProtectCameraThingHandler extends BaseThingHandler {
 
     private synchronized void handleAnonSnapshot(UniFiProtectCamera camera, ChannelUID channelUID, Command command) {
         if (!(command instanceof OnOffType)) {
-            logger.warn("Ignoring unsupported command = {} for channel = {} - valid commands types are: OnOffType",
+            logger.debug("Ignoring unsupported command = {} for channel = {} - valid commands types are: OnOffType",
                     command, channelUID);
             return;
         }
@@ -384,7 +384,7 @@ public class UniFiProtectCameraThingHandler extends BaseThingHandler {
 
     private synchronized void handleSnapshot(UniFiProtectCamera camera, ChannelUID channelUID, Command command) {
         if (!(command instanceof OnOffType)) {
-            logger.warn("Ignoring unsupported command = {} for channel = {} - valid commands types are: OnOffType",
+            logger.debug("Ignoring unsupported command = {} for channel = {} - valid commands types are: OnOffType",
                     command, channelUID);
             return;
         }
@@ -455,7 +455,7 @@ public class UniFiProtectCameraThingHandler extends BaseThingHandler {
     @SuppressWarnings("null")
     private synchronized void handleHighFpsMode(UniFiProtectCamera camera, ChannelUID channelUID, Command command) {
         if (!(command instanceof OnOffType)) {
-            logger.warn("Ignoring unsupported command = {} for channel = {} - valid commands types are: OnOffType",
+            logger.debug("Ignoring unsupported command = {} for channel = {} - valid commands types are: OnOffType",
                     command, channelUID);
             return;
         }
@@ -468,7 +468,7 @@ public class UniFiProtectCameraThingHandler extends BaseThingHandler {
     @SuppressWarnings("null")
     private synchronized void handleHdrMode(UniFiProtectCamera camera, ChannelUID channelUID, Command command) {
         if (!(command instanceof OnOffType)) {
-            logger.warn("Ignoring unsupported command = {} for channel = {} - valid commands types are: OnOffType",
+            logger.debug("Ignoring unsupported command = {} for channel = {} - valid commands types are: OnOffType",
                     command, channelUID);
             return;
         }
@@ -481,7 +481,7 @@ public class UniFiProtectCameraThingHandler extends BaseThingHandler {
     @SuppressWarnings("null")
     private synchronized void handleIrMode(UniFiProtectCamera camera, ChannelUID channelUID, Command command) {
         if (!(command instanceof DecimalType)) {
-            logger.warn("Ignoring unsupported command = {} for channel = {} - valid commands types are: OnOffType",
+            logger.debug("Ignoring unsupported command = {} for channel = {} - valid commands types are: OnOffType",
                     command, channelUID);
             return;
         }
@@ -495,7 +495,7 @@ public class UniFiProtectCameraThingHandler extends BaseThingHandler {
     private void handleRecordingMode(UniFiProtectCamera camera, ChannelUID channelUID, Command command) {
         synchronized (this) {
             if (!(command instanceof DecimalType)) {
-                logger.warn("Ignoring unsupported command = {} for channel = {} - valid commands types are: OnOffType",
+                logger.debug("Ignoring unsupported command = {} for channel = {} - valid commands types are: OnOffType",
                         command, channelUID);
                 return;
             }
@@ -510,7 +510,7 @@ public class UniFiProtectCameraThingHandler extends BaseThingHandler {
     private void handleReboot(@Nullable UniFiProtectCamera camera, ChannelUID channelUID, Command command) {
         synchronized (this) {
             if (!(command instanceof OnOffType)) {
-                logger.warn("Ignoring unsupported command = {} for channel = {} - valid commands types are: OnOffType",
+                logger.debug("Ignoring unsupported command = {} for channel = {} - valid commands types are: OnOffType",
                         command, channelUID);
                 return;
             }
@@ -527,7 +527,7 @@ public class UniFiProtectCameraThingHandler extends BaseThingHandler {
     private void handleStatusLightCommand(UniFiProtectCamera camera, ChannelUID channelUID, Command command) {
         synchronized (this) {
             if (!(command instanceof OnOffType)) {
-                logger.warn("Ignoring unsupported command = {} for channel = {} - valid commands types are: OnOffType",
+                logger.debug("Ignoring unsupported command = {} for channel = {} - valid commands types are: OnOffType",
                         command, channelUID);
                 return;
             }
