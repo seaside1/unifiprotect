@@ -306,6 +306,7 @@ https://github.com/seaside1/unifiprotect
   ### ALPHA10
   * Removed info logging, changed to debug
   * Eventlistener will now be retarted in case the NVR is rebooted
+  * Anon snapshots will be refreshed right away
   ### ALPHA9
  * Fixed Image type for snapshot
   ### ALPHA8
