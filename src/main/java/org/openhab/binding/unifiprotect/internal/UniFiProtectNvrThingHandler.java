@@ -163,7 +163,16 @@ public class UniFiProtectNvrThingHandler extends BaseBridgeHandler implements Pr
         UniFiProtectStatus status = refresh();
         if (status.getStatus() == SendStatus.SUCCESS) {
             updateStatus(ONLINE);
+            if (!eventManager.isStarted()) {
+                eventManager.start();
+                eventManager.addPropertyChangeListener(this);
+            }
         } else {
+            if (eventManager != null) {
+                eventManager.removePropertyChangeListener(this);
+                eventManager.dispose();
+
+            }
             updateStatus(OFFLINE, COMMUNICATION_ERROR, status.getMessage());
         }
     }
