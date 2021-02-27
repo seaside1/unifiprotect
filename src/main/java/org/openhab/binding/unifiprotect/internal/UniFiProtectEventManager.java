@@ -44,6 +44,10 @@ public class UniFiProtectEventManager implements PropertyChangeListener {
         wsClient = new UniFiProtectEventWsClient(httpClient, gson, config);
     }
 
+    public boolean isStarted() {
+        return socket != null;
+    }
+
     public void start() {
         try {
             logger.debug("Trying to start new websocket");
