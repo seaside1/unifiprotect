@@ -71,12 +71,129 @@
 		</config-description>
 
 	</bridge-type>
-	<thing-type id="camera">
+	<thing-type id="g4doorbell">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="nvr"/>
 		</supported-bridge-type-refs>
-		<label>UniFi Protect Camera</label>
-		<description>The UniFi Protect Camera connected to the UniFi Protect NVR</description>
+		<label>UniFi Protect G4 Doorbell</label>
+		<description>The UniFi G4 Doorbell connected to the UniFi Protect NVR</description>
+		<channels>
+			<channel id="name" typeId="name"/>
+			<channel id="type" typeId="type"/>
+			<channel id="state" typeId="state"/>
+			<channel id="host" typeId="host"/>
+			<channel id="is-dark" typeId="is-dark"/>
+			<channel id="status-light" typeId="status-light"/>
+			<channel id="reboot" typeId="reboot"/>
+			<channel id="motion-thumbnail" typeId="motion-thumbnail"/>
+			<channel id="motion-heatmap" typeId="motion-heatmap"/>
+			<channel id="motion-score" typeId="motion-score"/>
+			<channel id="snapshot" typeId="snapshot"/>
+			<channel id="snapshot-img" typeId="snapshot-img"/>
+			<channel id="a-snapshot" typeId="a-snapshot"/>
+			<channel id="a-snapshot-img" typeId="a-snapshot-img"/>
+			<channel id="ir-mode" typeId="ir-mode"/>
+			<channel id="hdr-mode" typeId="hdr-mode"/>
+			<channel id="high-fps-mode" typeId="high-fps-mode"/>
+			<channel id="recording-mode" typeId="recording-mode"/>
+			<channel id="is-motion-detected" typeId="is-motion-detected"/>
+			<channel id="is-mic-enabled" typeId="is-mic-enabled"/>
+			<channel id="is-recording" typeId="is-recording"/>
+			<channel id="up-since" typeId="up-since"/>
+			<channel id="connected-since" typeId="connected-since"/>
+			<channel id="last-seen" typeId="last-seen"/>
+			<channel id="last-motion" typeId="last-motion"/>
+			<channel id="mic-volume" typeId="mic-volume"/>
+			<channel id="smart-detect-vehicle" typeId="smart-detect-vehicle"/>
+			<channel id="smart-detect-person" typeId="smart-detect-person"/>
+			<channel id="smart-detect-motion" typeId="smart-detect-motion"/>
+			<channel id="smart-detect-thumbnail" typeId="smart-detect-thumbnail"/>
+			<channel id="smart-detect-score" typeId="smart-detect-score"/>
+			<channel id="smart-detect-type" typeId="smart-detect-type"/>
+			<channel id="smart-detect-last" typeId="smart-detect-last"/>
+			<channel id="ring-thumbnail" typeId="ring-thumbnail"/>
+			<channel id="is-ringing" typeId="is-ringing"/>
+			<channel id="last-ring" typeId="last-ring"/>
+			<channel id="lcd-leave-package" typeId="lcd-predefined-message"/>
+			<channel id="lcd-do-not-disturb" typeId="lcd-predefined-message"/>
+			<channel id="lcd-custom" typeId="lcd-custom"/>
+			<channel id="lcd-custom-text" typeId="lcd-custom-text"/>
+		</channels>
+		<representation-property>mac</representation-property>
+		<config-description>
+			<parameter name="name" type="text" required="true">
+				<label>Name</label>
+				<description>The Name of the camera</description>
+			</parameter>
+			<parameter name="mac" type="text" required="true">
+				<label>Mac</label>
+				<description>Mac Address of the Doorbell</description>
+			</parameter>
+			<parameter name="lcdCustomMessage" type="text" required="false">
+				<label>Custom Message </label>
+				<description>Custom Message</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<thing-type id="g4camera">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="nvr"/>
+		</supported-bridge-type-refs>
+		<label>UniFi Protect G4 Camera</label>
+		<description>The UniFi Protect G4 Camera connected to the UniFi Protect NVR</description>
+		<channels>
+			<channel id="name" typeId="name"/>
+			<channel id="type" typeId="type"/>
+			<channel id="state" typeId="state"/>
+			<channel id="host" typeId="host"/>
+			<channel id="is-dark" typeId="is-dark"/>
+			<channel id="status-light" typeId="status-light"/>
+			<channel id="reboot" typeId="reboot"/>
+			<channel id="motion-thumbnail" typeId="motion-thumbnail"/>
+			<channel id="motion-heatmap" typeId="motion-heatmap"/>
+			<channel id="motion-score" typeId="motion-score"/>
+			<channel id="snapshot" typeId="snapshot"/>
+			<channel id="snapshot-img" typeId="snapshot-img"/>
+			<channel id="a-snapshot" typeId="a-snapshot"/>
+			<channel id="a-snapshot-img" typeId="a-snapshot-img"/>
+			<channel id="ir-mode" typeId="ir-mode"/>
+			<channel id="hdr-mode" typeId="hdr-mode"/>
+			<channel id="high-fps-mode" typeId="high-fps-mode"/>
+			<channel id="recording-mode" typeId="recording-mode"/>
+			<channel id="is-motion-detected" typeId="is-motion-detected"/>
+			<channel id="is-mic-enabled" typeId="is-mic-enabled"/>
+			<channel id="is-recording" typeId="is-recording"/>
+			<channel id="up-since" typeId="up-since"/>
+			<channel id="connected-since" typeId="connected-since"/>
+			<channel id="last-seen" typeId="last-seen"/>
+			<channel id="last-motion" typeId="last-motion"/>
+			<channel id="mic-volume" typeId="mic-volume"/>
+			<channel id="smart-detect-vehicle" typeId="smart-detect-vehicle"/>
+			<channel id="smart-detect-person" typeId="smart-detect-person"/>
+			<channel id="smart-detect-motion" typeId="smart-detect-motion"/>
+			<channel id="smart-detect-thumbnail" typeId="smart-detect-thumbnail"/>
+			<channel id="smart-detect-score" typeId="smart-detect-score"/>
+			<channel id="smart-detect-type" typeId="smart-detect-type"/>
+			<channel id="smart-detect-last" typeId="smart-detect-last"/>
+		</channels>
+		<representation-property>mac</representation-property>
+		<config-description>
+			<parameter name="name" type="text" required="true">
+				<label>Name</label>
+				<description>The Name of the camera</description>
+			</parameter>
+			<parameter name="mac" type="text" required="true">
+				<label>Mac</label>
+				<description>Mac Address of the Camera</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<thing-type id="g3camera">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="nvr"/>
+		</supported-bridge-type-refs>
+		<label>UniFi Protect G3 Camera</label>
+		<description>The UniFi Protect G3 Camera connected to the UniFi Protect NVR</description>
 		<channels>
 			<channel id="name" typeId="name"/>
 			<channel id="type" typeId="type"/>
@@ -279,6 +396,18 @@
 		<description>If it is dark (infrared activated)</description>
 		<state readOnly="true"></state>
 	</channel-type>
+	<channel-type id="ring-thumbnail">
+		<item-type>Image</item-type>
+		<label>Ring Thumbnail</label>
+		<description>Will capture a thumbnail from last ring event</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="smart-detect-thumbnail">
+		<item-type>Image</item-type>
+		<label>SmartDetect Thumbnail</label>
+		<description>Will capture a thumbnail from last smart detect event</description>
+		<state readOnly="true"></state>
+	</channel-type>
 	<channel-type id="motion-thumbnail">
 		<item-type>Image</item-type>
 		<label>Motion Thumbnail</label>
@@ -295,6 +424,12 @@
 		<item-type>Number</item-type>
 		<label>Event Motion Score</label>
 		<description>Motion Score 0 - 100 for the event</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="smart-detect-score">
+		<item-type>Number</item-type>
+		<label>Smart Detect Event Score</label>
+		<description>Smart Detect Score 0 - 100 for the event</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="a-snapshot-img">
@@ -375,6 +510,12 @@
 		<description>If the camera detects motion</description>
 		<state readOnly="true"></state>
 	</channel-type>
+	<channel-type id="smart-detect-motion">
+		<item-type>Switch</item-type>
+		<label>Smart Motion Detected</label>
+		<description>If the camera detects a smart motion</description>
+		<state readOnly="true"></state>
+	</channel-type>
 	<channel-type id="is-mic-enabled">
 		<item-type>Switch</item-type>
 		<label>Is Mic Enabled</label>
@@ -416,5 +557,55 @@
 		<label>Last Motion</label>
 		<description>When last motion was detected</description>
 		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="smart-detect-vehicle">
+		<item-type>Switch</item-type>
+		<label>Turn on Smart Detect Vehicle</label>
+		<description>Turn on Smart Detect Vehicle</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="smart-detect-person">
+		<item-type>Switch</item-type>
+		<label>Turn on Smart Detect Person</label>
+		<description>Turn on Smart Detect Person</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="smart-detect-last">
+		<item-type>DateTime</item-type>
+		<label>Last Smart Motion</label>
+		<description>When last smart motion was detected</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="last-ring">
+		<item-type>DateTime</item-type>
+		<label>Last Ring</label>
+		<description>Last Ring on Doorbell</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="is-ringing">
+		<item-type>Switch</item-type>
+		<label>Doorbell Ding-Dong</label>
+		<description>Someone has pushed the doorbell button</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="lcd-custom-text">
+		<item-type>String</item-type>
+		<label>Custom Message</label>
+		<description>Custom Message</description>
+	</channel-type>
+	<channel-type id="lcd-predefined-message">
+		<item-type>Switch</item-type>
+		<label>Predefined Message</label>
+		<description>Predefined Message</description>
+	</channel-type>
+	<channel-type id="lcd-custom">
+		<item-type>Switch</item-type>
+		<label>Display Custom Message</label>
+		<description>Displays custom message</description>
+	</channel-type>
+	<channel-type id="smart-detect-type">
+		<item-type>String</item-type>
+		<label>Smart Detect Type</label>
+		<description>Smart Detect Type (vehicle / person)</description>
 	</channel-type>
 </thing:thing-descriptions>

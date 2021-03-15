@@ -14,23 +14,23 @@ package org.openhab.binding.unifiprotect.internal.model.request;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.unifiprotect.internal.UniFiProtectIrMode;
+import org.openhab.binding.unifiprotect.internal.UniFiProtectLcdMessage;
 import org.openhab.binding.unifiprotect.internal.thing.UniFiProtectNvrThingConfig;
 
 /**
- * The {@link UniFiProtectIrModeRequest}
+ * The {@link UniFiProtectLcdMessageRequest}
  *
  * @author Joseph (Seaside) Hagberg - Initial contribution
  */
 @NonNullByDefault
-public class UniFiProtectIrModeRequest extends UniFiProtectRequest {
+public class UniFiProtectLcdMessageRequest extends UniFiProtectRequest {
 
-    public UniFiProtectIrModeRequest(HttpClient httpClient, String cameraId, UniFiProtectNvrThingConfig config,
-            String token, UniFiProtectIrMode irMode) {
+    public UniFiProtectLcdMessageRequest(HttpClient httpClient, String cameraId, UniFiProtectNvrThingConfig config,
+            String token, UniFiProtectLcdMessage lcdMessage) {
         super(httpClient, config);
         setPath(API_CAMERAS.concat(cameraId));
         setHeader(UniFiProtectRequest.HEADER_X_CSRF_TOKEN, token);
-        setJsonRaw(irMode.getJsonRaw());
+        setJsonRaw(lcdMessage.getJsonRaw());
     }
 
     @Override

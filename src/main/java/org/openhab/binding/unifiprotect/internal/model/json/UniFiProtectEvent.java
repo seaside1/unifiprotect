@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.unifiprotect.internal.model.json;
 
+import java.util.Arrays;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -33,6 +35,9 @@ public class UniFiProtectEvent {
     private @Nullable String partition;
     private @Nullable String thumbnail;
     private @Nullable String heatmap;
+
+    private String @Nullable [] smartDetectTypes;
+    private String @Nullable [] smartDetectEvents;
 
     public @Nullable String getType() {
         return type;
@@ -66,7 +71,9 @@ public class UniFiProtectEvent {
     public String toString() {
         return "UniFiProtectEvent [type=" + type + ", start=" + start + ", end=" + end + ", camera=" + camera
                 + ", score=" + score + ", id=" + id + ", metadata=" + metadata + ", modelKey=" + modelKey
-                + ", partition=" + partition + ", thumbnail=" + thumbnail + ", heatmap=" + heatmap + "]";
+                + ", partition=" + partition + ", thumbnail=" + thumbnail + ", heatmap=" + heatmap
+                + ", smartDetectTypes=" + Arrays.toString(smartDetectTypes) + ", smartDetectEvents="
+                + Arrays.toString(smartDetectEvents) + "]";
     }
 
     public void setCamera(String camera) {
@@ -127,6 +134,22 @@ public class UniFiProtectEvent {
 
     public void setHeatmap(String heatmap) {
         this.heatmap = heatmap;
+    }
+
+    public String @Nullable [] getSmartDetectTypes() {
+        return smartDetectTypes;
+    }
+
+    public void setSmartDetectTypes(String @Nullable [] smartDetectTypes) {
+        this.smartDetectTypes = smartDetectTypes;
+    }
+
+    public String @Nullable [] getSmartDetectEvents() {
+        return smartDetectEvents;
+    }
+
+    public void setSmartDetectEvents(String @Nullable [] smartDetectEvents) {
+        this.smartDetectEvents = smartDetectEvents;
     }
 
     @SuppressWarnings("null")

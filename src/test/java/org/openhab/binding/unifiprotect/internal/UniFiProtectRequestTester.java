@@ -16,6 +16,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.Properties;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -23,9 +24,11 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.unifiprotect.internal.event.UniFiProtectEventManager;
 import org.openhab.binding.unifiprotect.internal.model.UniFiProtectCameraCache;
 import org.openhab.binding.unifiprotect.internal.model.UniFiProtectNvr;
 import org.openhab.binding.unifiprotect.internal.model.json.UniFiProtectEvent;
+import org.openhab.binding.unifiprotect.internal.thing.UniFiProtectNvrThingConfig;
 import org.openhab.binding.unifiprotect.internal.types.UniFiProtectCamera;
 import org.slf4j.LoggerFactory;
 
@@ -74,7 +77,8 @@ public class UniFiProtectRequestTester {
         nvr.refreshProtect();
         nvr.getNvrUser();
         logger.debug("Fetch NvrUser: {}", nvr.getNvrUser());
-        UniFiProtectEventManager em = new UniFiProtectEventManager(nvr.getHttpClient(), nvr.getGson(), config);
+        UniFiProtectEventManager em = new UniFiProtectEventManager(nvr.getHttpClient(), nvr.getUniFiProtectJsonParser(),
+                config);
         em.start();
         em.addPropertyChangeListener(new PropertyChangeListener() {
 
@@ -91,7 +95,6 @@ public class UniFiProtectRequestTester {
     }
 
     @Test
-    @Disabled
     public void getBootstrap() throws Exception {
         UniFiProtectNvr nvr = new UniFiProtectNvr(config);
         nvr.init();
@@ -174,6 +177,37 @@ public class UniFiProtectRequestTester {
 
     @Test
     @Disabled
+    public void setSmartDetectTypes() {
+        UniFiProtectNvr nvr = new UniFiProtectNvr(config);
+        nvr.init();
+        nvr.login();
+        nvr.refreshProtect();
+        UniFiProtectCameraCache cameraInsightCache = nvr.getCameraInsightCache();
+        Optional<UniFiProtectCamera> optCamera = cameraInsightCache.getCameras().stream()
+                .filter(camera -> camera.getType().toLowerCase().contains("doorbell")).findAny();
+        UniFiProtectCamera camera = optCamera.get();
+        // (camera -> logger.debug(camera.toString()));
+        nvr.setSmartDetectTypes(camera, UniFiProtectSmartDetectTypes.PERSON_AND_VEHICLE);
+    }
+
+    @Test
+    @Disabled
+    public void setLcdMessagePackage() {
+        UniFiProtectNvr nvr = new UniFiProtectNvr(config);
+        nvr.init();
+        nvr.login();
+        nvr.refreshProtect();
+        UniFiProtectCameraCache cameraInsightCache = nvr.getCameraInsightCache();
+        Optional<UniFiProtectCamera> optCamera = cameraInsightCache.getCameras().stream()
+                .filter(camera -> camera.getType().toLowerCase().contains("doorbell")).findAny();
+        UniFiProtectCamera camera = optCamera.get();
+        // (camera -> logger.debug(camera.toString()));
+        nvr.setLcdMessage(camera,
+                new UniFiProtectLcdMessage("Leffe", null, UniFiProtectLcdMessage.LcdMessageType.CUSTOM_MESSAGE));
+    }
+
+    @Test
+    @Disabled
     public void setHighFpsMode() throws Exception {
         UniFiProtectNvr nvr = new UniFiProtectNvr(config);
         nvr.init();
@@ -247,8 +281,3 @@ public class UniFiProtectRequestTester {
         nvr.rebootCamera(cameraInsightCache.getCameras().stream().reduce((first, second) -> second).get());
     }
 }
-
-// Anon snapshot fetched on refresh, should be fetched when downloaded
-// Snapshot also fetched on refresh, should be fetched when downloaded
-// Events not downloaded correctly
-// x Name, type, host, state not updated correctly

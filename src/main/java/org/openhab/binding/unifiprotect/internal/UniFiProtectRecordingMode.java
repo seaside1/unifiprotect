@@ -16,8 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link UniFiProtectRecordingMode} is responsible for creating things and thing
- * handlers.
+ * The {@link UniFiProtectRecordingMode}
  *
  * @author Joseph (Seaside) Hagberg - Initial contribution
  */

@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.unifiprotect.internal;
+package org.openhab.binding.unifiprotect.internal.event;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -18,13 +18,13 @@ import java.beans.PropertyChangeSupport;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.unifiprotect.internal.model.json.UniFiProtectJsonParser;
+import org.openhab.binding.unifiprotect.internal.thing.UniFiProtectNvrThingConfig;
 import org.openhab.binding.unifiprotect.websocket.UniFiProtectAction;
 import org.openhab.binding.unifiprotect.websocket.UniFiProtectEventWebSocket;
 import org.openhab.binding.unifiprotect.websocket.UniFiProtectEventWsClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.Gson;
 
 /**
  * The {@link UniFiProtectEventManager} is a specific cache for caching clients.
@@ -39,9 +39,10 @@ public class UniFiProtectEventManager implements PropertyChangeListener {
     private UniFiProtectEventWebSocket socket;
     private final PropertyChangeSupport propertyChangeSupport;
 
-    public UniFiProtectEventManager(HttpClient httpClient, Gson gson, UniFiProtectNvrThingConfig config) {
+    public UniFiProtectEventManager(HttpClient httpClient, UniFiProtectJsonParser uniFiProtectJsonParser,
+            UniFiProtectNvrThingConfig config) {
         propertyChangeSupport = new PropertyChangeSupport(this);
-        wsClient = new UniFiProtectEventWsClient(httpClient, gson, config);
+        wsClient = new UniFiProtectEventWsClient(httpClient, uniFiProtectJsonParser, config);
     }
 
     public boolean isStarted() {

@@ -10,34 +10,19 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.unifiprotect.internal;
+package org.openhab.binding.unifiprotect.internal.thing;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link UniFiProtectCameraThingConfig}
+ * The {@link UniFiProtectG4CameraThingConfig}
  *
  * @author Joseph (Seaside) Hagberg - Initial contribution
  */
 @NonNullByDefault
-public class UniFiProtectCameraThingConfig {
+public class UniFiProtectG4CameraThingConfig extends UniFiProtectBaseThingConfig {
     @Override
     public String toString() {
-        return "UniFiProtectCameraThingConfig [mac=" + mac + "]";
-    }
-
-    /* Camera Id should mac address */
-    private String mac = "";
-
-    public String getMac() {
-        return mac;
-    }
-
-    public void setMac(String mac) {
-        this.mac = mac;
-    }
-
-    public boolean isValid() {
-        return !mac.isEmpty();
+        return "UniFiProtectG4CameraThingConfig [mac=" + mac + "]";
     }
 }

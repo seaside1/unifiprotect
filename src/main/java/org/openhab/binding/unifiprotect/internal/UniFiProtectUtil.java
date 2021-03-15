@@ -57,6 +57,7 @@ public class UniFiProtectUtil {
     private static final String HEATMAP_SUFFIX = "-hmap.png";
     private static final String SNAPSHOT_SUFFIX = "-snap.jpg";
     private static final String ANON_SNAPSHOT_SUFFIX = "-asnap.jpg";
+    private static final String DASH = "-";
 
     public static double calculateHeightFromWidth(double thumbnailWidth) {
         return (thumbnailWidth / HEIGHT_DIVISOR) * HEIGHT_FACTOR;
@@ -65,7 +66,6 @@ public class UniFiProtectUtil {
     public static byte[] zlibDecompress(byte[] compressed) throws IOException, DataFormatException {
         final Inflater inflater = new Inflater();
         ByteArrayOutputStream out = null;
-        // System.out.println("Compressed length: " + compressed.length);
         try {
             out = new ByteArrayOutputStream(compressed.length);
             inflater.setInput(compressed);
@@ -98,8 +98,9 @@ public class UniFiProtectUtil {
     }
 
     @Nullable
-    public static File writeThumbnailToImageFolder(String imageFolder, String cameraId, byte[] content) {
-        return writeFileToImageFolder(imageFolder, cameraId, content, THUMBNAIL_SUFFIX);
+    public static File writeThumbnailToImageFolder(String imageFolder, String cameraId, @Nullable String eventType,
+            byte[] content) {
+        return writeFileToImageFolder(imageFolder, cameraId, content, eventType, THUMBNAIL_SUFFIX);
     }
 
     public static <T> CompletableFuture<T> scheduleAsync(ScheduledExecutorService executor,
@@ -117,13 +118,17 @@ public class UniFiProtectUtil {
     }
 
     @Nullable
-    private static File writeFileToImageFolder(String imageFolder, String cameraId, byte[] content, String suffix) {
+    private static File writeFileToImageFolder(String imageFolder, String cameraId, byte[] content,
+            @Nullable String eventType, String suffix) {
         FileOutputStream fout = null;
         File image = null;
         try {
-            image = new File(imageFolder.concat(File.separator).concat(cameraId).concat(suffix));
+            final String interfix = eventType == null ? UniFiProtectBindingConstants.EMPTY_STRING
+                    : DASH.concat(eventType);
+            image = new File(imageFolder.concat(File.separator).concat(cameraId).concat(interfix).concat(suffix));
             fout = new FileOutputStream(image);
             fout.write(content);
+            logger.debug("Wrote file: {}", image.getAbsolutePath());
         } catch (IOException iox) {
             logger.error("Failed to write to file: {} , for camera id: {} ", image.getAbsolutePath(), cameraId, iox);
             return null;
@@ -184,18 +189,21 @@ public class UniFiProtectUtil {
     }
 
     @Nullable
-    public static File writeHeatmapToFile(String imageFolder, String cameraId, byte[] content) {
-        return writeFileToImageFolder(imageFolder, cameraId, content, HEATMAP_SUFFIX);
+    public static File writeHeatmapToFile(String imageFolder, String cameraId, byte[] content,
+            @Nullable String eventType) {
+        return writeFileToImageFolder(imageFolder, cameraId, content, eventType, HEATMAP_SUFFIX);
     }
 
     @Nullable
     public static File writeSnapshotToFile(String imageFolder, String cameraId, byte[] content) {
-        return writeFileToImageFolder(imageFolder, cameraId, content, SNAPSHOT_SUFFIX);
+        return writeFileToImageFolder(imageFolder, cameraId, content, UniFiProtectBindingConstants.EMPTY_STRING,
+                SNAPSHOT_SUFFIX);
     }
 
     @Nullable
     public static File writeAnonSnapshotToFile(String imageFolder, String cameraId, byte[] content) {
-        return writeFileToImageFolder(imageFolder, cameraId, content, ANON_SNAPSHOT_SUFFIX);
+        return writeFileToImageFolder(imageFolder, cameraId, content, UniFiProtectBindingConstants.EMPTY_STRING,
+                ANON_SNAPSHOT_SUFFIX);
     }
 
     public static boolean isNotBlank(@Nullable String string) {

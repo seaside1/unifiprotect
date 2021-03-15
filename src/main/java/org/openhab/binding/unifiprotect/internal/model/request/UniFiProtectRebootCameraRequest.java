@@ -15,7 +15,7 @@ package org.openhab.binding.unifiprotect.internal.model.request;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpMethod;
-import org.openhab.binding.unifiprotect.internal.UniFiProtectNvrThingConfig;
+import org.openhab.binding.unifiprotect.internal.thing.UniFiProtectNvrThingConfig;
 
 /**
  * The {@link UniFiProtectRebootCameraRequest}

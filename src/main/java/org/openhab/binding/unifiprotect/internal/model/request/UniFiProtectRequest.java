@@ -32,9 +32,9 @@ import org.eclipse.jetty.http.HttpScheme;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.http.HttpURI;
 import org.eclipse.jetty.http.MimeTypes;
-import org.openhab.binding.unifiprotect.internal.UniFiProtectNvrThingConfig;
 import org.openhab.binding.unifiprotect.internal.model.UniFiProtectStatus;
 import org.openhab.binding.unifiprotect.internal.model.UniFiProtectStatus.SendStatus;
+import org.openhab.binding.unifiprotect.internal.thing.UniFiProtectNvrThingConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

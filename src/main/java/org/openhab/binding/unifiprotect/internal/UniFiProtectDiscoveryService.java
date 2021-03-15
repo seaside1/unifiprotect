@@ -13,12 +13,14 @@
 package org.openhab.binding.unifiprotect.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.unifiprotect.internal.thing.UniFiProtectNvrThingHandler;
 import org.openhab.binding.unifiprotect.internal.types.UniFiProtectCamera;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +36,6 @@ public class UniFiProtectDiscoveryService extends AbstractDiscoveryService {
     private static final String UNIFI_PROTECT_VENDOR = "UniFi Protect";
     private static final int TIMEOUT = 30;
     private UniFiProtectNvrThingHandler bridge;
-    // private ScheduledFuture<?> scanningJob;
 
     private final Logger logger = LoggerFactory.getLogger(UniFiProtectDiscoveryService.class);
 
@@ -77,8 +78,7 @@ public class UniFiProtectDiscoveryService extends AbstractDiscoveryService {
         }
         ThingUID bridgeUid = bridge.getThing().getUID();
         for (UniFiProtectCamera camera : bridge.getNvr().getCameraInsightCache().getCameras()) {
-            ThingUID thingUID = new ThingUID(UniFiProtectBindingConstants.THING_TYPE_CAMERA, bridgeUid,
-                    camera.getMac());
+            ThingUID thingUID = new ThingUID(getThingType(camera), bridgeUid, camera.getMac());
 
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withLabel(camera.getName())
                     .withBridge(bridgeUid).withProperty(Thing.PROPERTY_VENDOR, UNIFI_PROTECT_VENDOR)
@@ -88,6 +88,25 @@ public class UniFiProtectDiscoveryService extends AbstractDiscoveryService {
 
             thingDiscovered(discoveryResult);
         }
+    }
+
+    private ThingTypeUID getThingType(UniFiProtectCamera camera) {
+        final String type = camera.getType();
+        if (type != null) {
+            if (type.equals(UniFiProtectBindingConstants.G4_DOORBELL)) {
+                return UniFiProtectBindingConstants.THING_TYPE_G4_DOORBELL;
+            }
+
+            if (type.startsWith(UniFiProtectBindingConstants.G4_CAMERA_PREFIX)) {
+                return UniFiProtectBindingConstants.THING_TYPE_G4_CAMERA;
+            }
+
+            if (type.startsWith(UniFiProtectBindingConstants.G3_CAMERA_PREFIX)) {
+                return UniFiProtectBindingConstants.THING_TYPE_G3_CAMERA;
+            }
+        }
+        logger.error("Faild to identify UnifiProtect camera, assuming g3 type: {}", type);
+        return UniFiProtectBindingConstants.THING_TYPE_G3_CAMERA;
     }
 
     @Override
@@ -100,14 +119,6 @@ public class UniFiProtectDiscoveryService extends AbstractDiscoveryService {
     protected void startBackgroundDiscovery() {
         /* Not Implemented */
     }
-
-    // @Override
-    // protected void stopBackgroundDiscovery() {
-    // if (scanningJob != null && !scanningJob.isCancelled()) {
-    // scanningJob.cancel(false);
-    // scanningJob = null;
-    // }
-    // }
 
     @SuppressWarnings("null")
     @NonNullByDefault
