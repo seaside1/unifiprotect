@@ -46,19 +46,24 @@ OpenHAB Version: 2.5.x & Openhab 3.0.0Mx
 - Get a score of 0-100 on each motion event, in order to be able to filter out false positives
 - Detect if a hardrive in the nvr fails
 - Monitor the memory / diskstorage and CPU temperature
+- G4 Camera Smart Detections (Person or vehicle)
+- G4 Camera Smart Detection thumbnail
+- G4 Camera Smart Detection Score
+- G4 Camera enable smart detections
+- G4 Doorbell set custom LCD message
+- G4 Doorbell set predefined message (Leave package and do not disturb)
+- G4 Doorbell detect if it is ringing
 
 ## Supported hardware
 - UniFi Protect Cloud Key Gen2+ Firmware >= 2.0.18
 - UniFi Dream Machine / Pro 
-- Any UniFi Protect Camera
+- Any UniFi Protect Camera G3 and G4
 - UniFi NVR 
-- UniFi Doorbell NOT SUPPORTED (Support can be added at a later stage)
+- UniFi Doorbell 
 
 The binding has been rewritten to support UniFi OS only. That means if you have a UCKP (Cloudkey gen2+)
 you need to update it to at least firmware 2.0.18. After 2.0.18 UCKP is running UniFiOs just like the
 UDMP and UNVR. 
-***Please note that the UniFi Network binding currently is not working with firmware >= 2.0.18.***
-***If you are using the UniFi binding think twice before upgrading.***
 
 ## Dependencies
 * OH3 Map transformations ( https://www.openhab.org/addons/transformations/map/ )
@@ -83,11 +88,14 @@ To use the Anonymous Snapshot, you must ensure that each Camera is configured to
 ## Supported Things
 
 * `nvr/bridge` - Running UniFi Protect and handles the attached cameras 
-* `camera` -  A UniFi Camera G3/G4 etc
+* `g3camera` -  A UniFi G3 Camera 
+* `g4camera` - A UniFi G4 Camera
+* `g4doorbell` - A UniFi G4 Doorbell
 
 ## Discovery
 Discovery of cameras is possible. Background auto discovery is turned off and the Controller / NVR needs
-to be added manually before you can discover any devices.
+to be added manually before you can discover any devices. Doing discovery in the UI is recommended since
+it will reduce the risk of syntax errors.
 
 ## Binding Configuration
 The binding has no configuration options, all configuration is done at the Bridge and Thing levels.
@@ -113,12 +121,21 @@ The following table describes the Bridge configuration parameters:
 
 You must add a NVR / Controller (Bridge) before adding Cameras.
 
-The following table describes the Thing configuration parameters:
+The following table describes the Thing configuration parameters for G3 and G4:
 
 | Parameter    | Description                                                  | Config   | Default |
 | ------------ | -------------------------------------------------------------|--------- | ------- |
-| Name         | The name of The Camera                                       | Required | -       |
-| Mac          | The MAC address of the camera                                | Required | 180     |
+| Name         | The name of the Camera                                       | Required | -       |
+| Mac          | The MAC address of the camera (uppercase without ':')        | Required | 180     |
+
+The following table describes the Thing configuration parameters for G4 Doorbell:
+
+| Parameter         | Description                                                   | Config   | Default |
+| ----------------- | --------------------------------------------------------------|--------- | ------- |
+| Name              | The name of the G4 Doorbell                                   | Required | -       |
+| Mac               | The MAC address of the G4 Doorbell (uppercase without ':')    | Required | 180     |
+| lcdCustomMessage  | A custm LCD preconfigured message                             | Optional | -       |
+
 
 ## NVR Channels
 
