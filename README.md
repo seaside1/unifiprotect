@@ -197,7 +197,7 @@ Things
 Use paper UI to either discovery or add things
 If you want to create Things manually use below example (although this is not encouraged)
 
-items/unifiprotect.items
+items/unifiprotect.things
 
 ```
 Bridge unifiprotect:nvr:NVRID "UniFi Protect NVR" [ host="...", username="...", password="...", refresh=60 ] {
