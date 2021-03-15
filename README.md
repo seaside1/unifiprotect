@@ -201,9 +201,11 @@ items/unifiprotect.things
 
 ```
 Bridge unifiprotect:nvr:NVRID "UniFi Protect NVR" [ host="...", username="...", password="...", refresh=60 ] {
-   Thing camera frontDoorCamera [name="Front door camera", mac="xx:xx:xx:xx:xx:xx"]
+   Thing camera frontDoorCamera [name="Front door camera", mac="AABBCCDDEEFFGG"]
 }
 ```
+
+<b>Important, the mac address needs to be in uppercase without ":".</b>
 
 items/unifiprotect.items
 ```
