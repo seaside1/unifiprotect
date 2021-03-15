@@ -169,9 +169,9 @@ The NVR Channels
 | mem-total                    | Number    | Tota Memory                                                          | Read        |
 | alerts                       | Switch    | Turn on or of notifications                                          | Read/Write  |
 
-### `alerts`
+### Alerts
 
-The `alerts` channel allows you to turn on or off alerts sent by the UniFi Protect App.
+The alerts channel allows you to turn on or off alerts sent by the UniFi Protect App.
 You need to configure the alerts yourself by logging into the controller.
 
 ### Camera Channels
