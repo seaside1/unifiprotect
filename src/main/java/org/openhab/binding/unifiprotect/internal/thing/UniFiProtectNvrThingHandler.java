@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.unifiprotect.internal;
+package org.openhab.binding.unifiprotect.internal.thing;
 
 import static org.openhab.core.thing.ThingStatus.*;
 import static org.openhab.core.thing.ThingStatusDetail.COMMUNICATION_ERROR;
@@ -25,6 +25,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.unifiprotect.internal.UniFiProtectBindingConstants;
+import org.openhab.binding.unifiprotect.internal.UniFiProtectUtil;
+import org.openhab.binding.unifiprotect.internal.event.UniFiProtectEventManager;
 import org.openhab.binding.unifiprotect.internal.model.UniFiProtectNvr;
 import org.openhab.binding.unifiprotect.internal.model.UniFiProtectNvrChannel;
 import org.openhab.binding.unifiprotect.internal.model.UniFiProtectStatus;
@@ -59,7 +62,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class UniFiProtectNvrThingHandler extends BaseBridgeHandler implements PropertyChangeListener {
 
-    private static final int MOTION_EVENT_WAIT_TIME = 5;
     private @Nullable ScheduledFuture<?> refreshJob;
     private final Logger logger = LoggerFactory.getLogger(UniFiProtectNvrThingHandler.class);
 
@@ -97,7 +99,8 @@ public class UniFiProtectNvrThingHandler extends BaseBridgeHandler implements Pr
         if (initNvr) {
             status = nvr.start();
             if (status.getStatus() == SendStatus.SUCCESS) {
-                eventManager = new UniFiProtectEventManager(nvr.getHttpClient(), nvr.getGson(), config);
+                eventManager = new UniFiProtectEventManager(nvr.getHttpClient(), nvr.getUniFiProtectJsonParser(),
+                        config);
                 eventManager.start();
                 eventManager.addPropertyChangeListener(this);
             }
@@ -207,8 +210,8 @@ public class UniFiProtectNvrThingHandler extends BaseBridgeHandler implements Pr
 
     public synchronized void refreshCameras() {
         getThing().getThings().forEach((thing) -> {
-            if (thing.getHandler() instanceof UniFiProtectCameraThingHandler) {
-                ((UniFiProtectCameraThingHandler) thing.getHandler()).refresh();
+            if (thing.getHandler() instanceof UniFiProtectBaseThingHandler) {
+                ((UniFiProtectBaseThingHandler) thing.getHandler()).refresh();
             }
         });
     }
@@ -420,50 +423,89 @@ public class UniFiProtectNvrThingHandler extends BaseBridgeHandler implements Pr
 
     @Override
     public void propertyChange(@Nullable PropertyChangeEvent evt) {
-        if (evt.getPropertyName().equals(UniFiProtectAction.PROPERTY_EVENT_ACTION_ADD)) {
-            logger.debug("Got Property Motion Add: {}", evt.getPropertyName());
-            getNvr().refreshProtect();
-            getNvr().refreshEvents();
-            refreshCameras();
+        if (evt == null) {
             return;
         }
 
-        if (evt.getPropertyName().equals(UniFiProtectAction.PROPERTY_EVENT_ACTION_UPDATE)) {
-            logger.debug("Got EventMotionUpd refreshing Protect");
-            getNvr().refreshProtect();
-            UniFiProtectAction action = (UniFiProtectAction) evt.getNewValue();
-            UniFiProtectEvent event = getNvr().getEventFromId(action.getId());
-            logger.debug("Got EventMotionUpd action: {} event: {}", action, event);
-
-            String eventId = event != null ? event.getId() : null;
-            if (event != null && eventId != null) {
-                logger.debug("Got event motion: {}", event);
-                UniFiProtectCameraThingHandler handler = getCameraThingHandlerFromEvent(event);
-                logger.debug("### Start RefreshEvents");
-                getNvr().refreshEvents();
-                logger.debug("### End RefreshEvents");
-
-                if (handler != null) {
-                    handler.handleMotionEvent(MOTION_EVENT_WAIT_TIME, eventId);
-                } else {
-                    logger.debug("Failed to handle motion event, since handler is null or score is not sufficient: {}",
-                            event);
-                }
-
+        if (!isAddEvent(evt) && !isUpdEvent(evt)) {
+            logger.debug("Unhandled property evt is not update or add: {}", evt.getPropertyName());
+            return;
+        }
+        getNvr().refreshEvents();
+        UniFiProtectAction action = (UniFiProtectAction) evt.getNewValue();
+        UniFiProtectEvent event = getNvr().getEventFromId(action.getId());
+        if (event == null) {
+            // Sometimes event is asked for too quickly
+            event = getNvr().getEventFromId(action.getId());
+            if (event == null) {
+                logger.error("Failed to get event, ignoring: {}", action);
+                return;
             }
-            refreshCameras();
+        }
+        final String type = event.getType();
+        String eventId = event.getId();
+        if (type == null || eventId == null) {
+            logger.debug("Failed to get type from event, ignoring: {}", event);
             return;
         }
 
-        logger.debug("Unhandled property: {}", evt.getPropertyName());
+        UniFiProtectBaseThingHandler cameraHandler = getCameraThingHandlerFromEvent(event);
+        if (cameraHandler == null) {
+            logger.debug("Failed to handle  event, since handler is null: {}", event);
+            return;
+        }
+
+        if (isAddEvent(evt)) {
+            logger.debug("Got Property Event Add: {}", evt.getPropertyName());
+            if (type.equals(UniFiProtectBindingConstants.EVENT_TYPE_RING)) {
+                logger.debug("Handling event ring");
+                if (cameraHandler instanceof UniFiProtectG4DoorbellThingHandler) {
+                    ((UniFiProtectG4DoorbellThingHandler) cameraHandler).handleRingAddEvent(eventId);
+                } else {
+                    logger.error("Failed to handle ring event");
+                    return;
+                }
+            } else if (type.equals(UniFiProtectBindingConstants.EVENT_TYPE_SMART_DETECT_ZONE)) {
+                if (cameraHandler instanceof UniFiProtectG4CameraThingHandler) {
+                    ((UniFiProtectG4CameraThingHandler) cameraHandler).handleSmartDetectAddEvent(eventId);
+                } else {
+                    logger.error("Failed to handle SmartDetect event");
+                    return;
+                }
+            } else if (type.equals(UniFiProtectBindingConstants.EVENT_TYPE_MOTION)) {
+                cameraHandler.handleMotionAddEvent(eventId);
+            } else {
+                logger.debug("Unhandled EventActionAdd type: {}", type);
+            }
+            logger.debug("Got EventActionAdd action: {} event: {}", action, event);
+            return;
+        } else if (isUpdEvent(evt)) {
+            logger.debug("Got EventActionUpd action: {} event: {}", action, event);
+            if (type.equals(UniFiProtectBindingConstants.EVENT_TYPE_MOTION)) {
+                logger.debug("Handling event motion");
+                cameraHandler.handleThumbnailEvent(UniFiProtectBindingConstants.MOTION_EVENT_WAIT_TIME, eventId);
+                cameraHandler.handleHeatmapEvent(UniFiProtectBindingConstants.MOTION_EVENT_WAIT_TIME, eventId);
+            } else if (type.equals(UniFiProtectBindingConstants.EVENT_TYPE_SMART_DETECT_ZONE)) {
+                ((UniFiProtectG4CameraThingHandler) cameraHandler).handleSmartDetectUpdEvent(eventId);
+            }
+            return;
+        }
     }
 
-    private @Nullable UniFiProtectCameraThingHandler getCameraThingHandlerFromEvent(UniFiProtectEvent event) {
+    private boolean isUpdEvent(@Nullable PropertyChangeEvent evt) {
+        return evt.getPropertyName().equals(UniFiProtectAction.PROPERTY_EVENT_ACTION_UPDATE);
+    }
+
+    private boolean isAddEvent(@Nullable PropertyChangeEvent evt) {
+        return evt.getPropertyName().equals(UniFiProtectAction.PROPERTY_EVENT_ACTION_ADD);
+    }
+
+    private @Nullable UniFiProtectBaseThingHandler getCameraThingHandlerFromEvent(UniFiProtectEvent event) {
         logger.debug("Trying to find camera for event");
 
         for (Thing thing : getThing().getThings()) {
-            if (thing.getHandler() instanceof UniFiProtectCameraThingHandler) {
-                UniFiProtectCameraThingHandler handler = (UniFiProtectCameraThingHandler) thing.getHandler();
+            if (thing.getHandler() instanceof UniFiProtectBaseThingHandler) {
+                UniFiProtectBaseThingHandler handler = (UniFiProtectBaseThingHandler) thing.getHandler();
                 logger.debug("Handler id: {} name: {} eventCame: {}", handler.getCamera().getId(),
                         handler.getCamera().getName(), event.getCamera());
                 if (handler.getCamera() != null && handler.getCamera().getId().equals(event.getCamera())) {

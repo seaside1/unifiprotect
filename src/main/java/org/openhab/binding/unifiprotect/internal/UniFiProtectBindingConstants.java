@@ -33,10 +33,20 @@ public class UniFiProtectBindingConstants {
 
     /* Thing Types */
     public static final ThingTypeUID THING_TYPE_NVR = new ThingTypeUID(BINDING_ID, "nvr");
-    public static final ThingTypeUID THING_TYPE_CAMERA = new ThingTypeUID(BINDING_ID, "camera");
+    public static final ThingTypeUID THING_TYPE_G3_CAMERA = new ThingTypeUID(BINDING_ID, "g3camera");
+    public static final ThingTypeUID THING_TYPE_G4_CAMERA = new ThingTypeUID(BINDING_ID, "g4camera");
+    public static final ThingTypeUID THING_TYPE_G4_DOORBELL = new ThingTypeUID(BINDING_ID, "g4doorbell");
+    public static final String G4_DOORBELL = "UVC G4 Doorbell";
+    public static final String G3_CAMERA_PREFIX = "UVC G3";
+    public static final String G4_CAMERA_PREFIX = "UVC G4";
+    public static final String EVENT_TYPE_MOTION = "motion";
+    public static final String EVENT_TYPE_SMART_DETECT_ZONE = "smartDetectZone";
+    public static final String EVENT_TYPE_RING = "ring";
+    public static final int MOTION_EVENT_WAIT_TIME = 5;
 
-    public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(THING_TYPE_CAMERA, THING_TYPE_NVR).collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = Collections.unmodifiableSet(
+            Stream.of(THING_TYPE_G3_CAMERA, THING_TYPE_G4_CAMERA, THING_TYPE_NVR, THING_TYPE_G4_DOORBELL)
+                    .collect(Collectors.toSet()));
 
     /* Parameters */
     public static final String PARAMETER_HOST = "host";

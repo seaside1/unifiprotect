@@ -29,6 +29,8 @@ import org.openhab.binding.unifiprotect.internal.types.UniFiProtectCamera;
 @NonNullByDefault
 public class UniFiProtectCameraCache {
 
+    private final Map<String, UniFiProtectCamera> macToCamera = new HashMap<>();
+
     @Override
     public String toString() {
         final String toString = "";
@@ -36,8 +38,6 @@ public class UniFiProtectCameraCache {
                 .concat(" value".concat(entry.getValue().toString())));
         return "UniFiProtectCameraCache [size= " + macToCamera.size() + " macToCamera=" + toString + "]";
     }
-
-    private final Map<String, UniFiProtectCamera> macToCamera = new HashMap<>();
 
     private String generateKey(UniFiProtectCamera camera) {
         return camera.getMac().toLowerCase();

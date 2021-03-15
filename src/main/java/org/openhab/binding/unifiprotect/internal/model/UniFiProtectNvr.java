@@ -21,18 +21,16 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.openhab.binding.unifiprotect.internal.UniFiProtectCameraThingConfig;
-import org.openhab.binding.unifiprotect.internal.UniFiProtectEventCache;
-import org.openhab.binding.unifiprotect.internal.UniFiProtectImageHandler;
 import org.openhab.binding.unifiprotect.internal.UniFiProtectIrMode;
-import org.openhab.binding.unifiprotect.internal.UniFiProtectNvrThingConfig;
+import org.openhab.binding.unifiprotect.internal.UniFiProtectLcdMessage;
 import org.openhab.binding.unifiprotect.internal.UniFiProtectRecordingMode;
+import org.openhab.binding.unifiprotect.internal.UniFiProtectSmartDetectTypes;
 import org.openhab.binding.unifiprotect.internal.UniFiProtectUtil;
+import org.openhab.binding.unifiprotect.internal.event.UniFiProtectEventCache;
+import org.openhab.binding.unifiprotect.internal.image.UniFiProtectImageHandler;
 import org.openhab.binding.unifiprotect.internal.model.UniFiProtectStatus.SendStatus;
-import org.openhab.binding.unifiprotect.internal.model.json.UniFiProtectCameraInstanceCreator;
 import org.openhab.binding.unifiprotect.internal.model.json.UniFiProtectEvent;
 import org.openhab.binding.unifiprotect.internal.model.json.UniFiProtectJsonParser;
-import org.openhab.binding.unifiprotect.internal.model.json.UniFiProtectNvrInstanceCreator;
 import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectAlertsRequest;
 import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectAnonymousSnapshotRequest;
 import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectBootstrapRequest;
@@ -41,24 +39,22 @@ import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectHdrMo
 import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectHeatmapRequest;
 import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectHighFpsModeRequest;
 import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectIrModeRequest;
+import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectLcdMessageRequest;
 import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectLoginRequest;
 import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectRebootCameraRequest;
 import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectRecordingModeRequest;
+import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectSmartDetectRequest;
 import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectSnapshotRequest;
 import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectStatusLightRequest;
 import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectThumbnailRequest;
 import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectTokenRequest;
+import org.openhab.binding.unifiprotect.internal.thing.UniFiProtectBaseThingConfig;
+import org.openhab.binding.unifiprotect.internal.thing.UniFiProtectNvrThingConfig;
 import org.openhab.binding.unifiprotect.internal.types.UniFiProtectCamera;
 import org.openhab.binding.unifiprotect.internal.types.UniFiProtectNvrDevice;
 import org.openhab.binding.unifiprotect.internal.types.UniFiProtectNvrUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.FieldNamingPolicy;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link UniFiProtectNvr}
@@ -74,23 +70,18 @@ public class UniFiProtectNvr {
     private volatile @Nullable UniFiProtectNvrUser nvrUser;
     private volatile UniFiProtectEventCache eventCache = new UniFiProtectEventCache();
     private UniFiProtectCameraCache cameraInsightCache = new UniFiProtectCameraCache();
+
     private final HttpClient httpClient;
     private final Logger logger = LoggerFactory.getLogger(UniFiProtectNvr.class);
-    private final Gson gson;
-    private final UniFiProtectNvrThingConfig config;
 
-    private UniFiProtectCameraInstanceCreator uniFiProtectCameraInstanceCreator;
-    private UniFiProtectNvrInstanceCreator uniFiProtectNvrInstanceCreator;
+    private final UniFiProtectNvrThingConfig config;
+    private final UniFiProtectJsonParser uniFiProtectJsonParser;
 
     public UniFiProtectNvr(UniFiProtectNvrThingConfig config) {
         this.config = config;
         httpClient = new HttpClient(new SslContextFactory(true));
         httpClient.setFollowRedirects(false);
-        uniFiProtectCameraInstanceCreator = new UniFiProtectCameraInstanceCreator();
-        uniFiProtectNvrInstanceCreator = new UniFiProtectNvrInstanceCreator();
-        gson = new GsonBuilder().registerTypeAdapter(UniFiProtectNvrDevice.class, uniFiProtectNvrInstanceCreator)
-                .registerTypeAdapter(UniFiProtectCamera.class, uniFiProtectCameraInstanceCreator)
-                .setFieldNamingPolicy(FieldNamingPolicy.IDENTITY).create();
+        uniFiProtectJsonParser = new UniFiProtectJsonParser();
     }
 
     public boolean init() {
@@ -138,27 +129,30 @@ public class UniFiProtectNvr {
             }
         }
         logger.debug("Request is ok, parsing cameras");
-        final String jsonContent = request.getJsonContent();
-        if (jsonContent == null) {
+        final String bootstrapJsonContent = request.getJsonContent();
+        if (bootstrapJsonContent == null) {
             logger.error("Got null response when refreshing bootstrap");
             return UniFiProtectStatus.STATUS_EXECUTION_FAULT;
         }
-        JsonObject jsonObject = null;
-        try {
-            jsonObject = UniFiProtectJsonParser.parseJson(gson, jsonContent);
-        } catch (JsonSyntaxException x) {
-            logger.error("Failed to refresh bootstrap due to jsonexception: {}", x.getMessage());
+        boolean bootstrapParseSuccess = getUniFiProtectJsonParser().parseBootstrap(bootstrapJsonContent);
+        logger.debug("Json: {}", bootstrapJsonContent);
+        if (!bootstrapParseSuccess) {
             return UniFiProtectStatus.STATUS_EXECUTION_FAULT;
         }
-        UniFiProtectCamera[] cameras = UniFiProtectJsonParser.getCamerasFromJson(gson, jsonObject);
-        Arrays.stream(cameras).forEach(camera -> logger.debug("Camera: {}", camera));
-        logger.debug("Got Cameras size: {}", cameras.length);
+        UniFiProtectCamera[] allCameras = getUniFiProtectJsonParser().getCamerasFromBootstrap();
+        if (allCameras == null) {
+            return UniFiProtectStatus.STATUS_EXECUTION_FAULT;
+        }
         getCameraInsightCache().clear();
-        getCameraInsightCache().putAll(Arrays.asList(cameras));
+        getCameraInsightCache().putAll(Arrays.asList(allCameras));
         logger.debug("Put all size: {}", getCameraInsightCache().getCameras().size());
-        nvrDevice = UniFiProtectJsonParser.getNvrDeviceFromJson(gson, jsonObject);
-        logger.debug("UniFiProtectNvrDevice: {}", getNvrDevice());
-        UniFiProtectNvrUser[] nvrUsersFromJson = UniFiProtectJsonParser.getNvrUsersFromJson(gson, jsonObject);
+        nvrDevice = getUniFiProtectJsonParser().getNvrDeviceFromBootstrap();
+        logger.debug("UniFiProtectNvrDevice: {}", nvrDevice);
+        if (nvrDevice == null) {
+            return UniFiProtectStatus.STATUS_EXECUTION_FAULT;
+        }
+
+        UniFiProtectNvrUser[] nvrUsersFromJson = getUniFiProtectJsonParser().getNvrUsersFromBootstrap();
         Optional<@Nullable UniFiProtectNvrUser> findAny = Arrays.stream(nvrUsersFromJson)
                 .filter(u -> (u.getLocalUsername() != null && u.getLocalUsername().equals(getConfig().getUserName()))
                         || u.getFirstName() != null && u.getFirstName().toLowerCase().equals(getConfig().getUserName()))
@@ -168,7 +162,7 @@ public class UniFiProtectNvr {
         } catch (NoSuchElementException x) {
             logger.error("Could not find any valid user. Looking for: {}", getConfig().getUserName());
             Arrays.stream(nvrUsersFromJson).forEach(user -> logger.debug("User in response: {}", user));
-            logger.debug("Json response: {}", jsonContent);
+            logger.debug("Json response: {}", bootstrapJsonContent);
         }
         if (nvrUser != null && (nvrUser.getLocalUsername() == null || nvrUser.getLocalUsername().isEmpty())) {
             nvrUser.setLocalUsername(nvrUser.getFirstName().toLowerCase()); // Ugly workaround for localusername being
@@ -190,10 +184,10 @@ public class UniFiProtectNvr {
             logger.error("Failed to refresh events, since request resulted in null response");
             return UniFiProtectStatus.STATUS_EXECUTION_FAULT;
         }
-        final UniFiProtectEvent[] events = UniFiProtectJsonParser.getEventsFromJson(gson, jsonContent);
+        logger.debug("Got events json: {}", jsonContent);
+        final UniFiProtectEvent[] events = getUniFiProtectJsonParser().getEventsFromJson(jsonContent);
         getEventCache().clear();
         getEventCache().putAll(Arrays.asList(events));
-        logger.debug("Refreshed events size: {}", events.length);
         return sendStatus;
     }
 
@@ -203,7 +197,6 @@ public class UniFiProtectNvr {
 
     @SuppressWarnings("null")
     public synchronized UniFiProtectStatus refreshProtect() {
-        logger.debug("Refresh Protect fetch cameras");
         UniFiProtectStatus status = null;
         if (!isLoggedIn()) {
             status = login();
@@ -214,7 +207,7 @@ public class UniFiProtectNvr {
         }
         UniFiProtectStatus refreshBootstrap = refreshBootstrap();
         if (refreshBootstrap.getStatus() == SendStatus.SUCCESS) {
-            logger.debug("Successfully refreshed bootstrap");// TODO: FIXME
+            logger.debug("Successfully refreshed bootstrap");
         }
         return refreshBootstrap;
     }
@@ -233,9 +226,9 @@ public class UniFiProtectNvr {
         }
     }
 
-    public synchronized @Nullable UniFiProtectCamera getCamera(UniFiProtectCameraThingConfig config) {
+    public synchronized @Nullable UniFiProtectCamera getCamera(UniFiProtectBaseThingConfig config) {
         logger.debug("Getting camera from cache configMac: {}", config.getMac());
-        logger.debug("InsightCache: {}", cameraInsightCache.toString());
+        logger.debug("CameraInsightCache: {}", cameraInsightCache.toString());
         return cameraInsightCache.getCamera(config.getMac());
     }
 
@@ -385,7 +378,7 @@ public class UniFiProtectNvr {
                 return null;
             }
             File thumbnailFile = UniFiProtectUtil.writeThumbnailToImageFolder(getConfig().getImageFolder(), cameraId,
-                    request.getResponse().getContent());
+                    event.getType(), request.getResponse().getContent());
             if (thumbnailFile != null) {
                 thumbnailImage = new UniFiProtectImage(UniFiProtectImageHandler.IMAGE_JPEG, thumbnailFile);
                 logger.debug("Wrote thumbnail file: {} size: {}", thumbnailFile.getAbsolutePath(), data.length);
@@ -416,7 +409,7 @@ public class UniFiProtectNvr {
     @SuppressWarnings("null")
     public synchronized @Nullable UniFiProtectEvent getLastMotionEvent(UniFiProtectCamera camera) {
         final String id = camera != null ? camera.getId() : null;
-        return (id != null) ? eventCache.getEvent(id) : null;
+        return (id != null) ? eventCache.getLatestMotionEvent(id) : null;
     }
 
     @SuppressWarnings("null")
@@ -428,24 +421,27 @@ public class UniFiProtectNvr {
             return null;
         }
         if (heatmap == null || heatmap.isEmpty()) {
-            logger.debug("Could not find any heatMap in events for camera: {}", cameraId);
+            logger.warn("Could not find any heatMap in events for camera: {}", cameraId);
             return null;
         }
         UniFiProtectImage heatmapImage = null;
         UniFiProtectHeatmapRequest request = new UniFiProtectHeatmapRequest(httpClient, token, heatmap, getConfig());
         if (!requestSuccessFullySent(request.sendRequest())) {
+            logger.warn("Heatmap request failed");
             return null;
         }
 
         if (UniFiProtectUtil.requestHasContentOfSize(request, IMAGE_MIN_SIZE)) {
             byte[] data = request.getResponse().getContent();
-            File heatmapFile = UniFiProtectUtil.writeHeatmapToFile(getConfig().getImageFolder(), cameraId, data);
-            logger.debug("Content size for heatmap request: {}", data.length);
+            File heatmapFile = UniFiProtectUtil.writeHeatmapToFile(getConfig().getImageFolder(), cameraId, data,
+                    event.getType());
             if (heatmapFile != null) {
                 heatmapImage = new UniFiProtectImage(UniFiProtectImageHandler.IMAGE_PNG, heatmapFile);
                 logger.debug("Wrote heatmap file: {} size: {}", heatmapImage.getFile().getAbsolutePath(),
                         heatmapImage.getData().length);
             }
+        } else {
+            logger.warn("Heatmap request resulted in a 0 size image:");
         }
         return heatmapImage;
     }
@@ -519,13 +515,14 @@ public class UniFiProtectNvr {
         return httpClient;
     }
 
-    public Gson getGson() {
-        return gson;
+    public @Nullable UniFiProtectEvent getLastMotionEventFromCamera(UniFiProtectCamera camera) {
+        final String cameraId = camera != null ? camera.getId() : null;
+        return cameraId != null ? eventCache.getLatestMotionEvent(cameraId) : null;
     }
 
-    public @Nullable UniFiProtectEvent getLastEventFromCamera(UniFiProtectCamera camera) {
+    public @Nullable UniFiProtectEvent getLastRingEventFromCamera(UniFiProtectCamera camera) {
         final String cameraId = camera != null ? camera.getId() : null;
-        return cameraId != null ? eventCache.getEvent(cameraId) : null;
+        return cameraId != null ? eventCache.getLatestRingEvent(cameraId) : null;
     }
 
     public synchronized @Nullable UniFiProtectEvent getEventFromId(String id) {
@@ -534,5 +531,41 @@ public class UniFiProtectNvr {
 
     public UniFiProtectEvent[] getEvents() {
         return eventCache.getEvents();
+    }
+
+    public UniFiProtectJsonParser getUniFiProtectJsonParser() {
+        return uniFiProtectJsonParser;
+    }
+
+    public synchronized void setLcdMessage(UniFiProtectCamera camera, UniFiProtectLcdMessage lcdMessage) {
+        String cameraId = camera != null ? camera.getId() : null;
+        if (cameraId == null) {
+            logger.error("Failed to set LCD, camera field is null: {}", camera);
+            return;
+        }
+        UniFiProtectLcdMessageRequest request = new UniFiProtectLcdMessageRequest(httpClient, cameraId, getConfig(),
+                token, lcdMessage);
+        if (!requestSuccessFullySent(request.sendRequest())) {
+            return;
+        }
+        String jsonContent = request.getJsonContent();
+        logger.debug("LcdMessage result jsonResult: {}", jsonContent);
+    }
+
+    public synchronized void setSmartDetectTypes(UniFiProtectCamera camera,
+            UniFiProtectSmartDetectTypes smartDetectTypes) {
+        String cameraId = camera != null ? camera.getId() : null;
+        if (cameraId == null) {
+            logger.error("Failed to set LCD, camera field is null: {}", camera);
+            return;
+        }
+        UniFiProtectSmartDetectRequest request = new UniFiProtectSmartDetectRequest(httpClient, cameraId, getConfig(),
+                token, smartDetectTypes);
+        if (!requestSuccessFullySent(request.sendRequest())) {
+            return;
+        }
+        String jsonContent = request.getJsonContent();
+        logger.debug("smartDetectTypes result jsonResult: {}", jsonContent);
+        camera.setSmartDetectObjectTypes(smartDetectTypes);
     }
 }

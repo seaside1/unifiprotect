@@ -15,6 +15,7 @@ package org.openhab.binding.unifiprotect.internal.types;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.unifiprotect.internal.UniFiProtectBindingConstants;
+import org.openhab.binding.unifiprotect.internal.UniFiProtectSmartDetectTypes;
 
 /**
  * The {@link UniFiProtectCamera}
@@ -23,14 +24,13 @@ import org.openhab.binding.unifiprotect.internal.UniFiProtectBindingConstants;
  */
 @NonNullByDefault
 public class UniFiProtectCamera {
-    private @Nullable String thumbnailUrl;
-    private @Nullable String heatmapUrl;
+    private @Nullable String motionThumbnailUrl;
+    private @Nullable String motionHeatmapUrl;
     private @Nullable String snapshotUrl;
     private @Nullable String aSnapshotUrl;
     private @Nullable Long upSince;
     private String mac = UniFiProtectBindingConstants.EMPTY_STRING;
     private String host = UniFiProtectBindingConstants.EMPTY_STRING;
-
     private @Nullable String type;
     private String name = UniFiProtectBindingConstants.EMPTY_STRING;
     private @Nullable String videoMode;
@@ -63,10 +63,43 @@ public class UniFiProtectCamera {
     private @Nullable Boolean isProbingForWifi;
     private @Nullable Integer chimeDuration;
     private @Nullable Boolean isDark;
+    // Doorbell
+    private @Nullable LcdMessage lcdMessage;
+    private @Nullable String ringThumbnailUrl;
+    private @Nullable String ringHeatmapUrl;
+    private @Nullable Long lastRing;
+
+    // G4
+    private @Nullable SmartDetectSettings smartDetectSettings;
+    private @Nullable String smartDetectThumbnailUrl;
+    private @Nullable String smartDetectHeatmapUrl;
 
     @SuppressWarnings("null")
     public @Nullable String getIrLedMode() {
         return ispSettings != null && ispSettings.getIrLedMode() != null ? ispSettings.getIrLedMode() : null;
+    }
+
+    @SuppressWarnings("null")
+    public @Nullable String getLcdMessageText() {
+        return lcdMessage != null && lcdMessage.getText() != null ? lcdMessage.getText() : null;
+    }
+
+    @SuppressWarnings("null")
+    public UniFiProtectSmartDetectTypes getSmartDetectObjectTypes() {
+        String[] objectTypes = smartDetectSettings != null && smartDetectSettings.getObjectTypes() != null
+                ? smartDetectSettings.getObjectTypes()
+                : null;
+        return UniFiProtectSmartDetectTypes.fromArray(objectTypes);
+    }
+
+    @SuppressWarnings("null")
+    public void setSmartDetectObjectTypes(UniFiProtectSmartDetectTypes smartDetectTypes) {
+        smartDetectSettings.setObjectTypes(smartDetectTypes.getObjectTypesAsArray());
+    }
+
+    @SuppressWarnings("null")
+    public @Nullable String getLcdMessageType() {
+        return lcdMessage != null && lcdMessage.getType() != null ? lcdMessage.getType() : null;
     }
 
     @SuppressWarnings("null")
@@ -320,18 +353,18 @@ public class UniFiProtectCamera {
     }
 
     public String toStringDetailed() {
-        return "UniFiProtectCamera [thumbnailUrl=" + thumbnailUrl + ", heatmapUrl=" + heatmapUrl + ", snapshotUrl="
-                + snapshotUrl + ", aSnapshotUrl=" + aSnapshotUrl + ", upSince=" + upSince + ", mac=" + mac + ", host="
-                + host + ", type=" + type + ", name=" + name + ", lastSeen=" + lastSeen + ", connectedSince="
-                + connectedSince + ", state=" + state + ", hardwareRevision=" + hardwareRevision + ", firmwareVersion="
-                + firmwareVersion + ", firmwareBuild=" + firmwareBuild + ", isUpdating=" + isUpdating + ", isAdopting="
-                + isAdopting + ", isAdopted=" + isAdopted + ", isProvisioned=" + isProvisioned + ", isRebooting="
-                + isRebooting + ", isSshEnabled=" + isSshEnabled + ", canAdopt=" + canAdopt + ", isAttemptingToConnect="
-                + isAttemptingToConnect + ", isHidden=" + isHidden + ", lastMotion=" + lastMotion + ", micVolume="
-                + micVolume + ", isMicEnabled=" + isMicEnabled + ", isRecording=" + isRecording + ", isMotionDetected="
-                + isMotionDetected + ", ledSettings=" + ledSettings + ", phyRate=" + phyRate + ", id=" + id
-                + ", hdrMode=" + hdrMode + ", isProbingForWifi=" + isProbingForWifi + ", chimeDuration=" + chimeDuration
-                + ", isDark=" + isDark + "]";
+        return "UniFiProtectCamera [thumbnailUrl=" + motionThumbnailUrl + ", heatmapUrl=" + motionHeatmapUrl
+                + ", snapshotUrl=" + snapshotUrl + ", aSnapshotUrl=" + aSnapshotUrl + ", upSince=" + upSince + ", mac="
+                + mac + ", host=" + host + ", type=" + type + ", name=" + name + ", lastSeen=" + lastSeen
+                + ", connectedSince=" + connectedSince + ", state=" + state + ", hardwareRevision=" + hardwareRevision
+                + ", firmwareVersion=" + firmwareVersion + ", firmwareBuild=" + firmwareBuild + ", isUpdating="
+                + isUpdating + ", isAdopting=" + isAdopting + ", isAdopted=" + isAdopted + ", isProvisioned="
+                + isProvisioned + ", isRebooting=" + isRebooting + ", isSshEnabled=" + isSshEnabled + ", canAdopt="
+                + canAdopt + ", isAttemptingToConnect=" + isAttemptingToConnect + ", isHidden=" + isHidden
+                + ", lastMotion=" + lastMotion + ", micVolume=" + micVolume + ", isMicEnabled=" + isMicEnabled
+                + ", isRecording=" + isRecording + ", isMotionDetected=" + isMotionDetected + ", ledSettings="
+                + ledSettings + ", phyRate=" + phyRate + ", id=" + id + ", hdrMode=" + hdrMode + ", isProbingForWifi="
+                + isProbingForWifi + ", chimeDuration=" + chimeDuration + ", isDark=" + isDark + "]";
     }
 
     @Override
@@ -350,20 +383,20 @@ public class UniFiProtectCamera {
         this.id = id;
     }
 
-    public @Nullable String getThumbnailUrl() {
-        return thumbnailUrl;
+    public @Nullable String getMotionThumbnailUrl() {
+        return motionThumbnailUrl;
     }
 
-    public void setThumbnailUrl(String thumbnailUrl) {
-        this.thumbnailUrl = thumbnailUrl;
+    public void setMotionThumbnailUrl(String motionThumbnailUrl) {
+        this.motionThumbnailUrl = motionThumbnailUrl;
     }
 
-    public @Nullable String getHeatmapUrl() {
-        return heatmapUrl;
+    public @Nullable String getMotionHeatmapUrl() {
+        return motionHeatmapUrl;
     }
 
-    public void setHeatmapUrl(String heatmapUrl) {
-        this.heatmapUrl = heatmapUrl;
+    public void setMotionHeatmapUrl(String motionHeatmapUrl) {
+        this.motionHeatmapUrl = motionHeatmapUrl;
     }
 
     public @Nullable String getSnapshotUrl() {
@@ -414,6 +447,22 @@ public class UniFiProtectCamera {
         this.recordingSettings = recordingSettings;
     }
 
+    public @Nullable LcdMessage getLcdMessage() {
+        return lcdMessage;
+    }
+
+    public void setLcdMessage(LcdMessage lcdMessage) {
+        this.lcdMessage = lcdMessage;
+    }
+
+    public @Nullable Long getLastRing() {
+        return lastRing;
+    }
+
+    public void setLastRing(Long lastRing) {
+        this.lastRing = lastRing;
+    }
+
     @SuppressWarnings("null")
     @NonNullByDefault
     class RecordingSettings {
@@ -425,6 +474,44 @@ public class UniFiProtectCamera {
 
         public void setMode(String mode) {
             this.mode = mode;
+        }
+    }
+
+    @SuppressWarnings("null")
+    @NonNullByDefault
+    // "lcdMessage":{"type":"LEAVE_PACKAGE_AT_DOOR","text":"LEAVE PACKAGE AT DOOR","resetAt":null}
+    public class LcdMessage {
+        private @Nullable String type;
+        private @Nullable String text;
+        private @Nullable Long resetAt;
+
+        @Override
+        public String toString() {
+            return "LcdMessage [type=" + type + ", text=" + text + ", resetAt=" + resetAt + "]";
+        }
+
+        public @Nullable String getType() {
+            return type;
+        }
+
+        public void setType(String type) {
+            this.type = type;
+        }
+
+        public @Nullable String getText() {
+            return text;
+        }
+
+        public void setText(String text) {
+            this.text = text;
+        }
+
+        public @Nullable Long getResetAt() {
+            return resetAt;
+        }
+
+        public void setResetAt(Long resetAt) {
+            this.resetAt = resetAt;
         }
     }
 
@@ -476,6 +563,21 @@ public class UniFiProtectCamera {
 
     @SuppressWarnings("null")
     @NonNullByDefault
+    // smartDetectSettings":{"objectTypes":["person","vehicle"]}}
+    class SmartDetectSettings {
+        private String @Nullable [] objectTypes;
+
+        public String @Nullable [] getObjectTypes() {
+            return objectTypes;
+        }
+
+        public void setObjectTypes(String @Nullable [] objectTypes) {
+            this.objectTypes = objectTypes;
+        }
+    }
+
+    @SuppressWarnings("null")
+    @NonNullByDefault
     class LedSettings {
         private @Nullable Boolean isEnabled;
 
@@ -501,5 +603,41 @@ public class UniFiProtectCamera {
         public void setBlinkRate(Integer blinkRate) {
             this.blinkRate = blinkRate;
         }
+    }
+
+    public @Nullable String getRingThumbnailUrl() {
+        return ringThumbnailUrl;
+    }
+
+    public void setRingThumbnailUrl(String ringThumbnailUrl) {
+        this.ringThumbnailUrl = ringThumbnailUrl;
+    }
+
+    public @Nullable String getRingHeatmapUrl() {
+        return ringHeatmapUrl;
+    }
+
+    public void setRingHeatmapUrl(String ringHeatmapUrl) {
+        this.ringHeatmapUrl = ringHeatmapUrl;
+    }
+
+    public void setSmartDetectSettings(SmartDetectSettings smartDetectSettings) {
+        this.smartDetectSettings = smartDetectSettings;
+    }
+
+    public @Nullable String getSmartDetectThumbnailUrl() {
+        return smartDetectThumbnailUrl;
+    }
+
+    public void setSmartDetectThumbnailUrl(String smartDetectThumbnailUrl) {
+        this.smartDetectThumbnailUrl = smartDetectThumbnailUrl;
+    }
+
+    public @Nullable String getSmartDetectHeatmapUrl() {
+        return smartDetectHeatmapUrl;
+    }
+
+    public void setSmartDetectHeatmapUrl(String smartDetectHeatmapUrl) {
+        this.smartDetectHeatmapUrl = smartDetectHeatmapUrl;
     }
 }

@@ -30,8 +30,6 @@ import org.openhab.binding.unifiprotect.internal.model.json.UniFiProtectJsonPars
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-
 /**
  * The {@link UniFiProtectEventWebSocket}
  *
@@ -45,13 +43,13 @@ public class UniFiProtectEventWebSocket {
     private final CountDownLatch closeLatch;
     @SuppressWarnings("unused")
     private Session session;
-    private final Gson gson;
+    private final UniFiProtectJsonParser uniFiProtectJsonParser;
     private final Logger logger = LoggerFactory.getLogger(UniFiProtectEventWebSocket.class);
     private final PropertyChangeSupport propertyChangeSupport;
 
-    public UniFiProtectEventWebSocket(Gson gson) {
+    public UniFiProtectEventWebSocket(UniFiProtectJsonParser uniFiProtectJsonParser) {
         this.closeLatch = new CountDownLatch(1);
-        this.gson = gson;
+        this.uniFiProtectJsonParser = uniFiProtectJsonParser;
         propertyChangeSupport = new PropertyChangeSupport(this);
     }
 
@@ -90,6 +88,7 @@ public class UniFiProtectEventWebSocket {
         final byte[] bytes = new byte[frame.getPayloadLength()];
         frame.getPayload().get(bytes);
         final UniFiProtectFrame upFrame = new UniFiProtectFrame(bytes);
+
         if (upFrame.getType() == UniFiProtectFrameType.ACTION
                 && upFrame.getFormat() == UniFiProtectPayloadFormat.JSON_OBJECT) {
             String jsonContent = null;
@@ -99,12 +98,13 @@ public class UniFiProtectEventWebSocket {
                 logger.error("Failed to decode json as UTF-8", e);
                 return;
             }
-            UniFiProtectAction action = UniFiProtectJsonParser.getActionFromJson(gson, jsonContent);
+            logger.debug("Frame: {}", jsonContent);
+            UniFiProtectAction action = uniFiProtectJsonParser.getActionFromJson(jsonContent);
             if (action == null) {
                 return;
             }
             if (action.getModelKey().equals(UniFiProtectAction.MODEL_KEY_EVENT)) {
-                logger.debug("Got: {} and event action: {}", action.getAction(), upFrame);
+                logger.debug("ModelKeyEvent Got: {} and event action: {}", action.getAction(), upFrame);
                 if (action.getAction().equals(UniFiProtectAction.ACTION_ADD)) {
                     propertyChangeSupport.firePropertyChange(UniFiProtectAction.PROPERTY_EVENT_ACTION_ADD, null,
                             action);
@@ -112,6 +112,9 @@ public class UniFiProtectEventWebSocket {
                     propertyChangeSupport.firePropertyChange(UniFiProtectAction.PROPERTY_EVENT_ACTION_UPDATE, null,
                             action);
                 }
+            } else if (action.getModelKey().equals(UniFiProtectAction.MODEL_KEY_CAMERA)) {
+                logger.debug("ModelKeyCamera Got: {} and event action: {}", action.getAction(), upFrame);
+
             }
         }
     }

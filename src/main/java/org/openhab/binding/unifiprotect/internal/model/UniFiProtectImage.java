@@ -28,14 +28,13 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class UniFiProtectImage {
     private final Logger logger = LoggerFactory.getLogger(UniFiProtectImage.class);
+    private final String mimeType;
+    private final File file;
 
     @Override
     public String toString() {
-        return "UniFiProtectImage [mimeType=" + mimeType + ", file=" + file + "]";
+        return "UniFiProtectImage [logger=" + logger + ", mimeType=" + mimeType + ", file=" + file + "]";
     }
-
-    private final String mimeType;
-    private final File file;
 
     public UniFiProtectImage(String mimeType, File file) {
         this.mimeType = mimeType;

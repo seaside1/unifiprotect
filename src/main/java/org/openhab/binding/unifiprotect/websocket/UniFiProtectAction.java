@@ -25,6 +25,7 @@ public class UniFiProtectAction {
     public static final String PROPERTY_EVENT_ACTION_ADD = "EVENT_ACTION_ADD";
     public static final String PROPERTY_SOCKET_CLOSED = "SOCKET_CLOSED";
     public static final String PROPERTY_SOCKET_CONNECTED = "SOCKET_CONNECTED";
+    public static final String MODEL_KEY_CAMERA = "camera";
 
     private String action;
     private String modelKey;

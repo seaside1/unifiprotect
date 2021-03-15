@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.unifiprotect.internal;
+package org.openhab.binding.unifiprotect.internal.thing;
 
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -18,6 +18,7 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.unifiprotect.internal.UniFiProtectDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -46,22 +47,27 @@ public class UniFiProtectThingHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        logger.debug("Creating thing supports: {}", UniFiProtectNvrThingHandler.supportsThingType(thingTypeUID));
         if (UniFiProtectNvrThingHandler.supportsThingType(thingTypeUID)) {
             UniFiProtectNvrThingHandler uniFiProtectNvrThingHandler = new UniFiProtectNvrThingHandler((Bridge) thing);
             registerDeviceDiscoveryService(uniFiProtectNvrThingHandler);
             return uniFiProtectNvrThingHandler;
-        } else if (UniFiProtectCameraThingHandler.supportsThingType(thingTypeUID)) {
-            return new UniFiProtectCameraThingHandler(thing);
+        } else if (UniFiProtectG4DoorbellThingHandler.supportsThingType(thingTypeUID)) {
+            return new UniFiProtectG4DoorbellThingHandler(thing);
+        } else if (UniFiProtectG4CameraThingHandler.supportsThingType(thingTypeUID)) {
+            return new UniFiProtectG4CameraThingHandler(thing);
+        } else if (UniFiProtectG3CameraThingHandler.supportsThingType(thingTypeUID)) {
+            return new UniFiProtectG3CameraThingHandler(thing);
         }
-        logger.debug("Failed to creat thing returning null");
+        logger.error("Failed to creat thing returning null");
         return null;
     }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return UniFiProtectNvrThingHandler.supportsThingType(thingTypeUID)
-                || UniFiProtectCameraThingHandler.supportsThingType(thingTypeUID);
+                || UniFiProtectG4CameraThingHandler.supportsThingType(thingTypeUID)
+                || UniFiProtectG4DoorbellThingHandler.supportsThingType(thingTypeUID)
+                || UniFiProtectG3CameraThingHandler.supportsThingType(thingTypeUID);
     }
 
     private synchronized void registerDeviceDiscoveryService(UniFiProtectNvrThingHandler handler) {
