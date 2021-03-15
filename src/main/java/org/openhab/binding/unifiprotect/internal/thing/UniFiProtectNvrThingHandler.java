@@ -435,11 +435,20 @@ public class UniFiProtectNvrThingHandler extends BaseBridgeHandler implements Pr
         UniFiProtectAction action = (UniFiProtectAction) evt.getNewValue();
         UniFiProtectEvent event = getNvr().getEventFromId(action.getId());
         if (event == null) {
-            // Sometimes event is asked for too quickly
+            // Sometimes event is asked for too quickly, refresh again
+            getNvr().refreshEvents();
             event = getNvr().getEventFromId(action.getId());
+            // If we are still not successfully, a final attempt refreshing everything
             if (event == null) {
-                logger.error("Failed to get event, ignoring: {}", action);
-                return;
+                getNvr().refreshEvents();
+                refreshCameras();
+                getNvr().refreshProtect();
+                event = getNvr().getEventFromId(action.getId());
+                if (event == null) {
+                    // call it a day
+                    logger.error("Failed to get event, ignoring: {}", action);
+                    return;
+                }
             }
         }
         final String type = event.getType();
