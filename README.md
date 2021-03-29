@@ -432,6 +432,9 @@ Get jar-file from repo. Place the jar-file in the openhab-addons folder
 https://github.com/seaside1/unifiprotect
 
 ## Changelog
+  ### ALPHA12
+  * Fixed bug in heatmap dl
+  * Removed some logging
   ### ALPHA11
   * Added G3 Camera
   * Added G4 Camera
