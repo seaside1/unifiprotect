@@ -64,7 +64,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class UniFiProtectNvr {
 
-    private static final int IMAGE_MIN_SIZE = 800;
+    private static final int IMAGE_MIN_SIZE = 300;
     private volatile String token = "";
     private volatile @Nullable UniFiProtectNvrDevice nvrDevice;
     private volatile @Nullable UniFiProtectNvrUser nvrUser;
@@ -371,7 +371,7 @@ public class UniFiProtectNvr {
         }
         if (UniFiProtectUtil.requestHasContentOfSize(request, IMAGE_MIN_SIZE)) {
             byte[] data = request.getResponse().getContent();
-            logger.debug("Content size for thumbnail request: {}", data.length);
+            // logger.debug("Content size for thumbnail request: {}", data.length);
             final String cameraId = camera.getId();
             if (cameraId == null) {
                 logger.error("CameraId is null, cannot download thumbnail: {}", camera);
@@ -441,7 +441,14 @@ public class UniFiProtectNvr {
                         heatmapImage.getData().length);
             }
         } else {
-            logger.warn("Heatmap request resulted in a 0 size image:");
+            byte[] data = request.getResponse().getContent();
+            logger.warn("Heatmap request resulted in a error size image");
+            if (data != null) {
+                try {
+                    logger.debug("Heatmap data: {} {}", data.length, new String(data));
+                } catch (Exception x) {
+                }
+            }
         }
         return heatmapImage;
     }

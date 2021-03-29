@@ -465,7 +465,6 @@ public class UniFiProtectNvrThingHandler extends BaseBridgeHandler implements Pr
         }
 
         if (isAddEvent(evt)) {
-            logger.debug("Got Property Event Add: {}", evt.getPropertyName());
             if (type.equals(UniFiProtectBindingConstants.EVENT_TYPE_RING)) {
                 logger.debug("Handling event ring");
                 if (cameraHandler instanceof UniFiProtectG4DoorbellThingHandler) {
@@ -489,7 +488,6 @@ public class UniFiProtectNvrThingHandler extends BaseBridgeHandler implements Pr
             logger.debug("Got EventActionAdd action: {} event: {}", action, event);
             return;
         } else if (isUpdEvent(evt)) {
-            logger.debug("Got EventActionUpd action: {} event: {}", action, event);
             if (type.equals(UniFiProtectBindingConstants.EVENT_TYPE_MOTION)) {
                 logger.debug("Handling event motion");
                 cameraHandler.handleThumbnailEvent(UniFiProtectBindingConstants.MOTION_EVENT_WAIT_TIME, eventId);
