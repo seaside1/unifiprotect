@@ -231,8 +231,11 @@ public class UniFiProtectG4CameraThingHandler extends UniFiProtectBaseThingHandl
                 break;
             case SMART_DETECT_LAST:
                 if (smartDetectLast != null) {
-                    final Instant detectedLast = smartDetectLast;
-                    state = new DateTimeType(ZonedDateTime.ofInstant(detectedLast, ZoneId.systemDefault()));
+                    Instant detectedLast = smartDetectLast;
+                    // Ugly workaround for Nonull in interface
+                    if (detectedLast != null) {
+                        state = new DateTimeType(ZonedDateTime.ofInstant(detectedLast, ZoneId.systemDefault()));
+                    }
                 }
                 break;
             case SMART_DETECT_SCORE:
@@ -300,7 +303,6 @@ public class UniFiProtectG4CameraThingHandler extends UniFiProtectBaseThingHandl
     }
 
     public synchronized void handleSmartDetectAddEvent(String eventId) {
-        logger.info("Handle Smart Detect AddEvent: {}", eventId);
         isSmartMotionDetected = true;
         refreshSmartDetection();
         scehduleSmatDetectionToBeTurnedOff();
@@ -308,12 +310,10 @@ public class UniFiProtectG4CameraThingHandler extends UniFiProtectBaseThingHandl
     }
 
     private synchronized void refreshSmartDetection() {
-        logger.info("-- Refresh smart Detection");
         Channel smartDetectionChannel = getThing().getChannel(UniFiProtectG4Channel.SMART_DETECT_MOTION.name());
         UniFiProtectCamera camera = getCamera();
         UniFiProtectNvr nvr = getNvr();
         if (camera != null && smartDetectionChannel != null && nvr != null) {
-            logger.info("refreshing doorbel channel");
             refreshG4CameraChannel(camera, smartDetectionChannel.getUID(), nvr);
         }
     }
@@ -335,7 +335,6 @@ public class UniFiProtectG4CameraThingHandler extends UniFiProtectBaseThingHandl
     }
 
     public synchronized void handleSmartDetectUpdEvent(String eventId) {
-        logger.info("Handle Smart Detect UpdEvent: {}", eventId);
         UniFiProtectEvent event = getNvr().getEventFromId(eventId);
         if (event != null) {
             smartDetectScore = event.getScore();

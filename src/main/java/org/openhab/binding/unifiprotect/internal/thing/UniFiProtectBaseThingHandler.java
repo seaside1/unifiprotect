@@ -407,7 +407,9 @@ public class UniFiProtectBaseThingHandler extends BaseThingHandler {
     private synchronized void handleHeatmap(UniFiProtectCamera camera, UniFiProtectEvent event) {
         String id = camera != null && camera.getId() != null ? camera.getId() : null;
         UniFiProtectImage heatmap = getNvr().getHeatmap(camera, event);
-
+        if (heatmap == null) { // retry
+            heatmap = getNvr().getHeatmap(camera, event);
+        }
         final String type = event.getType();
         if (heatmap == null || type == null) {
             logger.error("Failed to set heatmap, event type not present: {} or invalid heatmap: {}", event, heatmap);
@@ -445,9 +447,13 @@ public class UniFiProtectBaseThingHandler extends BaseThingHandler {
     public synchronized void handleEventDownload(String type, String eventId, UniFiProtectCamera cam) {
         UniFiProtectEvent event = getNvr().getEventFromId(eventId);
         if (event == null) {
-            logger.warn("Failed to find eventId: {} Events in cache:", eventId);
-            Arrays.stream(getNvr().getEvents()).forEach(ev -> logger.debug("Event in cache: {}", ev));
-            return;
+            getNvr().refreshEvents();
+            event = getNvr().getEventFromId(eventId);
+            if (event == null) {
+                logger.warn("Failed to find event fo eventId: {} cacheSize: {}", eventId, getNvr().getEvents().length);
+                Arrays.stream(getNvr().getEvents()).forEach(ev -> logger.debug("Event in cache: {}", ev));
+                return;
+            }
         }
 
         logger.debug("Handling event Download by getting event for camera: {} eventid: {} event: {}", cam.getName(),
@@ -474,6 +480,7 @@ public class UniFiProtectBaseThingHandler extends BaseThingHandler {
             Supplier<CompletableFuture<UniFiProtectCamera>> asyncTask = () -> CompletableFuture.completedFuture(camera);
             future = UniFiProtectUtil.scheduleAsync(scheduler, asyncTask, delay, TimeUnit.SECONDS);
             future.thenAccept(cam -> {
+                getNvr().refreshEvents();
                 handleEventDownload(HEAT_DL, eventId, camera);
             });
             futures.put(cameraId + eventId + HEAT_DL, future);

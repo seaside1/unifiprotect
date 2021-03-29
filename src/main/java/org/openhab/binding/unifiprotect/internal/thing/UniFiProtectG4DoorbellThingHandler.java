@@ -316,12 +316,10 @@ public class UniFiProtectG4DoorbellThingHandler extends UniFiProtectG4CameraThin
     }
 
     private synchronized void refreshIsRinging() {
-        logger.info("-- Refresh ringing");
         Channel ringChannel = getThing().getChannel(UniFiProtectG4DoorbellChannel.IS_RINGING.name());
         UniFiProtectCamera camera = getCamera();
         UniFiProtectNvr nvr = getNvr();
         if (camera != null && ringChannel != null && nvr != null) {
-            logger.info("refreshing doorbel channel");
             refreshG4DoorbellChannel(camera, ringChannel.getUID(), nvr);
         }
     }
