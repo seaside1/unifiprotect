@@ -596,7 +596,7 @@ public class UniFiProtectBaseThingHandler extends BaseThingHandler {
         UniFiProtectCamera camera = getCamera();
         String cameraId = camera.getId();
         if (cameraId == null) {
-            logger.error("Failed to ring event, camera null");
+            logger.error("Failed schedule motion  event off, camera null");
             return;
         }
         Supplier<CompletableFuture<UniFiProtectCamera>> asyncTask = () -> CompletableFuture.completedFuture(camera);
@@ -609,15 +609,20 @@ public class UniFiProtectBaseThingHandler extends BaseThingHandler {
     }
 
     private synchronized void refreshIsMotionDetected() {
-        Channel motionDetectionChannel = getThing().getChannel(UniFiProtectCameraChannel.IS_MOTION_DETECTED.name());
+        Channel motionDetectionChannel = getThing()
+                .getChannel(UniFiProtectCameraChannel.IS_MOTION_DETECTED.toChannelId());
         UniFiProtectCamera camera = getCamera();
         UniFiProtectNvr nvr = getNvr();
         if (camera != null && motionDetectionChannel != null && nvr != null) {
             refreshChannel(camera, motionDetectionChannel.getUID(), nvr);
+        } else {
+            logger.error("Failed to refresh due to null element refreshChannel: {}",
+                    UniFiProtectCameraChannel.IS_MOTION_DETECTED.toChannelId());
         }
     }
 
     public synchronized void handleMotionAddEvent(String eventId) {
+        logger.debug("Motion detected camId: {} name: {}", getCamera().getId(), getCamera().getName());
         motionDetected = true;
         refreshIsMotionDetected();
         scehduleMotionEventToBeTurnedOff();

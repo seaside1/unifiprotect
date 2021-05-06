@@ -78,4 +78,8 @@ public enum UniFiProtectCameraChannel {
         }
         return channel;
     }
+
+    public String toChannelId() {
+        return this.name().replaceAll(UNDERSCORE, DASH).toLowerCase();
+    }
 }
