@@ -432,6 +432,8 @@ Get jar-file from repo. Place the jar-file in the openhab-addons folder
 https://github.com/seaside1/unifiprotect
 
 ## Changelog
+  ### ALPHA13
+  * Fixed motion detection channel bug
   ### ALPHA12
   * Fixed bug in heatmap dl
   * Removed some logging
