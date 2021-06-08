@@ -33,7 +33,9 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class UniFiProtectDiscoveryService extends AbstractDiscoveryService {
 
-    private static final String UNIFI_PROTECT_VENDOR = "UniFi Protect";
+    private static final String UNIFI_PROTECT_VENDOR = "Ubiquiti UniFi Protect";
+    private static final String UNIFI_PROTECT = "UniFi Protect: ";
+
     private static final int TIMEOUT = 30;
     private UniFiProtectNvrThingHandler bridge;
 
@@ -80,8 +82,9 @@ public class UniFiProtectDiscoveryService extends AbstractDiscoveryService {
         for (UniFiProtectCamera camera : bridge.getNvr().getCameraInsightCache().getCameras()) {
             ThingUID thingUID = new ThingUID(getThingType(camera), bridgeUid, camera.getMac());
 
-            DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withLabel(camera.getName())
-                    .withBridge(bridgeUid).withProperty(Thing.PROPERTY_VENDOR, UNIFI_PROTECT_VENDOR)
+            DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
+                    .withLabel(UNIFI_PROTECT.concat(camera.getName())).withBridge(bridgeUid)
+                    .withProperty(Thing.PROPERTY_VENDOR, UNIFI_PROTECT_VENDOR)
                     .withProperty(UniFiProtectBindingConstants.CAMERA_PROP_HOST, camera.getHost())
                     .withProperty(UniFiProtectBindingConstants.CAMERA_PROP_MAC, camera.getMac())
                     .withProperty(UniFiProtectBindingConstants.CAMERA_PROP_NAME, camera.getName()).build();

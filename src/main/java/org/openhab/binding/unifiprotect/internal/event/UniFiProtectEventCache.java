@@ -39,35 +39,57 @@ public class UniFiProtectEventCache {
 
     public void put(UniFiProtectEvent event) {
         logger.debug("Adding event to cache: {}", event);
-        CameraEventsObject cameraEventsObject = cameraToEvents.get(generateCameraKey(event));
+        final String camera = event.getCamera();
+        if (camera == null) {
+            logger.debug("Ignoring non camera event: {}", event);
+            return;
+        }
+        CameraEventsObject cameraEventsObject = cameraToEvents.get(generateCameraKey(camera));
         if (cameraEventsObject == null) {
             cameraEventsObject = new CameraEventsObject();
-            cameraToEvents.put(generateCameraKey(event), cameraEventsObject);
+            cameraToEvents.put(generateCameraKey(camera), cameraEventsObject);
         }
-        if (event.getType().equals(UniFiProtectBindingConstants.EVENT_TYPE_MOTION)) {
+        final String eventTypeString = event.getType();
+        if (eventTypeString == null) {
+            logger.debug("Ignoring event since type is null: {}", event);
+            return;
+        }
+        final String idString = event.getId();
+        if (idString == null) {
+            logger.debug("Ignoring event since id is null: {}", event);
+            return;
+        }
+
+        if (eventTypeString.equals(UniFiProtectBindingConstants.EVENT_TYPE_MOTION)) {
             UniFiProtectEvent oldEvent = cameraEventsObject.getLastMotionEvent();
             if (oldEvent != null) {
                 logger.debug("Removing id {} camera: {}", oldEvent.getId(), oldEvent.getCamera());
-                eventIdToEvent.remove(generateEventKey(oldEvent));
+                final String oldId = oldEvent.getId();
+                if (oldId != null) {
+                    eventIdToEvent.remove(generateEventKey(oldId));
+                }
             }
             cameraEventsObject.setLastMotionEvent(event);
-        } else if (event.getType().equals(UniFiProtectBindingConstants.EVENT_TYPE_RING)) {
+        } else if (eventTypeString.equals(UniFiProtectBindingConstants.EVENT_TYPE_RING)) {
             UniFiProtectEvent oldEvent = cameraEventsObject.getLastRingEvent();
             if (oldEvent != null) {
                 logger.debug("Removing id {} camera: {}", oldEvent.getId(), oldEvent.getCamera());
-                eventIdToEvent.remove(generateEventKey(oldEvent));
+                final String oldId = oldEvent.getId();
+                if (oldId != null) {
+                    eventIdToEvent.remove(generateEventKey(oldId));
+                }
             }
             cameraEventsObject.setLastRingEvent(event);
         }
-        eventIdToEvent.put(generateEventKey(event), event);
+        eventIdToEvent.put(generateEventKey(idString), event);
     }
 
-    private String generateEventKey(UniFiProtectEvent event) {
-        return event.getId().toLowerCase();
+    private String generateEventKey(String eventIdString) {
+        return eventIdString.toLowerCase();
     }
 
-    private String generateCameraKey(UniFiProtectEvent event) {
-        return event.getCamera().toLowerCase();
+    private String generateCameraKey(String cameraString) {
+        return cameraString.toLowerCase();
     }
 
     public @Nullable UniFiProtectEvent getLatestMotionEvent(String cameraId) {
