@@ -385,26 +385,9 @@ public class UniFiProtectNvrDevice {
                 : null;
     }
 
-    // public String getHardDrive0Name() {
-    // return hardDrive0isPresent() ? systemInfo.getStorage().getDevices()[0].getModel() :
-    // UniFiProtectBindingConstants.EMPTY_STRING;
-    // }
-    //
-    // public String getHardDrive0Health() {
-    // return hardDrive0isPresent() ? systemInfo.getHardDrives()[0].getHealth() :
-    // UniFiProtectBindingConstants.EMPTY_STRING;
-    // }
-    //
-    // public String getHardDrive0Status() {
-    // if (hardDrive0isPresent()) {
-    // return systemInfo.getStorage().getDevices()[0].getHealthy() ? "Healthy" : "Not Healthy";
-    // }
-    // return UniFiProtectBindingConstants.EMPTY_STRING;
-    // }
-    //
     @SuppressWarnings("null")
     private boolean device0isPresent() {
-        return systemInfo != null && systemInfo.getStorage().getDevices() != null
+        return systemInfo != null && systemInfo.getStorage() != null && systemInfo.getStorage().getDevices() != null
                 && systemInfo.getStorage().getDevices()[0] != null;
     }
 
