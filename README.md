@@ -432,6 +432,8 @@ Get jar-file from repo. Place the jar-file in the openhab-addons folder
 https://github.com/seaside1/unifiprotect
 
 ## Changelog
+  ### ALPHA14
+  * Fixed bug for UniFi Protect version 1.19.0 beta 10 where storage info is no longer working.
   ### ALPHA13
   * Fixed motion detection channel bug
   ### ALPHA12
