@@ -432,6 +432,8 @@ Get jar-file from repo. Place the jar-file in the openhab-addons folder
 https://github.com/seaside1/unifiprotect
 
 ## Changelog
+  ### ALPHA15
+  * Storage info updated again
   ### ALPHA14
   * Fixed bug for UniFi Protect version 1.19.0 beta 10 where storage info is no longer working.
   ### ALPHA13
