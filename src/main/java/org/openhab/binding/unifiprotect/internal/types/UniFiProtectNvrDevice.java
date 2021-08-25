@@ -388,7 +388,7 @@ public class UniFiProtectNvrDevice {
     @SuppressWarnings("null")
     private boolean device0isPresent() {
         return systemInfo != null && systemInfo.getStorage() != null && systemInfo.getStorage().getDevices() != null
-                && systemInfo.getStorage().getDevices()[0] != null;
+                && systemInfo.getStorage().getDevices().length > 0;
     }
 
     public @Nullable Long getDevice0Size() {
