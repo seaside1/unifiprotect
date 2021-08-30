@@ -33,6 +33,8 @@ import org.openhab.binding.unifiprotect.internal.model.UniFiProtectNvrChannel;
 import org.openhab.binding.unifiprotect.internal.model.UniFiProtectStatus;
 import org.openhab.binding.unifiprotect.internal.model.UniFiProtectStatus.SendStatus;
 import org.openhab.binding.unifiprotect.internal.model.json.UniFiProtectEvent;
+import org.openhab.binding.unifiprotect.internal.types.UniFiProtectNvrDevice;
+import org.openhab.binding.unifiprotect.internal.types.UniFiProtectNvrUser;
 import org.openhab.binding.unifiprotect.websocket.UniFiProtectAction;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -234,141 +236,148 @@ public class UniFiProtectNvrThingHandler extends BaseBridgeHandler implements Pr
         String channelID = channelUID.getIdWithoutGroup();
         State state = UnDefType.NULL;
         logger.debug("Refresh Channel: {}", channelID);
-        UniFiProtectNvrChannel channel = UniFiProtectNvrChannel.fromString(channelID);
-        if (nvr == null || nvr.getNvrDevice() == null) {
+        final UniFiProtectNvrChannel channel = UniFiProtectNvrChannel.fromString(channelID);
+        final UniFiProtectNvrDevice nvrDevice = nvr != null ? nvr.getNvrDevice() : null;
+        final UniFiProtectNvrUser nvrUser = nvr != null ? nvr.getNvrUser() : null;
+        if (nvrDevice == null) {
+            logger.debug("Nvr or NvrDevice is null not refreshing");
             return;
         }
         switch (channel) {
             case ENABLE_AUTOMATIC_BACKUPS:
-                if (nvr.getNvrDevice().getEnableAutomaticBackups() != null) {
-                    state = OnOffType.from(nvr.getNvrDevice().getEnableAutomaticBackups());
+                if (nvrDevice.getEnableAutomaticBackups() != null) {
+                    state = OnOffType.from(nvrDevice.getEnableAutomaticBackups());
                 }
                 break;
             case FIRMWARE_VERSION:
-                if (UniFiProtectUtil.isNotBlank(nvr.getNvrDevice().getFirmwareVersion())) {
-                    state = StringType.valueOf(nvr.getNvrDevice().getFirmwareVersion());
+                if (UniFiProtectUtil.isNotBlank(nvrDevice.getFirmwareVersion())) {
+                    state = StringType.valueOf(nvrDevice.getFirmwareVersion());
                 }
                 break;
             case HOST:
-                if (UniFiProtectUtil.isNotBlank(nvr.getNvrDevice().getHost())) {
-                    state = StringType.valueOf(nvr.getNvrDevice().getHost());
+                if (UniFiProtectUtil.isNotBlank(nvrDevice.getHost())) {
+                    state = StringType.valueOf(nvrDevice.getHost());
                 }
                 break;
             case HOSTS:
-                logger.debug("HOSTS: {}", nvr.getNvrDevice().getHosts());
-                if (UniFiProtectUtil.isNotBlank(nvr.getNvrDevice().getHosts())) {
-                    state = StringType.valueOf(nvr.getNvrDevice().getHosts());
+                logger.debug("HOSTS: {}", nvrDevice.getHosts());
+                if (UniFiProtectUtil.isNotBlank(nvrDevice.getHosts())) {
+                    state = StringType.valueOf(nvrDevice.getHosts());
                 }
                 break;
             case IS_CONNECTED_TO_CLOUD:
-                if (nvr.getNvrDevice().getIsConnectedToCloud() != null) {
-                    state = OnOffType.from(nvr.getNvrDevice().getIsConnectedToCloud());
+                if (nvrDevice.getIsConnectedToCloud() != null) {
+                    state = OnOffType.from(nvrDevice.getIsConnectedToCloud());
                 }
                 break;
             case LAST_SEEN:
-                if (nvr.getNvrDevice().getLastSeen() != null) {
-                    state = new DateTimeType(ZonedDateTime
-                            .ofInstant(Instant.ofEpochMilli(nvr.getNvrDevice().getLastSeen()), ZoneId.systemDefault()));
+                if (nvrDevice.getLastSeen() != null) {
+                    state = new DateTimeType(ZonedDateTime.ofInstant(Instant.ofEpochMilli(nvrDevice.getLastSeen()),
+                            ZoneId.systemDefault()));
                 }
                 break;
             case LAST_UPDATED_AT:
-                if (nvr.getNvrDevice().getLastUpdateAt() != null) {
-                    state = new DateTimeType(ZonedDateTime.ofInstant(
-                            Instant.ofEpochMilli(nvr.getNvrDevice().getLastUpdateAt()), ZoneId.systemDefault()));
+                if (nvrDevice.getLastUpdateAt() != null) {
+                    state = new DateTimeType(ZonedDateTime.ofInstant(Instant.ofEpochMilli(nvrDevice.getLastUpdateAt()),
+                            ZoneId.systemDefault()));
                 }
                 break;
             case NAME:
-                if (UniFiProtectUtil.isNotBlank(nvr.getNvrDevice().getName())) {
-                    state = StringType.valueOf(nvr.getNvrDevice().getName());
+                if (UniFiProtectUtil.isNotBlank(nvrDevice.getName())) {
+                    state = StringType.valueOf(nvrDevice.getName());
                 }
                 break;
             case RECORDING_RETENTION_DURATION:
-                if (nvr.getNvrDevice().getRecordingRetentionDurationMs() != null) {
-                    state = new DecimalType(nvr.getNvrDevice().getRecordingRetentionDurationMs());
+                if (nvrDevice.getRecordingRetentionDurationMs() != null) {
+                    state = new DecimalType(nvrDevice.getRecordingRetentionDurationMs());
                 }
                 break;
             case UPTIME:
-                if (nvr.getNvrDevice().getUptime() != null) {
-                    state = new DecimalType(nvr.getNvrDevice().getUptime());
+                if (nvrDevice.getUptime() != null) {
+                    state = new DecimalType(nvrDevice.getUptime());
                 }
                 break;
             case VERSION:
-                if (UniFiProtectUtil.isNotBlank(nvr.getNvrDevice().getVersion())) {
-                    state = StringType.valueOf(nvr.getNvrDevice().getVersion());
+                if (UniFiProtectUtil.isNotBlank(nvrDevice.getVersion())) {
+                    state = StringType.valueOf(nvrDevice.getVersion());
                 }
                 break;
             case HOST_SHORT_NAME:
-                if (UniFiProtectUtil.isNotBlank(nvr.getNvrDevice().getHostShortname())) {
-                    state = StringType.valueOf(nvr.getNvrDevice().getHostShortname());
+                if (UniFiProtectUtil.isNotBlank(nvrDevice.getHostShortname())) {
+                    state = StringType.valueOf(nvrDevice.getHostShortname());
                 }
                 break;
             case ALERTS:
-                logger.debug("Alert NVR: {}:", nvr.getNvrUser().getEnableNotifications());
-                Boolean enableNotifications = nvr.getNvrUser().getEnableNotifications();
+                if (nvrUser == null) {
+                    logger.debug("Not refreshing channel ALERTS, nvrUser is null");
+                    return;
+                }
+                logger.debug("Alert NVR: {}:", nvrUser.getEnableNotifications());
+                Boolean enableNotifications = nvrUser.getEnableNotifications();
                 if (enableNotifications != null) {
                     state = OnOffType.from(enableNotifications.booleanValue());
                     logger.debug("Alert NVR val: {}:", enableNotifications.booleanValue());
                 }
                 break;
             case CPU_AVERAGE_LOAD:
-                if (nvr.getNvrDevice().getCpuAverageLoad() != null) {
-                    state = new DecimalType(nvr.getNvrDevice().getCpuAverageLoad());
+                if (nvrDevice.getCpuAverageLoad() != null) {
+                    state = new DecimalType(nvrDevice.getCpuAverageLoad());
                 }
                 break;
             case CPU_TEMPERATURE:
-                if (nvr.getNvrDevice().getCpuTemperature() != null) {
-                    state = new DecimalType(nvr.getNvrDevice().getCpuTemperature());
+                if (nvrDevice.getCpuTemperature() != null) {
+                    state = new DecimalType(nvrDevice.getCpuTemperature());
                 }
                 break;
             case DEVICE_0_HEALTHY:
-                if (nvr.getNvrDevice().getDevice0Healthy() != null) {
-                    state = OnOffType.from(nvr.getNvrDevice().getDevice0Healthy());
+                if (nvrDevice.getDevice0Healthy() != null) {
+                    state = OnOffType.from(nvrDevice.getDevice0Healthy());
                 }
                 break;
             case DEVICE_0_MODEL:
-                if (nvr.getNvrDevice().getDevice0Model() != null) {
-                    state = StringType.valueOf(nvr.getNvrDevice().getDevice0Model());
+                if (nvrDevice.getDevice0Model() != null) {
+                    state = StringType.valueOf(nvrDevice.getDevice0Model());
                 }
                 break;
             case DEVICE_0_SIZE:
-                if (nvr.getNvrDevice().getDevice0Size() != null) {
-                    state = new DecimalType(nvr.getNvrDevice().getDevice0Size());
+                if (nvrDevice.getDevice0Size() != null) {
+                    state = new DecimalType(nvrDevice.getDevice0Size());
                 }
                 break;
             case MEM_AVAILABLE:
-                if (nvr.getNvrDevice().getMemAvailable() != null) {
-                    state = new DecimalType(nvr.getNvrDevice().getMemAvailable());
+                if (nvrDevice.getMemAvailable() != null) {
+                    state = new DecimalType(nvrDevice.getMemAvailable());
                 }
                 break;
             case MEM_FREE:
-                if (nvr.getNvrDevice().getMemFree() != null) {
-                    state = new DecimalType(nvr.getNvrDevice().getMemFree());
+                if (nvrDevice.getMemFree() != null) {
+                    state = new DecimalType(nvrDevice.getMemFree());
                 }
                 break;
             case MEM_TOTAL:
-                if (nvr.getNvrDevice().getMemTotal() != null) {
-                    state = new DecimalType(nvr.getNvrDevice().getMemTotal());
+                if (nvrDevice.getMemTotal() != null) {
+                    state = new DecimalType(nvrDevice.getMemTotal());
                 }
                 break;
             case STORAGE_AVAILABLE:
-                if (nvr.getNvrDevice().getStorageAvailable() != null) {
-                    state = new DecimalType(nvr.getNvrDevice().getStorageAvailable());
+                if (nvrDevice.getStorageAvailable() != null) {
+                    state = new DecimalType(nvrDevice.getStorageAvailable());
                 }
                 break;
             case STORAGE_TOTAL_SIZE:
-                if (nvr.getNvrDevice().getStorageSize() != null) {
-                    state = new DecimalType(nvr.getNvrDevice().getStorageSize());
+                if (nvrDevice.getStorageSize() != null) {
+                    state = new DecimalType(nvrDevice.getStorageSize());
                 }
                 break;
             case STORAGE_TYPE:
-                String type = nvr.getNvrDevice().getStorageType();
+                String type = nvrDevice.getStorageType();
                 if (UniFiProtectUtil.isNotBlank(type)) {
-                    state = StringType.valueOf(nvr.getNvrDevice().getSystemInfo().getStorage().getType());
+                    state = StringType.valueOf(nvrDevice.getSystemInfo().getStorage().getType());
                 }
                 break;
             case STORAGE_USED:
-                if (nvr.getNvrDevice().getStorageUsed() != null) {
-                    state = new DecimalType(nvr.getNvrDevice().getStorageUsed());
+                if (nvrDevice.getStorageUsed() != null) {
+                    state = new DecimalType(nvrDevice.getStorageUsed());
                 }
                 break;
             default:
@@ -399,18 +408,20 @@ public class UniFiProtectNvrThingHandler extends BaseBridgeHandler implements Pr
     }
 
     @SuppressWarnings("null")
-    private void handleAlerts(UniFiProtectNvr nvr, ChannelUID channelUID, Command command) {
-        synchronized (this) {
-            if (!(command instanceof OnOffType)) {
-                logger.debug("Ignoring unsupported command = {} for channel = {} - valid commands types are: OnOffType",
-                        command, channelUID);
-                return;
-            }
-
-            logger.info("Turning alerts: {}  camera: {}, ip: {}", command == OnOffType.ON, nvr.getNvrDevice().getName(),
-                    nvr.getNvrDevice().getHost());
-            getNvr().turnOnOrOffAlerts(command == OnOffType.ON);
+    private synchronized void handleAlerts(UniFiProtectNvr nvr, ChannelUID channelUID, Command command) {
+        if (!(command instanceof OnOffType)) {
+            logger.debug("Ignoring unsupported command = {} for channel = {} - valid commands types are: OnOffType",
+                    command, channelUID);
+            return;
         }
+        final UniFiProtectNvrDevice nvrDevice = nvr != null ? nvr.getNvrDevice() : null;
+        if (nvrDevice == null) {
+            logger.debug("No nvr or nvrDevice is set ignoring handleAlerts");
+            return;
+        }
+        logger.info("Turning alerts: {}  camera: {}, ip: {}", command == OnOffType.ON, nvrDevice.getName(),
+                nvrDevice.getHost());
+        nvr.turnOnOrOffAlerts(command == OnOffType.ON);
     }
 
     public @Nullable UniFiProtectNvr getNvr() {
@@ -426,7 +437,6 @@ public class UniFiProtectNvrThingHandler extends BaseBridgeHandler implements Pr
         if (evt == null) {
             return;
         }
-
         if (!isAddEvent(evt) && !isUpdEvent(evt)) {
             logger.debug("Unhandled property evt is not update or add: {}", evt.getPropertyName());
             return;
