@@ -19,6 +19,7 @@ package org.openhab.binding.unifiprotect.websocket;
  */
 public class UniFiProtectAction {
     public static final String MODEL_KEY_EVENT = "event";
+
     public static final String ACTION_ADD = "add";
     public static final String ACTION_UPDATE = "update";
     public static final String PROPERTY_EVENT_ACTION_UPDATE = "EVENT_ACTION_UPDATE";

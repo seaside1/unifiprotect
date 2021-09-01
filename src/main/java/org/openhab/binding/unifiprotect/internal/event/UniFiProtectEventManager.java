@@ -15,9 +15,12 @@ package org.openhab.binding.unifiprotect.internal.event;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.unifiprotect.internal.UniFiProtectUtil;
 import org.openhab.binding.unifiprotect.internal.model.json.UniFiProtectJsonParser;
 import org.openhab.binding.unifiprotect.internal.thing.UniFiProtectNvrThingConfig;
 import org.openhab.binding.unifiprotect.websocket.UniFiProtectAction;
@@ -38,6 +41,7 @@ public class UniFiProtectEventManager implements PropertyChangeListener {
     private final UniFiProtectEventWsClient wsClient;
     private UniFiProtectEventWebSocket socket;
     private final PropertyChangeSupport propertyChangeSupport;
+    private volatile CompletableFuture<Void> reInitializationFuture = null;
 
     public UniFiProtectEventManager(HttpClient httpClient, UniFiProtectJsonParser uniFiProtectJsonParser,
             UniFiProtectNvrThingConfig config) {
@@ -49,18 +53,20 @@ public class UniFiProtectEventManager implements PropertyChangeListener {
         return socket != null;
     }
 
-    public void start() {
+    public synchronized boolean start() {
         try {
             logger.debug("Trying to start new websocket");
             socket = wsClient.start();
             socket.addPropertyChangeListener(this);
+            return true;
         } catch (Exception e) {
             logger.error("Failed to start event api websocket listener", e);
         }
+        return false;
     }
 
     @Override
-    public void propertyChange(@Nullable PropertyChangeEvent evt) {
+    public synchronized void propertyChange(@Nullable PropertyChangeEvent evt) {
         logger.debug("Property Changed: {}", evt.getPropertyName());
         if (evt.getPropertyName().equals(UniFiProtectAction.PROPERTY_EVENT_ACTION_ADD)) {
             UniFiProtectAction action = (UniFiProtectAction) evt.getNewValue();
@@ -77,9 +83,23 @@ public class UniFiProtectEventManager implements PropertyChangeListener {
         } else if (evt.getPropertyName().equals(UniFiProtectAction.PROPERTY_SOCKET_CLOSED)) {
             logger.debug("Socket disconnected!");
             socket.removePropertyChangeListener(this);
-            start();
+            reinit();
         } else {
             logger.debug("Unhandled Property change in UniFiProtectEventManager: {}", evt.getPropertyName());
+        }
+    }
+
+    private synchronized void reinit() {
+        if (reInitializationFuture == null) {
+            reInitializationFuture = UniFiProtectUtil.delayedExecution(10, TimeUnit.SECONDS);
+            reInitializationFuture.thenAccept(s -> {
+                logger.info("Socket failed, reinitializing!");
+                final boolean startStatus = start();
+                reInitializationFuture = null;
+                if (!startStatus) {
+                    reinit();
+                }
+            });
         }
     }
 
@@ -91,21 +111,22 @@ public class UniFiProtectEventManager implements PropertyChangeListener {
         propertyChangeSupport.addPropertyChangeListener(pcl);
     }
 
-    public void removePropertyChangeListener(PropertyChangeListener pcl) {
+    public synchronized void removePropertyChangeListener(PropertyChangeListener pcl) {
         propertyChangeSupport.removePropertyChangeListener(pcl);
     }
 
-    public void stop() {
+    public synchronized void stop() {
         try {
             socket.removePropertyChangeListener(this);
             wsClient.stop();
+
             socket = null;
         } catch (Exception e) {
             logger.debug("Failed to stop manager", e);
         }
     }
 
-    public void dispose() {
+    public synchronized void dispose() {
         try {
             stop();
         } catch (Exception e) {

@@ -14,6 +14,7 @@ package org.openhab.binding.unifiprotect.websocket;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -29,6 +30,8 @@ import org.eclipse.jetty.websocket.api.extensions.Frame;
 import org.openhab.binding.unifiprotect.internal.model.json.UniFiProtectJsonParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link UniFiProtectEventWebSocket}
@@ -80,11 +83,15 @@ public class UniFiProtectEventWebSocket {
     }
 
     @OnWebSocketFrame
-    public void onFrame(Frame frame) {
+    public synchronized void onFrame(Frame frame) {
+        if (session == null) {
+            return;
+        }
         if (frame.getPayloadLength() <= FRAME_MIN_SIZE) {
             logger.error("Failed to decode frame, not enough byte: {}", frame.getPayloadLength());
             return;
         }
+
         final byte[] bytes = new byte[frame.getPayloadLength()];
         frame.getPayload().get(bytes);
         final UniFiProtectFrame upFrame = new UniFiProtectFrame(bytes);
@@ -99,7 +106,12 @@ public class UniFiProtectEventWebSocket {
                 return;
             }
             logger.debug("Frame: {}", jsonContent);
-            UniFiProtectAction action = uniFiProtectJsonParser.getActionFromJson(jsonContent);
+            UniFiProtectAction action = null;
+            try {
+                action = uniFiProtectJsonParser.getActionFromJson(jsonContent);
+            } catch (JsonSyntaxException syntax) {
+                logger.error("Failed to parse json");
+            }
             if (action == null) {
                 return;
             }
@@ -114,7 +126,6 @@ public class UniFiProtectEventWebSocket {
                 }
             } else if (action.getModelKey().equals(UniFiProtectAction.MODEL_KEY_CAMERA)) {
                 logger.debug("ModelKeyCamera Got: {} and event action: {}", action.getAction(), upFrame);
-
             }
         }
     }
@@ -126,6 +137,19 @@ public class UniFiProtectEventWebSocket {
 
     public void addPropertyChangeListener(PropertyChangeListener pcl) {
         propertyChangeSupport.addPropertyChangeListener(pcl);
+    }
+
+    public synchronized void dispose() {
+        try {
+            session.close();
+            session = null;
+        } catch (Exception x) {
+            try {
+                session.disconnect();
+                session = null;
+            } catch (IOException e) {
+            }
+        }
     }
 
     public void removePropertyChangeListener(PropertyChangeListener pcl) {

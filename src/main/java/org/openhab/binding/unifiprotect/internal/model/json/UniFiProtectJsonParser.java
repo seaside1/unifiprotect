@@ -67,7 +67,7 @@ public class UniFiProtectJsonParser {
         try {
             bootStrapJsonObject = parseJson(gson, bootstrapJsonContent);
         } catch (JsonSyntaxException x) {
-            logger.error("Failed to parse bootstrap json", x);
+            logger.error("Failed to parse bootstrap json");
             logger.debug("Failed to parse bootstrap json: {}", bootstrapJsonContent, x);
             return false;
         }

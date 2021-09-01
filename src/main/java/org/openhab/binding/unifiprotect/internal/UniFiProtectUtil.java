@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
@@ -31,6 +32,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.unifiprotect.internal.model.json.UniFiProtectEvent;
 import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectRequest;
 import org.openhab.binding.unifiprotect.internal.types.UniFiProtectCamera;
+import org.openhab.core.common.ThreadPoolManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,6 +60,8 @@ public class UniFiProtectUtil {
     private static final String SNAPSHOT_SUFFIX = "-snap.jpg";
     private static final String ANON_SNAPSHOT_SUFFIX = "-asnap.jpg";
     private static final String DASH = "-";
+    protected static final ScheduledExecutorService scheduler = ThreadPoolManager
+            .getScheduledPool(ThreadPoolManager.THREAD_POOL_NAME_COMMON);
 
     public static double calculateHeightFromWidth(double thumbnailWidth) {
         return (thumbnailWidth / HEIGHT_DIVISOR) * HEIGHT_FACTOR;
@@ -101,6 +105,11 @@ public class UniFiProtectUtil {
     public static File writeThumbnailToImageFolder(String imageFolder, String cameraId, @Nullable String eventType,
             byte[] content) {
         return writeFileToImageFolder(imageFolder, cameraId, content, eventType, THUMBNAIL_SUFFIX);
+    }
+
+    public static <T> CompletableFuture<T> delayedExecution(long delay, TimeUnit unit) {
+        Executor delayedExecutor = CompletableFuture.delayedExecutor(delay, unit, scheduler);
+        return CompletableFuture.supplyAsync(() -> null, delayedExecutor);
     }
 
     public static <T> CompletableFuture<T> scheduleAsync(ScheduledExecutorService executor,
