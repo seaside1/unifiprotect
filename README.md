@@ -1,7 +1,5 @@
 ![alt text](https://raw.githubusercontent.com/seaside1/unifiprotect/main/img/logocombo.png)
-# UniFi Protect  Binding
 
-## About
 Integrates UniFi Protect Camera System into OpenHAB. See https://ui.com/why-protect/
 This binding utilizes an undocumented json REST API that is present in the NVR. It works very similar
 to the 
@@ -432,8 +430,11 @@ Get jar-file from repo. Place the jar-file in the openhab-addons folder
 https://github.com/seaside1/unifiprotect
 
 ## Changelog
+  ### BETA2
+  * Update for OpenHab 3.2.x and fixed bug were recoring mode was renamed in UniFi Protect 1.20.0
   ### ALPHA15
   * Storage info updated again
+
   ### ALPHA14
   * Fixed bug for UniFi Protect version 1.19.0 beta 10 where storage info is no longer working.
   ### ALPHA13
@@ -475,3 +476,7 @@ https://github.com/seaside1/unifiprotect
 ## Roadmap
 * Support for multiple harddrives
 * Live view of cameras
+
+## Resources
+
+https://github.com/seaside1/unifiprotect/raw/main/bin/org.openhab.binding.unifiprotect-3.x.x-BETA2.jar
