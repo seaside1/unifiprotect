@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
  * @author Joseph Hagberg - Initial contribution
  */
 public class UniFiProtectEventManager implements PropertyChangeListener {
+    private static final int INITIALIZATION_DELAY = 10;
     private final Logger logger = LoggerFactory.getLogger(UniFiProtectEventManager.class);
     private final UniFiProtectEventWsClient wsClient;
     private UniFiProtectEventWebSocket socket;
@@ -91,7 +92,7 @@ public class UniFiProtectEventManager implements PropertyChangeListener {
 
     private synchronized void reinit() {
         if (reInitializationFuture == null) {
-            reInitializationFuture = UniFiProtectUtil.delayedExecution(10, TimeUnit.SECONDS);
+            reInitializationFuture = UniFiProtectUtil.delayedExecution(INITIALIZATION_DELAY, TimeUnit.SECONDS);
             reInitializationFuture.thenAccept(s -> {
                 logger.info("Socket failed, reinitializing!");
                 final boolean startStatus = start();

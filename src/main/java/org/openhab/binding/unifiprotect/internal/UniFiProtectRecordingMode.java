@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,12 +24,12 @@ import org.eclipse.jdt.annotation.Nullable;
 public enum UniFiProtectRecordingMode {
     NEVER,
     ALWAYS,
-    MOTION,
+    DETECTIONS,
     INVALID;
 
     private static final String JSON_RAW_NEVER = "{\"recordingSettings\":{\"mode\":\"never\"}}";
     private static final String JSON_RAW_ALWAYS = "{\"recordingSettings\":{\"mode\":\"always\"}}";
-    private static final String JSON_RAW_MOTION = "{\"recordingSettings\":{\"mode\":\"motion\"}}";
+    private static final String JSON_RAW_DETECTIONS = "{\"recordingSettings\":{\"mode\":\"detections\"}}";
 
     public @Nullable String getJsonRaw() {
         switch (this) {
@@ -37,8 +37,8 @@ public enum UniFiProtectRecordingMode {
                 return JSON_RAW_ALWAYS;
             case INVALID:
                 return null;
-            case MOTION:
-                return JSON_RAW_MOTION;
+            case DETECTIONS:
+                return JSON_RAW_DETECTIONS;
             case NEVER:
                 return JSON_RAW_NEVER;
             default:
@@ -57,7 +57,7 @@ public enum UniFiProtectRecordingMode {
         }
 
         if (value == 2) {
-            return MOTION;
+            return DETECTIONS;
         }
 
         return INVALID;

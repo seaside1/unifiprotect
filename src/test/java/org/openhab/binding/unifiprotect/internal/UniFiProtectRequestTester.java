@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -245,7 +245,6 @@ public class UniFiProtectRequestTester {
     }
 
     @Test
-    @Disabled
     public void setRecordingMode() throws Exception {
         UniFiProtectNvr nvr = new UniFiProtectNvr(config);
         nvr.init();
@@ -254,7 +253,7 @@ public class UniFiProtectRequestTester {
         UniFiProtectCameraCache cameraInsightCache = nvr.getCameraInsightCache();
         cameraInsightCache.getCameras().stream().forEach(camera -> logger.debug(camera.toString()));
         nvr.setRecordingMode(cameraInsightCache.getCameras().stream().reduce((first, second) -> second).get(),
-                UniFiProtectRecordingMode.MOTION);
+                UniFiProtectRecordingMode.DETECTIONS);
     }
 
     @Test
