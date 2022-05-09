@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -340,33 +340,39 @@ public class UniFiProtectNvrThingHandler extends BaseBridgeHandler implements Pr
                 }
                 break;
             case DEVICE_0_SIZE:
-                if (nvrDevice.getDevice0Size() != null) {
-                    state = new DecimalType(nvrDevice.getDevice0Size());
+                final Long size = nvrDevice.getDevice0Size();
+                if (size != null) {
+                    state = new DecimalType(size);
                 }
                 break;
             case MEM_AVAILABLE:
-                if (nvrDevice.getMemAvailable() != null) {
-                    state = new DecimalType(nvrDevice.getMemAvailable());
+                final Long memory = nvrDevice.getMemAvailable();
+                if (memory != null) {
+                    state = new DecimalType(memory);
                 }
                 break;
             case MEM_FREE:
-                if (nvrDevice.getMemFree() != null) {
-                    state = new DecimalType(nvrDevice.getMemFree());
+                final Long memoryFree = nvrDevice.getMemFree();
+                if (memoryFree != null) {
+                    state = new DecimalType(memoryFree);
                 }
                 break;
             case MEM_TOTAL:
-                if (nvrDevice.getMemTotal() != null) {
-                    state = new DecimalType(nvrDevice.getMemTotal());
+                final Long memTotal = nvrDevice.getMemTotal();
+                if (memTotal != null) {
+                    state = new DecimalType(memTotal);
                 }
                 break;
             case STORAGE_AVAILABLE:
-                if (nvrDevice.getStorageAvailable() != null) {
-                    state = new DecimalType(nvrDevice.getStorageAvailable());
+                final Long storageAvailable = nvrDevice.getStorageAvailable();
+                if (storageAvailable != null) {
+                    state = new DecimalType(storageAvailable);
                 }
                 break;
             case STORAGE_TOTAL_SIZE:
-                if (nvrDevice.getStorageSize() != null) {
-                    state = new DecimalType(nvrDevice.getStorageSize());
+                final Long storageSize = nvrDevice.getStorageSize();
+                if (storageSize != null) {
+                    state = new DecimalType(storageSize);
                 }
                 break;
             case STORAGE_TYPE:
@@ -376,8 +382,9 @@ public class UniFiProtectNvrThingHandler extends BaseBridgeHandler implements Pr
                 }
                 break;
             case STORAGE_USED:
-                if (nvrDevice.getStorageUsed() != null) {
-                    state = new DecimalType(nvrDevice.getStorageUsed());
+                final Long storageUsed = nvrDevice.getStorageUsed();
+                if (storageUsed != null) {
+                    state = new DecimalType(storageUsed);
                 }
                 break;
             default:

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -188,9 +188,11 @@ public class UniFiProtectBaseThingHandler extends BaseThingHandler {
                 }
                 break;
             case MOTION_SCORE:
-                String id = camera.getId();
-                if (id != null && getNvr().getLastMotionEventFromCamera(camera) != null) {
-                    state = new DecimalType(getNvr().getLastMotionEventFromCamera(camera).getScore());
+                final String id = camera.getId();
+                final UniFiProtectEvent event = getNvr().getLastMotionEventFromCamera(camera);
+                final Long score = event.getScore();
+                if (score != null) {
+                    state = new DecimalType(score);
                 }
                 break;
             case HOST:
@@ -234,8 +236,9 @@ public class UniFiProtectBaseThingHandler extends BaseThingHandler {
                 }
                 break;
             case MIC_VOLUME:
-                if (camera.getMicVolume() != null) {
-                    state = new DecimalType(camera.getMicVolume());
+                Integer micVolume = camera.getMicVolume();
+                if (micVolume != null) {
+                    state = new DecimalType(micVolume);
                 }
                 break;
             case NAME:
