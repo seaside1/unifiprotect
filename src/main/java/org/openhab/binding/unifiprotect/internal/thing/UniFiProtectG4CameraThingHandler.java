@@ -239,8 +239,9 @@ public class UniFiProtectG4CameraThingHandler extends UniFiProtectBaseThingHandl
                 }
                 break;
             case SMART_DETECT_SCORE:
-                if (smartDetectScore != null) {
-                    state = new DecimalType(smartDetectScore);
+                final long score = (smartDetectScore != null) ? smartDetectScore : -1;
+                if (score > -1) {
+                    state = new DecimalType(score);
                 }
                 break;
             case SMART_DETECT_PERSON:
