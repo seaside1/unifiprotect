@@ -1,31 +1,23 @@
 ![alt text](https://raw.githubusercontent.com/seaside1/unifiprotect/main/img/logocombo.png)
 
-Integrates UniFi Protect Camera System into OpenHAB. See https://ui.com/why-protect/
+Integrates UniFi Protect Camera System into openHAB. See https://ui.com/why-protect/
 This binding utilizes an undocumented json REST API that is present in the NVR. It works very similar
 to the 
 
 1) Homebridge solution: https://github.com/hjdhjd/homebridge-unifi-protect 
 2) HomeAssistant solution: https://github.com/briis/unifiprotect
 
-The binding is written in java and tailored for OpenHAB.
+The binding is written in java and tailored for openHAB.
 
 The Binding has a configurable refresh rate. The refresh rate will update the NVR information. 
 For Events (motion detection) starting at ALPHA6 the UniFiProtect Event API over websockets has 
 been implemented. Thus motion detection should be instant and without the need of polling.
 
-## OpenHab Version
-The binding was originally written for Openhab 2.5.x. The prebuild jar-file for OpenHAB 2.5.x is located 
-https://github.com/seaside1/unifiprotect/tree/main/bin and named org.openhab.binding.unifiprotect-2.5.x-ALPHAXX.jar
-
-OpenHAB 3.0.0Mx version is also located under https://github.com/seaside1/unifiprotect/tree/main/bin and name
-org.openhab.binding.unifiprotect-3.0.0-ALPHAXX.jar
-
-Future versions of this binding will mainly support **OpenHAB 3.0.0**
-I'll build 2.5.x version if there is need.
+## openHAB Version
+openHAB version 3.x.x is supported.
 
 ## Usage
-Maturity: ALPHA
-OpenHAB Version: 2.5.x & Openhab 3.0.0Mx 
+Maturity: BETA
 
 ## Example of usage
 - Detect Motion and trigger other system notifications, Alexa, Google Home, turn on lights, sound an alarm etc.
@@ -430,11 +422,13 @@ Get jar-file from repo. Place the jar-file in the openhab-addons folder
 https://github.com/seaside1/unifiprotect
 
 ## Changelog
+  ### BETA3
+  * New build system
+  * Fixed npe warning
   ### BETA2
   * Update for OpenHab 3.2.x and fixed bug were recoring mode was renamed in UniFi Protect 1.20.0
   ### ALPHA15
   * Storage info updated again
-
   ### ALPHA14
   * Fixed bug for UniFi Protect version 1.19.0 beta 10 where storage info is no longer working.
   ### ALPHA13
@@ -476,7 +470,3 @@ https://github.com/seaside1/unifiprotect
 ## Roadmap
 * Support for multiple harddrives
 * Live view of cameras
-
-## Resources
-
-https://github.com/seaside1/unifiprotect/raw/main/bin/org.openhab.binding.unifiprotect-3.x.x-BETA2.jar
