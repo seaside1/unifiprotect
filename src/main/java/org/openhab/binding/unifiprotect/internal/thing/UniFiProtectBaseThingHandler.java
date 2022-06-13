@@ -190,9 +190,11 @@ public class UniFiProtectBaseThingHandler extends BaseThingHandler {
             case MOTION_SCORE:
                 final String id = camera.getId();
                 final UniFiProtectEvent event = getNvr().getLastMotionEventFromCamera(camera);
-                final Long score = event.getScore();
-                if (score != null) {
-                    state = new DecimalType(score);
+                if (event != null) {
+                    final Long score = event.getScore();
+                    if (score != null) {
+                        state = new DecimalType(score);
+                    }
                 }
                 break;
             case HOST:
