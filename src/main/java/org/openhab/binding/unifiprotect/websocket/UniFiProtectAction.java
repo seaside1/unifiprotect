@@ -31,6 +31,8 @@ public class UniFiProtectAction {
     private String action;
     private String modelKey;
     private String id;
+    private String newUpdateId;
+    private String mac;
 
     @Override
     public String toString() {
@@ -59,5 +61,21 @@ public class UniFiProtectAction {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getNewUpdateId() {
+        return newUpdateId;
+    }
+
+    public void setNewUpdateId(String newUpdateId) {
+        this.newUpdateId = newUpdateId;
+    }
+
+    public String getMac() {
+        return mac;
+    }
+
+    public void setMac(String mac) {
+        this.mac = mac;
     }
 }

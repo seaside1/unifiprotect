@@ -41,6 +41,7 @@ import com.google.gson.JsonSyntaxException;
 @WebSocket
 public class UniFiProtectEventWebSocket {
 
+    private static final char JSON_END_BRACKET = '}';
     private static final String UTF_8 = "UTF-8";
     private static final int FRAME_MIN_SIZE = 9;
     private final CountDownLatch closeLatch;
@@ -108,9 +109,13 @@ public class UniFiProtectEventWebSocket {
             logger.debug("Frame: {}", jsonContent);
             UniFiProtectAction action = null;
             try {
+                final int lastIndex = jsonContent.lastIndexOf(JSON_END_BRACKET);
+                if (lastIndex > 0) { // Remove garabage characters in the end, introduced in UniFi Protect 2.1.1
+                    jsonContent = jsonContent.substring(0, lastIndex + 1);
+                }
                 action = uniFiProtectJsonParser.getActionFromJson(jsonContent);
             } catch (JsonSyntaxException syntax) {
-                logger.error("Failed to parse json");
+                logger.error("Failed to parse json: {}", jsonContent, syntax);
             }
             if (action == null) {
                 return;
