@@ -13,6 +13,7 @@
 package org.openhab.binding.unifiprotect.internal.model;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -135,7 +136,13 @@ public class UniFiProtectNvr {
             return UniFiProtectStatus.STATUS_EXECUTION_FAULT;
         }
         boolean bootstrapParseSuccess = getUniFiProtectJsonParser().parseBootstrap(bootstrapJsonContent);
-        logger.debug("Json: {}", bootstrapJsonContent);
+        if (logger.isDebugEnabled()) {
+            try {
+                UniFiProtectUtil.writeFile(File.createTempFile("bootstrap", ".json"), bootstrapJsonContent.getBytes());
+            } catch (IOException e) {
+                logger.debug("Failed to write bootstrap", e);
+            }
+        }
         if (!bootstrapParseSuccess) {
             return UniFiProtectStatus.STATUS_EXECUTION_FAULT;
         }

@@ -127,19 +127,19 @@ public class UniFiProtectUtil {
     }
 
     @Nullable
-    private static File writeFileToImageFolder(String imageFolder, String cameraId, byte[] content,
-            @Nullable String eventType, String suffix) {
+    public static File writeFileToFolder(String folder, String file, byte[] content) {
+        return writeFile(new File(folder.concat(File.separator).concat(file)), content);
+    }
+
+    @Nullable
+    public static File writeFile(File outFile, byte[] content) {
         FileOutputStream fout = null;
-        File image = null;
         try {
-            final String interfix = eventType == null ? UniFiProtectBindingConstants.EMPTY_STRING
-                    : DASH.concat(eventType);
-            image = new File(imageFolder.concat(File.separator).concat(cameraId).concat(interfix).concat(suffix));
-            fout = new FileOutputStream(image);
+            fout = new FileOutputStream(outFile);
             fout.write(content);
-            logger.debug("Wrote file: {}", image.getAbsolutePath());
+            logger.debug("Wrote file: {}", outFile.getAbsolutePath());
         } catch (IOException iox) {
-            logger.error("Failed to write to file: {} , for camera id: {} ", image.getAbsolutePath(), cameraId, iox);
+            logger.error("Failed to write to file: {}", outFile.getAbsolutePath(), iox);
             return null;
         } finally {
             try {
@@ -150,7 +150,14 @@ public class UniFiProtectUtil {
                 // Best effort
             }
         }
-        return image;
+        return outFile;
+    }
+
+    @Nullable
+    private static File writeFileToImageFolder(String imageFolder, String cameraId, byte[] content,
+            @Nullable String eventType, String suffix) {
+        final String interfix = eventType == null ? UniFiProtectBindingConstants.EMPTY_STRING : DASH.concat(eventType);
+        return writeFileToFolder(imageFolder, cameraId.concat(interfix).concat(suffix), content);
     }
 
     public static long calculateStartTimeForEvent(int eventsTimePeriodLength) {
