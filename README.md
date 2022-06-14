@@ -55,6 +55,8 @@ The binding has been rewritten to support UniFi OS only. That means if you have 
 you need to update it to at least firmware 2.0.18. After 2.0.18 UCKP is running UniFiOs just like the
 UDMP and UNVR. 
 
+<b>Note stay on stable UniFi Protect version. Early Access versions are not supported.</b>
+
 ## Dependencies
 * OH3 Map transformations ( https://www.openhab.org/addons/transformations/map/ )
 
