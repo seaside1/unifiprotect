@@ -72,12 +72,12 @@ public class UniFiProtectEventManager implements PropertyChangeListener {
         if (evt.getPropertyName().equals(UniFiProtectAction.PROPERTY_EVENT_ACTION_ADD)) {
             UniFiProtectAction action = (UniFiProtectAction) evt.getNewValue();
             logger.debug("Got action property add change: {}", action);
-            motionDetected(action, UniFiProtectAction.PROPERTY_EVENT_ACTION_ADD);
+            actionEventDetected(action, UniFiProtectAction.PROPERTY_EVENT_ACTION_ADD);
             String eventId = action.getId();
         } else if (evt.getPropertyName().equals(UniFiProtectAction.PROPERTY_EVENT_ACTION_UPDATE)) {
             UniFiProtectAction action = (UniFiProtectAction) evt.getNewValue();
             logger.debug("Got action property upd change: {}", action);
-            motionDetected(action, UniFiProtectAction.PROPERTY_EVENT_ACTION_UPDATE);
+            actionEventDetected(action, UniFiProtectAction.PROPERTY_EVENT_ACTION_UPDATE);
             String eventId = action.getId();
         } else if (evt.getPropertyName().equals(UniFiProtectAction.PROPERTY_SOCKET_CONNECTED)) {
             logger.debug("Socket connected!");
@@ -104,7 +104,7 @@ public class UniFiProtectEventManager implements PropertyChangeListener {
         }
     }
 
-    private void motionDetected(UniFiProtectAction action, String property) {
+    private void actionEventDetected(UniFiProtectAction action, String property) {
         propertyChangeSupport.firePropertyChange(property, null, action);
     }
 

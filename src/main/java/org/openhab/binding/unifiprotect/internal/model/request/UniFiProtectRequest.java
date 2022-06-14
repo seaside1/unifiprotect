@@ -13,7 +13,9 @@
 package org.openhab.binding.unifiprotect.internal.model.request;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
@@ -79,7 +81,7 @@ public abstract class UniFiProtectRequest {
 
     private String path = "/";
 
-    private Map<String, String> queryParameters = new HashMap<>();
+    private Map<String, List<String>> queryParameters = new HashMap<>();
 
     private Map<String, String> bodyParameters = new HashMap<>();
 
@@ -109,7 +111,10 @@ public abstract class UniFiProtectRequest {
     }
 
     public synchronized void setQueryParameter(String key, Object value) {
-        this.queryParameters.put(key, String.valueOf(value));
+        final List<String> values = queryParameters.containsKey(key) ? queryParameters.get(key)
+                : new ArrayList<String>();
+        values.add(String.valueOf(value));
+        queryParameters.put(key, values);
     }
 
     public synchronized UniFiProtectStatus sendRequest() {
@@ -183,8 +188,10 @@ public abstract class UniFiProtectRequest {
         HttpURI uri = new HttpURI(getHttpScheme().concat(SCHEME_SEPARATOR).concat(host).concat(path));
         final Request request = httpClient.newRequest(uri.toString()).timeout(TIMEOUT_SECONDS, TimeUnit.SECONDS);
         request.method(getHttpMethod());
-        for (Entry<String, String> entry : queryParameters.entrySet()) {
-            request.param(entry.getKey(), entry.getValue());
+        for (Entry<String, List<String>> entry : queryParameters.entrySet()) {
+            for (String value : entry.getValue()) {
+                request.param(entry.getKey(), value);
+            }
         }
         if (!bodyParameters.isEmpty()) {
             String jsonBody = getRequestBodyAsJson();

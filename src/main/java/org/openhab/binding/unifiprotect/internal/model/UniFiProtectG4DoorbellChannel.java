@@ -57,4 +57,8 @@ public enum UniFiProtectG4DoorbellChannel {
         }
         return channel;
     }
+
+    public String toChannelId() {
+        return this.name().replaceAll(UNDERSCORE, DASH).toLowerCase();
+    }
 }

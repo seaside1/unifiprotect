@@ -266,7 +266,6 @@ public class UniFiProtectG4DoorbellThingHandler extends UniFiProtectG4CameraThin
                 break;
             default:
                 break;
-
         }
         if (state != UnDefType.NULL) {
             updateState(channelID, state);
@@ -316,11 +315,15 @@ public class UniFiProtectG4DoorbellThingHandler extends UniFiProtectG4CameraThin
     }
 
     private synchronized void refreshIsRinging() {
-        Channel ringChannel = getThing().getChannel(UniFiProtectG4DoorbellChannel.IS_RINGING.name());
+        Channel ringChannel = getThing().getChannel(UniFiProtectG4DoorbellChannel.IS_RINGING.toChannelId());
         UniFiProtectCamera camera = getCamera();
         UniFiProtectNvr nvr = getNvr();
         if (camera != null && ringChannel != null && nvr != null) {
             refreshG4DoorbellChannel(camera, ringChannel.getUID(), nvr);
+        } else {
+            logger.error(
+                    "Failed to refresh doorbell for ring thing: {} camera: {} ringChannel: {} ringChannelname: {} nvr: {}",
+                    thing, camera, ringChannel, UniFiProtectG4DoorbellChannel.IS_RINGING.name(), nvr);
         }
     }
 

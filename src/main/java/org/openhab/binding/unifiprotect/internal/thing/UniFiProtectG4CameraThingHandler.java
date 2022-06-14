@@ -311,7 +311,7 @@ public class UniFiProtectG4CameraThingHandler extends UniFiProtectBaseThingHandl
     }
 
     private synchronized void refreshSmartDetection() {
-        Channel smartDetectionChannel = getThing().getChannel(UniFiProtectG4Channel.SMART_DETECT_MOTION.name());
+        Channel smartDetectionChannel = getThing().getChannel(UniFiProtectG4Channel.SMART_DETECT_MOTION.toChannelId());
         UniFiProtectCamera camera = getCamera();
         UniFiProtectNvr nvr = getNvr();
         if (camera != null && smartDetectionChannel != null && nvr != null) {

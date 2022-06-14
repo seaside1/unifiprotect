@@ -20,6 +20,7 @@ import java.beans.PropertyChangeListener;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -64,6 +65,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class UniFiProtectNvrThingHandler extends BaseBridgeHandler implements PropertyChangeListener {
 
+    private static final long REFRESH_DELAY = 1;
     private @Nullable ScheduledFuture<?> refreshJob;
     private final Logger logger = LoggerFactory.getLogger(UniFiProtectNvrThingHandler.class);
 
@@ -73,6 +75,8 @@ public class UniFiProtectNvrThingHandler extends BaseBridgeHandler implements Pr
     private UniFiProtectNvrThingConfig config = new UniFiProtectNvrThingConfig();
 
     private @Nullable UniFiProtectEventManager eventManager;
+
+    private @Nullable CompletableFuture<Void> refreshFuture = null;
 
     public UniFiProtectNvrThingHandler(Bridge bridge) {
         super(bridge);
@@ -439,36 +443,9 @@ public class UniFiProtectNvrThingHandler extends BaseBridgeHandler implements Pr
         return UniFiProtectBindingConstants.THING_TYPE_NVR.equals(thingTypeUID);
     }
 
-    @Override
-    public void propertyChange(@Nullable PropertyChangeEvent evt) {
-        if (evt == null) {
-            return;
-        }
-        if (!isAddEvent(evt) && !isUpdEvent(evt)) {
-            logger.debug("Unhandled property evt is not update or add: {}", evt.getPropertyName());
-            return;
-        }
-        getNvr().refreshEvents();
-        UniFiProtectAction action = (UniFiProtectAction) evt.getNewValue();
-        UniFiProtectEvent event = getNvr().getEventFromId(action.getId());
-        if (event == null) {
-            // Sometimes event is asked for too quickly, refresh again
-            getNvr().refreshEvents();
-            event = getNvr().getEventFromId(action.getId());
-            // If we are still not successfully, a final attempt refreshing everything
-            if (event == null) {
-                getNvr().refreshEvents();
-                refreshCameras();
-                getNvr().refreshProtect();
-                event = getNvr().getEventFromId(action.getId());
-                if (event == null) {
-                    // call it a day
-                    logger.debug("Failed to get event, ignoring: {}", action);
-                    return;
-                }
-            }
-        }
+    private void handleEvent(UniFiProtectEvent event, PropertyChangeEvent evt) {
         final String type = event.getType();
+        final UniFiProtectAction action = (UniFiProtectAction) evt.getNewValue();
         String eventId = event.getId();
         if (type == null || eventId == null) {
             logger.debug("Failed to get type from event, ignoring: {}", event);
@@ -482,15 +459,8 @@ public class UniFiProtectNvrThingHandler extends BaseBridgeHandler implements Pr
         }
 
         if (isAddEvent(evt)) {
-            if (type.equals(UniFiProtectBindingConstants.EVENT_TYPE_RING)) {
-                logger.debug("Handling event ring");
-                if (cameraHandler instanceof UniFiProtectG4DoorbellThingHandler) {
-                    ((UniFiProtectG4DoorbellThingHandler) cameraHandler).handleRingAddEvent(eventId);
-                } else {
-                    logger.error("Failed to handle ring event");
-                    return;
-                }
-            } else if (type.equals(UniFiProtectBindingConstants.EVENT_TYPE_SMART_DETECT_ZONE)) {
+            logger.debug("Handle Event add action: {} event: {}", action, event);
+            if (type.equals(UniFiProtectBindingConstants.EVENT_TYPE_SMART_DETECT_ZONE)) {
                 if (cameraHandler instanceof UniFiProtectG4CameraThingHandler) {
                     ((UniFiProtectG4CameraThingHandler) cameraHandler).handleSmartDetectAddEvent(eventId);
                 } else {
@@ -499,20 +469,70 @@ public class UniFiProtectNvrThingHandler extends BaseBridgeHandler implements Pr
                 }
             } else if (type.equals(UniFiProtectBindingConstants.EVENT_TYPE_MOTION)) {
                 cameraHandler.handleMotionAddEvent(eventId);
+            } else if (type.equals(UniFiProtectBindingConstants.EVENT_TYPE_RING)) {
+                logger.debug("Handling add event ring");
+                if (cameraHandler instanceof UniFiProtectG4DoorbellThingHandler) {
+                    ((UniFiProtectG4DoorbellThingHandler) cameraHandler).handleRingAddEvent(eventId);
+                } else {
+                    logger.error("Failed to handle ring event");
+                    return;
+                }
             } else {
                 logger.debug("Unhandled EventActionAdd type: {}", type);
             }
-            logger.debug("Got EventActionAdd action: {} event: {}", action, event);
             return;
         } else if (isUpdEvent(evt)) {
+            logger.debug("Got EventActionUpd action: {} event: {}", action, event);
             if (type.equals(UniFiProtectBindingConstants.EVENT_TYPE_MOTION)) {
                 logger.debug("Handling event motion");
                 cameraHandler.handleThumbnailEvent(UniFiProtectBindingConstants.MOTION_EVENT_WAIT_TIME, eventId);
                 cameraHandler.handleHeatmapEvent(UniFiProtectBindingConstants.MOTION_EVENT_WAIT_TIME, eventId);
             } else if (type.equals(UniFiProtectBindingConstants.EVENT_TYPE_SMART_DETECT_ZONE)) {
                 ((UniFiProtectG4CameraThingHandler) cameraHandler).handleSmartDetectUpdEvent(eventId);
+            } else if (type.equals(UniFiProtectBindingConstants.EVENT_TYPE_RING)) {
+                logger.debug("Handling upd event ring");
             }
             return;
+        } else {
+            logger.debug("Unhandled event {}", evt.getPropertyName());
+        }
+    }
+
+    @Override
+    public void propertyChange(@Nullable PropertyChangeEvent evt) {
+        if (evt == null) {
+            return;
+        }
+        getNvr().refreshEvents();
+        UniFiProtectAction action = (UniFiProtectAction) evt.getNewValue();
+        UniFiProtectEvent event = getNvr().getEventFromId(action.getId());
+        if (event != null) {
+            handleEvent(event, evt);
+            return;
+        } else {
+            logger.debug("Failed to find event attempt 1 from id: {}", action.getId());
+        }
+        // Sometimes event is asked for too quickly, refresh again
+        refreshEvents(evt, action.getId());
+    }
+
+    private synchronized void refreshEvents(PropertyChangeEvent evt, String id) {
+        if (refreshFuture == null) {
+            refreshFuture = UniFiProtectUtil.delayedExecution(REFRESH_DELAY, TimeUnit.SECONDS);
+            refreshFuture.thenAccept(s -> {
+                try {
+                    getNvr().refreshEvents();
+                    UniFiProtectEvent event = getNvr().getEventFromId(id);
+                    if (event != null) {
+                        handleEvent(event, evt);
+                    } else {
+                        logger.debug("Failed to find event attempt 2 with id: {}", id);
+                    }
+                } finally {
+                    refreshFuture = null;
+                }
+
+            });
         }
     }
 

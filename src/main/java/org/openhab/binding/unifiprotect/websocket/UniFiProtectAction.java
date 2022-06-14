@@ -56,6 +56,10 @@ public class UniFiProtectAction {
     }
 
     public String getId() {
+        final int dash = id.indexOf('-');
+        if (dash > 0) {
+            id = id.substring(0, dash);
+        }
         return id;
     }
 

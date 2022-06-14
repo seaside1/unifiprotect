@@ -460,7 +460,6 @@ public class UniFiProtectBaseThingHandler extends BaseThingHandler {
                 return;
             }
         }
-
         logger.debug("Handling event Download by getting event for camera: {} eventid: {} event: {}", cam.getName(),
                 event.getId(), event);
         if (type.equals(HEAT_DL)) {
@@ -469,7 +468,6 @@ public class UniFiProtectBaseThingHandler extends BaseThingHandler {
             handleThumbnail(cam, event);
         }
         futures.remove(cam.getId() + type);
-        refresh();
     }
 
     public synchronized void handleHeatmapEvent(int delay, String eventId) {

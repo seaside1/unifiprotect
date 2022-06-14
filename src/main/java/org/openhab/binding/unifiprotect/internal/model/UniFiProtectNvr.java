@@ -234,8 +234,11 @@ public class UniFiProtectNvr {
     }
 
     public synchronized @Nullable UniFiProtectCamera getCamera(UniFiProtectBaseThingConfig config) {
-        logger.debug("Getting camera from cache configMac: {}", config.getMac());
-        logger.debug("CameraInsightCache: {}", cameraInsightCache.toString());
+        if (logger.isDebugEnabled()) {
+            logger.debug("getCamera cache configMac: {}", config.getMac());
+            logger.debug("getCamera CameraInsightCache: {}", cameraInsightCache.toString());
+            logger.debug("getCamera camera: {}", cameraInsightCache.getCamera(config.getMac()));
+        }
         return cameraInsightCache.getCamera(config.getMac());
     }
 
