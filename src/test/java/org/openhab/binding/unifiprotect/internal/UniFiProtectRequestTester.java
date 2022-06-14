@@ -70,6 +70,7 @@ public class UniFiProtectRequestTester {
     }
 
     @Test
+    @Disabled
     public void getWebsocketMessage() throws Exception {
         UniFiProtectNvr nvr = new UniFiProtectNvr(config);
         nvr.init();
@@ -84,17 +85,18 @@ public class UniFiProtectRequestTester {
 
             @Override
             public void propertyChange(@Nullable PropertyChangeEvent evt) {
-                System.out.println(evt.getPropertyName());
+                logger.info(evt.getPropertyName());
             }
         });
         Thread.sleep(40000);
         nvr.refreshProtect();
 
         UniFiProtectEvent[] events = nvr.getEvents();
-        Arrays.stream(events).forEach(e -> System.out.println(e));
+        Arrays.stream(events).forEach(e -> logger.info(e.toString()));
     }
 
     @Test
+    @Disabled
     public void getBootstrap() throws Exception {
         UniFiProtectNvr nvr = new UniFiProtectNvr(config);
         nvr.init();
@@ -245,6 +247,7 @@ public class UniFiProtectRequestTester {
     }
 
     @Test
+    @Disabled
     public void setRecordingMode() throws Exception {
         UniFiProtectNvr nvr = new UniFiProtectNvr(config);
         nvr.init();
