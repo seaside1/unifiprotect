@@ -424,11 +424,16 @@ Get jar-file from repo. Place the jar-file in the openhab-addons folder
 https://github.com/seaside1/unifiprotect
 
 ## Changelog
+  ### BETA5
+  * Support for UniFi Protect 2.1.1
+  * Reworked event api actions
+  * Motion detections more robust
+  * Ring notification is faster and more robust
+  * Removed not needed calls for refreshing Protect
   ### BETA4
   * Prepare for UniFi Protect 2.1.1
   * Fixed npe that caused websocket to close
   * Writing bootrap to tempfile if debug is on
-
   ### BETA3
   * New build system
   * Fixed npe warning
