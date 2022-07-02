@@ -15,6 +15,7 @@ package org.openhab.binding.unifiprotect.internal.model;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -48,7 +49,6 @@ import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectSmart
 import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectSnapshotRequest;
 import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectStatusLightRequest;
 import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectThumbnailRequest;
-import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectTokenRequest;
 import org.openhab.binding.unifiprotect.internal.thing.UniFiProtectBaseThingConfig;
 import org.openhab.binding.unifiprotect.internal.thing.UniFiProtectNvrThingConfig;
 import org.openhab.binding.unifiprotect.internal.types.UniFiProtectCamera;
@@ -97,19 +97,14 @@ public class UniFiProtectNvr {
     }
 
     public synchronized UniFiProtectStatus login() {
-        UniFiProtectTokenRequest tokenRequest = new UniFiProtectTokenRequest(httpClient, config);
-        UniFiProtectStatus sendStatus = tokenRequest.sendRequest();
+        UniFiProtectLoginRequest loginRequest = new UniFiProtectLoginRequest(token, httpClient, getConfig());
+        UniFiProtectStatus sendStatus = loginRequest.sendRequest();
         if (!requestSuccessFullySent(sendStatus)) {
             return sendStatus;
         }
-        token = tokenRequest.getToken();
+        token = loginRequest.getToken();
         if (token.isEmpty()) {
             return UniFiProtectStatus.STATUS_TOKEN_MISSING;
-        }
-        UniFiProtectLoginRequest loginRequest = new UniFiProtectLoginRequest(token, httpClient, getConfig());
-        sendStatus = loginRequest.sendRequest();
-        if (!requestSuccessFullySent(sendStatus)) {
-            return sendStatus;
         }
         return sendStatus;
     }
@@ -209,7 +204,9 @@ public class UniFiProtectNvr {
             status = login();
         }
         if (status != null && status.getStatus() != SendStatus.SUCCESS) {
-            logger.error("Failed to updated Cameras since we can't seem to login");
+            logger.error("Failed to updated Cameras since we can't seem to login status: {}", status.getStatus());
+            logger.debug("Status message: {} exception: {}", status.getMessage(),
+                    status.getException() != null ? status.getException().toString() : "");
             return status;
         }
         UniFiProtectStatus refreshBootstrap = refreshBootstrap();
@@ -546,7 +543,7 @@ public class UniFiProtectNvr {
         return eventCache.getEventFromEventId(id);
     }
 
-    public UniFiProtectEvent[] getEvents() {
+    public Collection<UniFiProtectEvent> getEvents() {
         return eventCache.getEvents();
     }
 

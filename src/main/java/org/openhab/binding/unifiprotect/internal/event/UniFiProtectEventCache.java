@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.unifiprotect.internal.event;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -121,8 +122,8 @@ public class UniFiProtectEventCache {
         return eventIdToEvent.get(id.toLowerCase());
     }
 
-    public UniFiProtectEvent[] getEvents() {
-        return (UniFiProtectEvent[]) eventIdToEvent.values().toArray();
+    public Collection<UniFiProtectEvent> getEvents() {
+        return eventIdToEvent.values();
     }
 
     private class CameraEventsObject {

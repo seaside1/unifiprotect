@@ -14,6 +14,8 @@ package org.openhab.binding.unifiprotect.internal.model.request;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.openhab.binding.unifiprotect.internal.UniFiProtectBindingConstants;
 import org.openhab.binding.unifiprotect.internal.thing.UniFiProtectNvrThingConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,10 +30,14 @@ public class UniFiProtectLoginRequest extends UniFiProtectRequest {
 
     public static final String AUTH_PATH_UNIFI_OS = "/api/auth/login";
 
-    private static final String REMEMBER = "remember";
+    public static final String REMEMBER = "remember";
+    public static final String REMEMBER_ME = "rememberMe";
+
     private static final String STRICT = "strict";
-    private static final String PASSWORD = "password";
-    private static final String USERNAME = "username";
+    public static final String PASSWORD = "password";
+    public static final String USERNAME = "username";
+    public static final String TOKEN = "token";
+
     private final Logger logger = LoggerFactory.getLogger(UniFiProtectLoginRequest.class);
 
     public UniFiProtectLoginRequest(String token, HttpClient httpClient, UniFiProtectNvrThingConfig config) {
@@ -41,6 +47,18 @@ public class UniFiProtectLoginRequest extends UniFiProtectRequest {
         setBodyParameter(PASSWORD, config.getPassword());
         setBodyParameter(STRICT, false);
         setBodyParameter(REMEMBER, false);
-        setHeader(HEADER_X_CSRF_TOKEN, token);
+        setBodyParameter(REMEMBER_ME, false);
+        setBodyParameter(TOKEN, UniFiProtectBindingConstants.EMPTY_STRING);
+    }
+
+    public String getToken() {
+        final ContentResponse response = getResponse();
+
+        return response != null && response.getHeaders() != null
+                && response.getHeaders().get(HEADER_X_CSRF_TOKEN) != null
+                        ? response.getHeaders().get(HEADER_X_CSRF_TOKEN)
+                        : response != null && response.getHeaders().get(HEADER_X_CSRF_TOKEN.toLowerCase()) != null
+                                ? response.getHeaders().get(HEADER_X_CSRF_TOKEN.toLowerCase())
+                                : UniFiProtectBindingConstants.EMPTY_STRING;
     }
 }

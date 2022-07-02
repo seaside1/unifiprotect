@@ -15,7 +15,6 @@ package org.openhab.binding.unifiprotect.internal;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -91,8 +90,7 @@ public class UniFiProtectRequestTester {
         Thread.sleep(40000);
         nvr.refreshProtect();
 
-        UniFiProtectEvent[] events = nvr.getEvents();
-        Arrays.stream(events).forEach(e -> logger.info(e.toString()));
+        nvr.getEvents().forEach(e -> logger.info(e.toString()));
     }
 
     @Test

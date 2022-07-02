@@ -18,7 +18,6 @@ import static org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -455,8 +454,8 @@ public class UniFiProtectBaseThingHandler extends BaseThingHandler {
             getNvr().refreshEvents();
             event = getNvr().getEventFromId(eventId);
             if (event == null) {
-                logger.warn("Failed to find event fo eventId: {} cacheSize: {}", eventId, getNvr().getEvents().length);
-                Arrays.stream(getNvr().getEvents()).forEach(ev -> logger.debug("Event in cache: {}", ev));
+                logger.warn("Failed to find event fo eventId: {} cacheSize: {}", eventId, getNvr().getEvents().size());
+                getNvr().getEvents().forEach(ev -> logger.debug("Event in cache: {}", ev.getId()));
                 return;
             }
         }
