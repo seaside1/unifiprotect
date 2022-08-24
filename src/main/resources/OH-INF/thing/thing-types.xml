@@ -116,7 +116,6 @@
 			<channel id="last-ring" typeId="last-ring"/>
 			<channel id="lcd-leave-package" typeId="lcd-predefined-message"/>
 			<channel id="lcd-do-not-disturb" typeId="lcd-predefined-message"/>
-			<channel id="lcd-custom" typeId="lcd-custom"/>
 			<channel id="lcd-custom-text" typeId="lcd-custom-text"/>
 		</channels>
 		<representation-property>mac</representation-property>
@@ -597,11 +596,6 @@
 		<item-type>Switch</item-type>
 		<label>Predefined Message</label>
 		<description>Predefined Message</description>
-	</channel-type>
-	<channel-type id="lcd-custom">
-		<item-type>Switch</item-type>
-		<label>Display Custom Message</label>
-		<description>Displays custom message</description>
 	</channel-type>
 	<channel-type id="smart-detect-type">
 		<item-type>String</item-type>

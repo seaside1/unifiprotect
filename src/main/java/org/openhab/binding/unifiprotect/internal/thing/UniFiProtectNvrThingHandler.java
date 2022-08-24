@@ -508,12 +508,11 @@ public class UniFiProtectNvrThingHandler extends BaseBridgeHandler implements Pr
         UniFiProtectEvent event = getNvr().getEventFromId(action.getId());
         if (event != null) {
             handleEvent(event, evt);
-            return;
         } else {
             logger.debug("Failed to find event attempt 1 from id: {}", action.getId());
+            // Sometimes event is asked for too quickly, refresh again
+            refreshEvents(evt, action.getId());
         }
-        // Sometimes event is asked for too quickly, refresh again
-        refreshEvents(evt, action.getId());
     }
 
     private synchronized void refreshEvents(PropertyChangeEvent evt, String id) {

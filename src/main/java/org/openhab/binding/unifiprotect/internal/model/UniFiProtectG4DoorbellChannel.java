@@ -25,7 +25,6 @@ import org.slf4j.LoggerFactory;
 public enum UniFiProtectG4DoorbellChannel {
     LCD_LEAVE_PACKAGE,
     LCD_DO_NOT_DISTURB,
-    LCD_CUSTOM,
     LCD_CUSTOM_TEXT,
     IS_RINGING,
     RING_THUMBNAIL,

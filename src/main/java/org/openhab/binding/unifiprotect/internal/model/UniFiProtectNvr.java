@@ -65,7 +65,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class UniFiProtectNvr {
 
-    private static final int IMAGE_MIN_SIZE = 300;
+    private static final int IMAGE_MIN_SIZE = 200;
     private volatile String token = "";
     private volatile @Nullable UniFiProtectNvrDevice nvrDevice;
     private volatile @Nullable UniFiProtectNvrUser nvrUser;
@@ -449,7 +449,7 @@ public class UniFiProtectNvr {
             }
         } else {
             byte[] data = request.getResponse().getContent();
-            logger.warn("Heatmap request resulted in a error size image");
+            logger.debug("Heatmap request resulted in a error size image");
             if (data != null) {
                 try {
                     logger.debug("Heatmap data: {} {}", data.length, new String(data));

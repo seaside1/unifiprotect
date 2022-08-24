@@ -13,7 +13,6 @@
 package org.openhab.binding.unifiprotect.internal.thing;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link UniFiProtectG4DoorbellThingConfig}
@@ -23,18 +22,4 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class UniFiProtectG4DoorbellThingConfig extends UniFiProtectG4CameraThingConfig {
 
-    private @Nullable String lcdCustomMessage;
-
-    @Override
-    public String toString() {
-        return "UniFiProtectG4DoorbellThingConfig [lcdCustomMessage=" + lcdCustomMessage + "]" + super.toString();
-    }
-
-    public @Nullable String getLcdCustomMessage() {
-        return lcdCustomMessage;
-    }
-
-    public void setLcdCustomMessage(String lcdCustomMessage) {
-        this.lcdCustomMessage = lcdCustomMessage;
-    }
 }

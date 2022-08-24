@@ -18,7 +18,6 @@ import static org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
@@ -32,6 +31,7 @@ import org.openhab.binding.unifiprotect.internal.UniFiProtectUtil;
 import org.openhab.binding.unifiprotect.internal.model.UniFiProtectG4DoorbellChannel;
 import org.openhab.binding.unifiprotect.internal.model.UniFiProtectNvr;
 import org.openhab.binding.unifiprotect.internal.types.UniFiProtectCamera;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
@@ -55,7 +55,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class UniFiProtectG4DoorbellThingHandler extends UniFiProtectG4CameraThingHandler {
 
-    private static final String PROPERTY_CUSTOM_LCD_TEXT = "CUSTOM_LCD_TEXT";
+    private static final String PROPERTY_CUSTOM_LCD_TEXT = "lcdCustomMessage";
     protected UniFiProtectG4DoorbellThingConfig config = new UniFiProtectG4DoorbellThingConfig();
     private final Logger logger = LoggerFactory.getLogger(UniFiProtectG4DoorbellThingHandler.class);
     private volatile boolean isRinging = false;
@@ -108,9 +108,6 @@ public class UniFiProtectG4DoorbellThingHandler extends UniFiProtectG4CameraThin
             return;
         }
         switch (channel) {
-            case LCD_CUSTOM:
-                handleLcdCustom(camera, channelUID, command);
-                break;
             case LCD_CUSTOM_TEXT:
                 handleLcdCustomText(camera, channelUID, command);
                 break;
@@ -130,41 +127,40 @@ public class UniFiProtectG4DoorbellThingHandler extends UniFiProtectG4CameraThin
     private void handleLcdCustomText(UniFiProtectCamera camera, ChannelUID channelUID, Command command) {
         if (command instanceof StringType) {
             String lcdCustomText = ((StringType) command).toString();
-            storeProperty(PROPERTY_CUSTOM_LCD_TEXT, lcdCustomText);
+            storeConfigProperty(PROPERTY_CUSTOM_LCD_TEXT, lcdCustomText);
+            handleLcdCustom(camera);
         }
     }
 
-    private void storeProperty(String key, String value) {
-        Map<String, String> properties = editProperties();
-        properties.put(key, value);
-        updateProperties(properties);
+    private void storeConfigProperty(String key, String value) {
+        Configuration config = editConfiguration();
+        config.put(key, value);
+        updateConfiguration(config);
     }
 
     private synchronized @Nullable String loadPropertyCustomLcdText() {
-        return thing.getProperties().get(PROPERTY_CUSTOM_LCD_TEXT);
+        final Object value = thing.getConfiguration().getProperties().get(PROPERTY_CUSTOM_LCD_TEXT);
+        return value == null ? null : (String) value;
     }
 
-    private synchronized void handleLcdCustom(UniFiProtectCamera camera, ChannelUID channelUID, Command command) {
-        if (!(command instanceof OnOffType)) {
-            logger.debug("Ignoring unsupported command = {} for channel = {} - valid commands types are: OnOffType",
-                    command, channelUID);
+    private synchronized void handleLcdCustom(UniFiProtectCamera camera) {
+        logger.info("Using config: {}", config);
+        String customLcdText = loadPropertyCustomLcdText();
+        if (customLcdText == null || customLcdText.isEmpty()) {
+            customLcdText = getLcdCustomMessageFromConfig();
+            logger.info("No custom Lcd text found in in property, trying config: {}", customLcdText);
+        }
+        if (customLcdText == null || customLcdText.isEmpty()) {
+            logger.info("No custom Lcd text found in config aborted");
             return;
         }
-        if (command == OnOffType.ON) {
-            logger.info("Using config: {}", config);
-            String customLcdText = loadPropertyCustomLcdText();
-            if (customLcdText == null || customLcdText.isEmpty()) {
-                customLcdText = config.getLcdCustomMessage();
-                logger.info("No custom Lcd text found in in property, trying config: {}", customLcdText);
-            }
-            if (customLcdText == null || customLcdText.isEmpty()) {
-                logger.info("No custom Lcd text found in config aborted");
-                return;
-            }
-            setLcdMessageOn(UniFiProtectLcdMessage.LcdMessageType.CUSTOM_MESSAGE, customLcdText, camera);
-        } else if (command == OnOffType.OFF) {
-            setLcdMessageOff(camera);
-        }
+        setLcdMessageOn(UniFiProtectLcdMessage.LcdMessageType.CUSTOM_MESSAGE, customLcdText, camera);
+    }
+
+    private @Nullable String getLcdCustomMessageFromConfig() {
+        Configuration config = getConfig();
+        Object value = config.get(PROPERTY_CUSTOM_LCD_TEXT);
+        return value == null ? null : (String) value;
     }
 
     private synchronized void handleLcdLeavePackage(UniFiProtectCamera camera, ChannelUID channelUID, Command command) {
@@ -249,13 +245,6 @@ public class UniFiProtectG4DoorbellThingHandler extends UniFiProtectG4CameraThin
                             : OnOffType.OFF;
                 }
                 break;
-            case LCD_CUSTOM:
-                if (lcdMessageType != null) {
-                    LcdMessageType type = UniFiProtectLcdMessage.LcdMessageType.parse(lcdMessageType);
-                    state = type == UniFiProtectLcdMessage.LcdMessageType.CUSTOM_MESSAGE ? state = OnOffType.ON
-                            : OnOffType.OFF;
-                }
-                break;
             case LCD_CUSTOM_TEXT:
                 if (lcdMessageType != null) {
                     String lcdCustomText = loadPropertyCustomLcdText();
@@ -300,6 +289,12 @@ public class UniFiProtectG4DoorbellThingHandler extends UniFiProtectG4CameraThin
             }
             this.config = (UniFiProtectG4DoorbellThingConfig) config;
             updateStatus(ONLINE);
+        } else if (thing.getStatus() == ONLINE) {
+            this.config = (UniFiProtectG4DoorbellThingConfig) config;
+            final UniFiProtectCamera camera = getCamera();
+            if (camera != null) {
+                handleLcdCustom(camera);
+            }
         }
     }
 

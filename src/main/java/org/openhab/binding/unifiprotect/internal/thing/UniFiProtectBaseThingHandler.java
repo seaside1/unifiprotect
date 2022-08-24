@@ -65,9 +65,12 @@ public class UniFiProtectBaseThingHandler extends BaseThingHandler {
     private static final String HIGH_FPS = "highFps";
     private static final String HEAT_DL = "HEAT_DL";
     private static final String THMB_DL = "THMB_DL";
+    private static final long REFRESH_DELAY = 1L;
     protected UniFiProtectBaseThingConfig cameraConfig = new UniFiProtectBaseThingConfig();
     private final Logger logger = LoggerFactory.getLogger(UniFiProtectBaseThingHandler.class);
     private volatile boolean motionDetected = false;
+    private @Nullable CompletableFuture<Void> heatMapDelayDlFuture = null;
+    private @Nullable CompletableFuture<Void> thumbnailDelayDlFuture = null;
 
     protected UniFiProtectImageHandler imageHandler = new UniFiProtectImageHandler();
 
@@ -409,42 +412,73 @@ public class UniFiProtectBaseThingHandler extends BaseThingHandler {
     }
 
     private synchronized void handleHeatmap(UniFiProtectCamera camera, UniFiProtectEvent event) {
-        String id = camera != null && camera.getId() != null ? camera.getId() : null;
-        UniFiProtectImage heatmap = getNvr().getHeatmap(camera, event);
-        if (heatmap == null) { // retry
-            heatmap = getNvr().getHeatmap(camera, event);
-        }
+        final UniFiProtectImage heatmap = getNvr().getHeatmap(camera, event);
         final String type = event.getType();
-        if (heatmap == null || type == null) {
-            logger.error("Failed to set heatmap, event type not present: {} or invalid heatmap: {}", event, heatmap);
+        if (type == null || !type.equals(UniFiProtectBindingConstants.EVENT_TYPE_MOTION)) {
             return;
         }
-
-        if (type.equals(UniFiProtectBindingConstants.EVENT_TYPE_MOTION)) {
-            camera.setMotionHeatmapUrl(heatmap.getFile().getAbsolutePath());
-            imageHandler.setMotionHeatmap(camera, heatmap);
+        if (heatmap == null) { // retry
+            heatMapDelayDlFuture = UniFiProtectUtil.delayedExecution(REFRESH_DELAY, TimeUnit.SECONDS);
+            heatMapDelayDlFuture.thenAccept(s -> {
+                try {
+                    final UniFiProtectImage heatmap2 = getNvr().getHeatmap(camera, event);
+                    if (heatmap2 == null) {
+                        logger.error("Failed to set heatmap, event type not present: {} or invalid heatmap: {}", event,
+                                heatmap);
+                        return;
+                    }
+                    setResultingHeatmap(heatmap2, camera);
+                } finally {
+                    heatMapDelayDlFuture = null;
+                }
+            });
+        } else {
+            setResultingHeatmap(heatmap, camera);
         }
     }
 
+    private synchronized void setResultingHeatmap(UniFiProtectImage heatmap, UniFiProtectCamera camera) {
+        camera.setMotionHeatmapUrl(heatmap.getFile().getAbsolutePath());
+        imageHandler.setMotionHeatmap(camera, heatmap);
+    }
+
     private synchronized void handleThumbnail(UniFiProtectCamera camera, UniFiProtectEvent event) {
-        String id = camera != null && camera.getId() != null ? camera.getId() : null;
-        UniFiProtectImage thumbnail = getNvr().getThumbnail(camera, event);
+        final UniFiProtectImage thumbnail = getNvr().getThumbnail(camera, event);
+        final String type = event.getType();
+        if (type == null) {
+            logger.error("Failed to write thumbnail, event type not present: {}", event);
+            return;
+        }
         if (thumbnail != null) {
-            final String type = event.getType();
-            if (type == null) {
-                logger.error("Failed to write thumbnail, event type not present: {}", event);
-                return;
-            }
-            if (type.equals(UniFiProtectBindingConstants.EVENT_TYPE_MOTION)) {
-                camera.setMotionThumbnailUrl(thumbnail.getFile().getAbsolutePath());
-                imageHandler.setMotionThumbnail(camera, thumbnail);
-            } else if (type.equals(UniFiProtectBindingConstants.EVENT_TYPE_RING)) {
-                camera.setRingThumbnailUrl(thumbnail.getFile().getAbsolutePath());
-                imageHandler.setRingThumbnail(camera, thumbnail);
-            } else if (type.equals(UniFiProtectBindingConstants.EVENT_TYPE_SMART_DETECT_ZONE)) {
-                camera.setSmartDetectThumbnailUrl(thumbnail.getFile().getAbsolutePath());
-                imageHandler.setSmartDetectThumbnail(camera, thumbnail);
-            }
+            setThumbnail(thumbnail, type, camera);
+        } else {
+            thumbnailDelayDlFuture = UniFiProtectUtil.delayedExecution(REFRESH_DELAY, TimeUnit.SECONDS);
+            thumbnailDelayDlFuture.thenAccept(s -> {
+                try {
+                    final UniFiProtectImage thumbnail2 = getNvr().getThumbnail(camera, event);
+                    if (thumbnail2 == null) {
+                        logger.error("Failed to set thumbnail, event type not present: {} or invalid heatmap: {}",
+                                event, thumbnail2);
+                        return;
+                    }
+                    setThumbnail(thumbnail2, type, camera);
+                } finally {
+                    thumbnailDelayDlFuture = null;
+                }
+            });
+        }
+    }
+
+    private synchronized void setThumbnail(UniFiProtectImage thumbnail, String type, UniFiProtectCamera camera) {
+        if (type.equals(UniFiProtectBindingConstants.EVENT_TYPE_MOTION)) {
+            camera.setMotionThumbnailUrl(thumbnail.getFile().getAbsolutePath());
+            imageHandler.setMotionThumbnail(camera, thumbnail);
+        } else if (type.equals(UniFiProtectBindingConstants.EVENT_TYPE_RING)) {
+            camera.setRingThumbnailUrl(thumbnail.getFile().getAbsolutePath());
+            imageHandler.setRingThumbnail(camera, thumbnail);
+        } else if (type.equals(UniFiProtectBindingConstants.EVENT_TYPE_SMART_DETECT_ZONE)) {
+            camera.setSmartDetectThumbnailUrl(thumbnail.getFile().getAbsolutePath());
+            imageHandler.setSmartDetectThumbnail(camera, thumbnail);
         }
     }
 
