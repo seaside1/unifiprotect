@@ -218,7 +218,6 @@ You need to configure the alerts yourself by logging into the controller.
 | last-ring                    | DateTime  | Timestamp for last ring event                                        | Read/Write  |
 | lcd-leave-package            | Switch    | Will display the predefined Leave Package at Door message            | Read/Write  |
 | lcd-do-not-disturb           | Switch    | Will display the predefined Do not disturb message                   | Read/Write  |
-| lcd-custom                   | Switch    | Will display the pre configured or lcd-custom-text message           | Read/Write  |
 | lcd-custom-text              | String    | Channel for setting custom lcd messages                              | Read/Write  |
 
 The LCD message displayed by the doorbell will either be the configured message in the thing configuration or
@@ -424,6 +423,12 @@ Get jar-file from repo. Place the jar-file in the openhab-addons folder
 https://github.com/seaside1/unifiprotect
 
 ## Changelog
+  ### BETA7
+  * Removed warnings
+  * Fixed Doorbell custom message, removed the switch to trigger the message
+  * Fixed heatmap and thumbnail retrival without refresh of entire system
+  ### BETA6
+  * Login issue for 2.5.8 fixed
   ### BETA5
   * Support for UniFi Protect 2.1.1
   * Reworked event api actions
