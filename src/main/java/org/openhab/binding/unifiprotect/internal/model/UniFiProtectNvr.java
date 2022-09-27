@@ -133,7 +133,9 @@ public class UniFiProtectNvr {
         boolean bootstrapParseSuccess = getUniFiProtectJsonParser().parseBootstrap(bootstrapJsonContent);
         if (logger.isDebugEnabled()) {
             try {
-                UniFiProtectUtil.writeFile(File.createTempFile("bootstrap", ".json"), bootstrapJsonContent.getBytes());
+                final File tmpFile = File.createTempFile("bootstrap", ".json");
+                UniFiProtectUtil.writeFile(tmpFile, bootstrapJsonContent.getBytes());
+                logger.debug("Wrote bootstrap to temp file: {}", tmpFile.getAbsolutePath());
             } catch (IOException e) {
                 logger.debug("Failed to write bootstrap", e);
             }
