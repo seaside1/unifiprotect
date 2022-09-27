@@ -423,6 +423,8 @@ Get jar-file from repo. Place the jar-file in the openhab-addons folder
 https://github.com/seaside1/unifiprotect
 
 ## Changelog
+  ### BETA8
+  * If debug is enabled, bootstrap.json will be printed to a temp-file
   ### BETA7
   * Removed warnings
   * Fixed Doorbell custom message, removed the switch to trigger the message
