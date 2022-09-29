@@ -70,7 +70,7 @@ public abstract class UniFiProtectRequest {
 
     public static final String PROPERTY_CAMERAS = "cameras";
 
-    private static final UniFiProtectStatus RESPONSE_STATUS_OK = new UniFiProtectStatus(SendStatus.SUCCESS);
+    public static final UniFiProtectStatus RESPONSE_STATUS_OK = UniFiProtectStatus.STATUS_SUCCESS;
     private static final String SCHEME_SEPARATOR = "://";
 
     private final Logger logger = LoggerFactory.getLogger(UniFiProtectRequest.class);

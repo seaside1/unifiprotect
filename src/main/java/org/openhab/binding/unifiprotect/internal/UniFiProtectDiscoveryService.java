@@ -96,7 +96,7 @@ public class UniFiProtectDiscoveryService extends AbstractDiscoveryService {
     private ThingTypeUID getThingType(UniFiProtectCamera camera) {
         final String type = camera.getType();
         if (type != null) {
-            if (type.equals(UniFiProtectBindingConstants.G4_DOORBELL)) {
+            if (type.startsWith(UniFiProtectBindingConstants.G4_DOORBELL)) {
                 return UniFiProtectBindingConstants.THING_TYPE_G4_DOORBELL;
             }
 

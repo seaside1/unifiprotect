@@ -250,6 +250,9 @@ public class UniFiProtectG4CameraThingHandler extends UniFiProtectBaseThingHandl
             case SMART_DETECT_VEHICLE:
                 state = OnOffType.from(detectTypes.containsVehicle());
                 break;
+            case SMART_DETECT_PACKAGE:
+                state = OnOffType.from(detectTypes.containsPackage());
+                break;
             case SMART_DETECT_MOTION:
                 state = OnOffType.from(isSmartMotionDetected);
                 break;

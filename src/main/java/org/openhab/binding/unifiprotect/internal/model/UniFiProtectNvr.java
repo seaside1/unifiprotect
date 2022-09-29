@@ -109,27 +109,7 @@ public class UniFiProtectNvr {
         return sendStatus;
     }
 
-    private synchronized UniFiProtectStatus refreshBootstrap() {
-        UniFiProtectBootstrapRequest request = new UniFiProtectBootstrapRequest(httpClient, getConfig(), token);
-        UniFiProtectStatus bootStrapRequestStatus = request.sendRequest();
-        if (!requestSuccessFullySent(bootStrapRequestStatus)) {
-            if (request.creditialsExpired()) {
-                logger.debug("Credentials expired, logging in again");
-                UniFiProtectStatus status = login();
-                if (status.getStatus() == SendStatus.SUCCESS) {
-                    request = new UniFiProtectBootstrapRequest(httpClient, getConfig(), token);
-                    bootStrapRequestStatus = request.sendRequest();
-                } else {
-                    return bootStrapRequestStatus;
-                }
-            }
-        }
-        logger.debug("Request is ok, parsing cameras");
-        final String bootstrapJsonContent = request.getJsonContent();
-        if (bootstrapJsonContent == null) {
-            logger.error("Got null response when refreshing bootstrap");
-            return UniFiProtectStatus.STATUS_EXECUTION_FAULT;
-        }
+    protected synchronized UniFiProtectStatus refreshBootstrap(String bootstrapJsonContent) {
         boolean bootstrapParseSuccess = getUniFiProtectJsonParser().parseBootstrap(bootstrapJsonContent);
         if (logger.isDebugEnabled()) {
             try {
@@ -174,7 +154,31 @@ public class UniFiProtectNvr {
         }
         logger.debug("UniFiProtectNvrUser: {}", getNvrUser());
         logger.debug("Login Token Success: {}", token);
-        return bootStrapRequestStatus;
+        return UniFiProtectStatus.STATUS_SUCCESS;
+    }
+
+    protected synchronized UniFiProtectStatus refreshBootstrap() {
+        UniFiProtectBootstrapRequest request = new UniFiProtectBootstrapRequest(httpClient, getConfig(), token);
+        UniFiProtectStatus bootStrapRequestStatus = request.sendRequest();
+        if (!requestSuccessFullySent(bootStrapRequestStatus)) {
+            if (request.creditialsExpired()) {
+                logger.debug("Credentials expired, logging in again");
+                UniFiProtectStatus status = login();
+                if (status.getStatus() == SendStatus.SUCCESS) {
+                    request = new UniFiProtectBootstrapRequest(httpClient, getConfig(), token);
+                    bootStrapRequestStatus = request.sendRequest();
+                } else {
+                    return bootStrapRequestStatus;
+                }
+            }
+        }
+        logger.debug("Request is ok, parsing cameras");
+        final String bootstrapJsonContent = request.getJsonContent();
+        if (bootstrapJsonContent == null) {
+            logger.error("Got null response when refreshing bootstrap");
+            return UniFiProtectStatus.STATUS_EXECUTION_FAULT;
+        }
+        return refreshBootstrap(bootstrapJsonContent);
     }
 
     public synchronized UniFiProtectStatus refreshEvents() {

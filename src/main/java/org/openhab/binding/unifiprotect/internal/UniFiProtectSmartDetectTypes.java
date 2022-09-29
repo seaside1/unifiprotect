@@ -27,19 +27,26 @@ public enum UniFiProtectSmartDetectTypes {
     PERSON,
     VEHICLE,
     PERSON_AND_VEHICLE,
+    PACKAGE,
     EMPTY,
     UNDEF;
 
     private static final String VEHICLE_STR = "vehicle";
     private static final String PERSON_STR = "person";
+    private static final String PACKAGE_STR = "package";
     private static final String EMPTY_JSON = "{\"smartDetectSettings\":{\"objectTypes\":[]}}";
     private static final String PERSON_JSON = "{\"smartDetectSettings\":{\"objectTypes\":[\"person\"]}}";
     private static final String VEHICLE_JSON = "{\"smartDetectSettings\":{\"objectTypes\":[\"vehicle\"]}}";
+    private static final String PACKAGE_JSON = "{\"smartDetectSettings\":{\"objectTypes\":[\"package\"]}}";
     private static final String PERSON_AND_VEHICLE_JSON = "{\"smartDetectSettings\":{\"objectTypes\":[\"person\",\"vehicle\"]}}";
     private static final String DUMMY = "UNDEF OBJ SmartDetectType";
 
     public boolean containsPerson() {
         return this == PERSON || this == PERSON_AND_VEHICLE;
+    }
+
+    public boolean containsPackage() {
+        return this == PACKAGE;
     }
 
     public boolean containsVehicle() {
@@ -52,6 +59,8 @@ public enum UniFiProtectSmartDetectTypes {
                 return PERSON_AND_VEHICLE_JSON;
             case PERSON:
                 return PERSON_JSON;
+            case PACKAGE:
+                return PACKAGE_JSON;
             case EMPTY:
                 return EMPTY_JSON;
             case UNDEF:
@@ -68,14 +77,17 @@ public enum UniFiProtectSmartDetectTypes {
             return EMPTY;
         }
 
-        final boolean person = Arrays.stream(objectTypes).anyMatch(type -> type.equals(PERSON_STR));
-        final boolean vehicle = Arrays.stream(objectTypes).anyMatch(type -> type.equals(VEHICLE_STR));
-        if (person && vehicle) {
+        final boolean personType = Arrays.stream(objectTypes).anyMatch(type -> type.equals(PERSON_STR));
+        final boolean vehicleType = Arrays.stream(objectTypes).anyMatch(type -> type.equals(VEHICLE_STR));
+        final boolean packageType = Arrays.stream(objectTypes).anyMatch(type -> type.equals(PACKAGE_STR));
+        if (personType && vehicleType) {
             return PERSON_AND_VEHICLE;
-        } else if (person) {
+        } else if (personType) {
             return PERSON;
-        } else if (vehicle) {
+        } else if (vehicleType) {
             return VEHICLE;
+        } else if (packageType) {
+            return PACKAGE;
         }
         return EMPTY;
     }
@@ -86,6 +98,8 @@ public enum UniFiProtectSmartDetectTypes {
                 return new String[] {};
             case PERSON:
                 return new String[] { PERSON_STR };
+            case PACKAGE:
+                return new String[] { PACKAGE_STR };
             case PERSON_AND_VEHICLE:
                 return new String[] { PERSON_STR, VEHICLE_STR };
             case UNDEF:

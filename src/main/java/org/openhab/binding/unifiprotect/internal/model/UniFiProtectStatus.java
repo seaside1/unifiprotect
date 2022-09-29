@@ -25,6 +25,7 @@ import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectReque
 @NonNullByDefault
 public class UniFiProtectStatus {
 
+    public static final UniFiProtectStatus STATUS_SUCCESS = new UniFiProtectStatus(SendStatus.SUCCESS);
     public static final UniFiProtectStatus STATUS_NOT_SENT = new UniFiProtectStatus(SendStatus.NOT_SENT);
     public static final UniFiProtectStatus STATUS_TOKEN_MISSING = new UniFiProtectStatus(SendStatus.TOKEN_MISSING);
     public static final UniFiProtectStatus STATUS_EXECUTION_FAULT = new UniFiProtectStatus(SendStatus.EXECUTION_FAULT);

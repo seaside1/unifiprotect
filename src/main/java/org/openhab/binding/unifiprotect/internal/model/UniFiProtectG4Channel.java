@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 public enum UniFiProtectG4Channel {
     SMART_DETECT_PERSON,
     SMART_DETECT_VEHICLE,
+    SMART_DETECT_PACKAGE,
     SMART_DETECT_MOTION,
     SMART_DETECT_THUMBNAIL,
     SMART_DETECT_SCORE,
