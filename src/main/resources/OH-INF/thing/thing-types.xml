@@ -107,6 +107,7 @@
 			<channel id="smart-detect-vehicle" typeId="smart-detect-vehicle"/>
 			<channel id="smart-detect-person" typeId="smart-detect-person"/>
 			<channel id="smart-detect-motion" typeId="smart-detect-motion"/>
+			<channel id="smart-detect-package" typeId="smart-detect-package"/>
 			<channel id="smart-detect-thumbnail" typeId="smart-detect-thumbnail"/>
 			<channel id="smart-detect-score" typeId="smart-detect-score"/>
 			<channel id="smart-detect-type" typeId="smart-detect-type"/>
@@ -567,6 +568,12 @@
 		<item-type>Switch</item-type>
 		<label>Turn on Smart Detect Person</label>
 		<description>Turn on Smart Detect Person</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="smart-detect-package">
+		<item-type>Switch</item-type>
+		<label>Smart Detect Package</label>
+		<description>Smart Detect Package</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="smart-detect-last">

@@ -39,10 +39,10 @@ public class UniFiProtectNvrDevice {
     private String firmwareVersion = UniFiProtectBindingConstants.EMPTY_STRING;
     private String hardwarePlatform = UniFiProtectBindingConstants.EMPTY_STRING;
     private Map<String, Integer> ports = new HashMap<>();
-    private Long uptime = new Long(-1);
-    private Long lastSeen = new Long(-1);
+    private Long uptime = Long.valueOf(-1);
+    private Long lastSeen = Long.valueOf(-1);
     private Boolean isUpdating = Boolean.FALSE;
-    private Long lastUpdateAt = new Long(-1);
+    private Long lastUpdateAt = Long.valueOf(-1);
     private Boolean isConnectedToCloud = Boolean.FALSE;
     private Boolean isStation = Boolean.FALSE;
     private Boolean enableAutomaticBackups = Boolean.FALSE;
@@ -52,11 +52,11 @@ public class UniFiProtectNvrDevice {
     private String[] hosts = new String[0];
     private String hardwareId = UniFiProtectBindingConstants.EMPTY_STRING;
     private String hardwareRevision = UniFiProtectBindingConstants.EMPTY_STRING;
-    private Integer hostType = new Integer(-1);
+    private Integer hostType = Integer.valueOf(-1);
     private String hostShortname = UniFiProtectBindingConstants.EMPTY_STRING;
     private Boolean isHardware = Boolean.FALSE;
     private String timeFormat = UniFiProtectBindingConstants.EMPTY_STRING;
-    private Long recordingRetentionDurationMs = new Long(-1);
+    private Long recordingRetentionDurationMs = Long.valueOf(-1);
     private Boolean enableCrashReporting = Boolean.FALSE;
     private Boolean disableAudio = Boolean.FALSE;
     private UniFiProtectSystemInfo systemInfo = new UniFiProtectSystemInfo();
@@ -329,42 +329,31 @@ public class UniFiProtectNvrDevice {
     }
 
     public @Nullable Long getMemAvailable() {
-        return getSystemInfo() != null && getSystemInfo().getMemory() != null
-                ? getSystemInfo().getMemory().getAvailable()
-                : null;
+        return getSystemInfo().getMemory().getAvailable();
     }
 
     public @Nullable Long getMemFree() {
-        return getSystemInfo() != null && getSystemInfo().getMemory().getFree() != null
-                ? getSystemInfo().getMemory().getFree()
-                : null;
+        return getSystemInfo().getMemory().getFree();
     }
 
     public @Nullable Long getMemTotal() {
-        return getSystemInfo() != null && getSystemInfo().getMemory().getTotal() != null
-                ? getSystemInfo().getMemory().getTotal()
-                : null;
+        return getSystemInfo().getMemory().getTotal();
     }
 
     public @Nullable Long getStorageAvailable() {
-        return getSystemInfo() != null && getSystemInfo().getStorage() != null
-                ? getSystemInfo().getStorage().getAvailable()
-                : null;
+        return getSystemInfo().getStorage().getAvailable();
     }
 
     public @Nullable Long getStorageSize() {
-        return getSystemInfo() != null && getSystemInfo().getStorage() != null ? getSystemInfo().getStorage().getSize()
-                : null;
+        return getSystemInfo().getStorage().getSize();
     }
 
     public @Nullable String getStorageType() {
-        return getSystemInfo() != null && getSystemInfo().getStorage() != null ? getSystemInfo().getStorage().getType()
-                : null;
+        return getSystemInfo().getStorage().getType();
     }
 
     public @Nullable Long getStorageUsed() {
-        return getSystemInfo() != null && getSystemInfo().getStorage() != null ? getSystemInfo().getStorage().getUsed()
-                : null;
+        return getSystemInfo().getStorage().getUsed();
     }
 
     public @Nullable String getDevice0Model() {
@@ -376,13 +365,11 @@ public class UniFiProtectNvrDevice {
     }
 
     public Double getCpuTemperature() {
-        return getSystemInfo() != null && getSystemInfo().getCpu() != null ? getSystemInfo().getCpu().getTemperature()
-                : null;
+        return getSystemInfo().getCpu().getTemperature();
     }
 
     public Double getCpuAverageLoad() {
-        return getSystemInfo() != null && getSystemInfo().getCpu() != null ? getSystemInfo().getCpu().getAverageLoad()
-                : null;
+        return getSystemInfo().getCpu().getAverageLoad();
     }
 
     @SuppressWarnings("null")

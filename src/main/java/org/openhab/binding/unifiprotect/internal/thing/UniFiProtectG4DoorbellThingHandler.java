@@ -27,6 +27,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.unifiprotect.internal.UniFiProtectBindingConstants;
 import org.openhab.binding.unifiprotect.internal.UniFiProtectLcdMessage;
 import org.openhab.binding.unifiprotect.internal.UniFiProtectLcdMessage.LcdMessageType;
+import org.openhab.binding.unifiprotect.internal.UniFiProtectSmartDetectTypes;
 import org.openhab.binding.unifiprotect.internal.UniFiProtectUtil;
 import org.openhab.binding.unifiprotect.internal.model.UniFiProtectG4DoorbellChannel;
 import org.openhab.binding.unifiprotect.internal.model.UniFiProtectNvr;
@@ -108,6 +109,9 @@ public class UniFiProtectG4DoorbellThingHandler extends UniFiProtectG4CameraThin
             return;
         }
         switch (channel) {
+            case SMART_DETECT_PACKAGE:
+                handleSmartDetectPackage(camera, channelUID, command);
+                break;
             case LCD_CUSTOM_TEXT:
                 handleLcdCustomText(camera, channelUID, command);
                 break;
@@ -122,6 +126,47 @@ public class UniFiProtectG4DoorbellThingHandler extends UniFiProtectG4CameraThin
             default:
                 break;
         }
+    }
+
+    private synchronized void handleSmartDetectPackage(UniFiProtectCamera camera, ChannelUID channelUID,
+            Command command) {
+        if (!(command instanceof OnOffType)) {
+            logger.debug("Ignoring unsupported command = {} for channel = {} - valid commands types are: OnOffType",
+                    command, channelUID);
+            return;
+        }
+        UniFiProtectSmartDetectTypes type = camera.getSmartDetectObjectTypes();
+        UniFiProtectSmartDetectTypes newType = null;
+        switch (type) {
+            case EMPTY:
+                if (command == OnOffType.ON) {
+                    newType = UniFiProtectSmartDetectTypes.PACKAGE;
+                } else if (command == OnOffType.OFF) {
+                    newType = UniFiProtectSmartDetectTypes.EMPTY;
+                } else {
+                    newType = UniFiProtectSmartDetectTypes.UNDEF;
+                }
+                break;
+            case PACKAGE:
+                if (command == OnOffType.ON) {
+                    newType = UniFiProtectSmartDetectTypes.PACKAGE;
+                } else if (command == OnOffType.OFF) {
+                    newType = UniFiProtectSmartDetectTypes.EMPTY;
+                } else {
+                    newType = UniFiProtectSmartDetectTypes.UNDEF;
+                }
+                break;
+            case UNDEF:
+                logger.error("Invalid type when trying to activate smart function");
+                break;
+            default:
+                break;
+        }
+        if (newType == null) {
+            logger.error("Failed to get correct type, ignoring command");
+            return;
+        }
+        sendSmartDetectMessage(newType, camera);
     }
 
     private void handleLcdCustomText(UniFiProtectCamera camera, ChannelUID channelUID, Command command) {
@@ -227,9 +272,10 @@ public class UniFiProtectG4DoorbellThingHandler extends UniFiProtectG4CameraThin
                 state = OnOffType.from(isRinging);
                 break;
             case LAST_RING:
-                if (camera.getLastRing() != null && camera.getLastRing() > 0) {
-                    state = new DateTimeType(ZonedDateTime.ofInstant(Instant.ofEpochMilli(camera.getLastRing()),
-                            ZoneId.systemDefault()));
+                final Long lastRing = camera.getLastRing();
+                if (lastRing != null && lastRing > 0) {
+                    state = new DateTimeType(
+                            ZonedDateTime.ofInstant(Instant.ofEpochMilli(lastRing), ZoneId.systemDefault()));
                 }
                 break;
             case LCD_DO_NOT_DISTURB:
@@ -324,7 +370,7 @@ public class UniFiProtectG4DoorbellThingHandler extends UniFiProtectG4CameraThin
 
     private synchronized void scehduleRingToBeTurnedOff() {
         UniFiProtectCamera camera = getCamera();
-        String cameraId = camera.getId();
+        String cameraId = camera != null ? camera.getId() : null;
         if (cameraId == null) {
             logger.error("Failed to ring event, camera null");
             return;

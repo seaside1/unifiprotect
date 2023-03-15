@@ -148,7 +148,7 @@ public class UniFiProtectG4CameraThingHandler extends UniFiProtectBaseThingHandl
             logger.error("Failed to get correct type, ignoring command");
             return;
         }
-        sendSmartDetectPersonMessage(newType, camera);
+        sendSmartDetectMessage(newType, camera);
     }
 
     private synchronized void handleSmartDetectVehicle(UniFiProtectCamera camera, ChannelUID channelUID,
@@ -191,10 +191,10 @@ public class UniFiProtectG4CameraThingHandler extends UniFiProtectBaseThingHandl
             logger.error("Failed to get correct type, ignoring command");
             return;
         }
-        sendSmartDetectPersonMessage(newType, camera);
+        sendSmartDetectMessage(newType, camera);
     }
 
-    private synchronized void sendSmartDetectPersonMessage(UniFiProtectSmartDetectTypes newType,
+    protected synchronized void sendSmartDetectMessage(UniFiProtectSmartDetectTypes newType,
             UniFiProtectCamera camera) {
         logger.info("Sending turn on/off SmatDetect Settings: {} camera: {}, ip: {}", newType.name(), camera.getName(),
                 camera.getHost());
