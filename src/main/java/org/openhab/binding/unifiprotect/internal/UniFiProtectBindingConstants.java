@@ -35,10 +35,12 @@ public class UniFiProtectBindingConstants {
     public static final ThingTypeUID THING_TYPE_NVR = new ThingTypeUID(BINDING_ID, "nvr");
     public static final ThingTypeUID THING_TYPE_G3_CAMERA = new ThingTypeUID(BINDING_ID, "g3camera");
     public static final ThingTypeUID THING_TYPE_G4_CAMERA = new ThingTypeUID(BINDING_ID, "g4camera");
+    public static final ThingTypeUID THING_TYPE_G5_CAMERA = new ThingTypeUID(BINDING_ID, "g5camera");
     public static final ThingTypeUID THING_TYPE_G4_DOORBELL = new ThingTypeUID(BINDING_ID, "g4doorbell");
     public static final String G4_DOORBELL = "UVC G4 Doorbell";
     public static final String G3_CAMERA_PREFIX = "UVC G3";
     public static final String G4_CAMERA_PREFIX = "UVC G4";
+    public static final String G5_CAMERA_PREFIX = "UVC G5";
     public static final String EVENT_TYPE_MOTION = "motion";
     public static final String EVENT_TYPE_SMART_DETECT_ZONE = "smartDetectZone";
     public static final String EVENT_TYPE_RING = "ring";
@@ -61,4 +63,5 @@ public class UniFiProtectBindingConstants {
     public static final String PROPERTY_EVENT_ACTION_ADD = "EVENT_ACTION_ADD";
 
     public static final String EMPTY_STRING = "";
+
 }
