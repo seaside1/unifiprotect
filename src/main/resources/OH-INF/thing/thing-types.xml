@@ -70,59 +70,59 @@
 			</parameter>
 		</config-description>
 	</bridge-type>
-	   <thing-type id="g5camera">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="nvr"/>
-        </supported-bridge-type-refs>
-        <label>UniFi Protect G5 Camera</label>
-        <description>The UniFi Protect G5 Camera connected to the UniFi Protect NVR</description>
-        <channels>
-            <channel id="name" typeId="name"/>
-            <channel id="type" typeId="type"/>
-            <channel id="state" typeId="state"/>
-            <channel id="host" typeId="host"/>
-            <channel id="is-dark" typeId="is-dark"/>
-            <channel id="status-light" typeId="status-light"/>
-            <channel id="reboot" typeId="reboot"/>
-            <channel id="motion-thumbnail" typeId="motion-thumbnail"/>
-            <channel id="motion-heatmap" typeId="motion-heatmap"/>
-            <channel id="motion-score" typeId="motion-score"/>
-            <channel id="snapshot" typeId="snapshot"/>
-            <channel id="snapshot-img" typeId="snapshot-img"/>
-            <channel id="a-snapshot" typeId="a-snapshot"/>
-            <channel id="a-snapshot-img" typeId="a-snapshot-img"/>
-            <channel id="ir-mode" typeId="ir-mode"/>
-            <channel id="hdr-mode" typeId="hdr-mode"/>
-            <channel id="high-fps-mode" typeId="high-fps-mode"/>
-            <channel id="recording-mode" typeId="recording-mode"/>
-            <channel id="is-motion-detected" typeId="is-motion-detected"/>
-            <channel id="is-mic-enabled" typeId="is-mic-enabled"/>
-            <channel id="is-recording" typeId="is-recording"/>
-            <channel id="up-since" typeId="up-since"/>
-            <channel id="connected-since" typeId="connected-since"/>
-            <channel id="last-seen" typeId="last-seen"/>
-            <channel id="last-motion" typeId="last-motion"/>
-            <channel id="mic-volume" typeId="mic-volume"/>
-            <channel id="smart-detect-vehicle" typeId="smart-detect-vehicle"/>
-            <channel id="smart-detect-person" typeId="smart-detect-person"/>
-            <channel id="smart-detect-motion" typeId="smart-detect-motion"/>
-            <channel id="smart-detect-thumbnail" typeId="smart-detect-thumbnail"/>
-            <channel id="smart-detect-score" typeId="smart-detect-score"/>
-            <channel id="smart-detect-type" typeId="smart-detect-type"/>
-            <channel id="smart-detect-last" typeId="smart-detect-last"/>
-        </channels>
-        <representation-property>mac</representation-property>
-        <config-description>
-            <parameter name="name" type="text" required="true">
-                <label>Name</label>
-                <description>The Name of the camera</description>
-            </parameter>
-            <parameter name="mac" type="text" required="true">
-                <label>Mac</label>
-                <description>Mac Address of the Camera</description>
-            </parameter>
-        </config-description>
-    </thing-type>
+	<thing-type id="g5camera">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="nvr"/>
+		</supported-bridge-type-refs>
+		<label>UniFi Protect G5 Camera</label>
+		<description>The UniFi Protect G5 Camera connected to the UniFi Protect NVR</description>
+		<channels>
+			<channel id="name" typeId="name"/>
+			<channel id="type" typeId="type"/>
+			<channel id="state" typeId="state"/>
+			<channel id="host" typeId="host"/>
+			<channel id="is-dark" typeId="is-dark"/>
+			<channel id="status-light" typeId="status-light"/>
+			<channel id="reboot" typeId="reboot"/>
+			<channel id="motion-thumbnail" typeId="motion-thumbnail"/>
+			<channel id="motion-heatmap" typeId="motion-heatmap"/>
+			<channel id="motion-score" typeId="motion-score"/>
+			<channel id="snapshot" typeId="snapshot"/>
+			<channel id="snapshot-img" typeId="snapshot-img"/>
+			<channel id="a-snapshot" typeId="a-snapshot"/>
+			<channel id="a-snapshot-img" typeId="a-snapshot-img"/>
+			<channel id="ir-mode" typeId="ir-mode"/>
+			<channel id="hdr-mode" typeId="hdr-mode"/>
+			<channel id="high-fps-mode" typeId="high-fps-mode"/>
+			<channel id="recording-mode" typeId="recording-mode"/>
+			<channel id="is-motion-detected" typeId="is-motion-detected"/>
+			<channel id="is-mic-enabled" typeId="is-mic-enabled"/>
+			<channel id="is-recording" typeId="is-recording"/>
+			<channel id="up-since" typeId="up-since"/>
+			<channel id="connected-since" typeId="connected-since"/>
+			<channel id="last-seen" typeId="last-seen"/>
+			<channel id="last-motion" typeId="last-motion"/>
+			<channel id="mic-volume" typeId="mic-volume"/>
+			<channel id="smart-detect-vehicle" typeId="smart-detect-vehicle"/>
+			<channel id="smart-detect-person" typeId="smart-detect-person"/>
+			<channel id="smart-detect-motion" typeId="smart-detect-motion"/>
+			<channel id="smart-detect-thumbnail" typeId="smart-detect-thumbnail"/>
+			<channel id="smart-detect-score" typeId="smart-detect-score"/>
+			<channel id="smart-detect-type" typeId="smart-detect-type"/>
+			<channel id="smart-detect-last" typeId="smart-detect-last"/>
+		</channels>
+		<representation-property>mac</representation-property>
+		<config-description>
+			<parameter name="name" type="text" required="true">
+				<label>Name</label>
+				<description>The Name of the camera</description>
+			</parameter>
+			<parameter name="mac" type="text" required="true">
+				<label>Mac</label>
+				<description>Mac Address of the Camera</description>
+			</parameter>
+		</config-description>
+	</thing-type>
 	<thing-type id="g4doorbell">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="nvr"/>
