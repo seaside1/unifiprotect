@@ -2,10 +2,7 @@
 
 Integrates UniFi Protect Camera System into openHAB. See https://ui.com/why-protect/
 This binding utilizes an undocumented json REST API that is present in the NVR. It works very similar
-to the 
-
-1) Homebridge solution: https://github.com/hjdhjd/homebridge-unifi-protect 
-2) HomeAssistant solution: https://github.com/briis/unifiprotect
+to the Homebridge and HomeAssistant soultion.
 
 The binding is written in java and tailored for openHAB.
 
@@ -51,9 +48,9 @@ Maturity: BETA
 
 - UniFi Protect Cloud Key Gen2+ Firmware >= 2.0.18
 - UniFi Dream Machine / Pro 
-- Any UniFi Protect Camera G3 and G4
+- Any UniFi Protect Camera G3, G4 and G5
 - UniFi NVR 
-- UniFi Doorbell 
+- UniFi Doorbell / Pro
 
 The binding has been rewritten to support UniFi OS only. That means if you have a UCKP (Cloudkey gen2+)
 you need to update it to at least firmware 2.0.18. After 2.0.18 UCKP is running UniFiOs just like the
@@ -92,7 +89,8 @@ This cannot be done in the UniFi Protect Controller, but has to be done on each 
 * `nvr/bridge` - Running UniFi Protect and handles the attached cameras 
 * `g3camera` -  A UniFi G3 Camera 
 * `g4camera` - A UniFi G4 Camera
-* `g4doorbell` - A UniFi G4 Doorbell
+* `g4doorbell` - A UniFi G4 Doorbell / Doorbell Pro
+* `g5camera` - A UniFi G5 Camera
 
 ## Discovery
 
@@ -220,6 +218,10 @@ You need to configure the alerts yourself by logging into the controller.
 | smart-detect-last            | DateTime  | Last Smart Detection Event timestamp                                 | Read        |
 
 ### G4 Doorbell Camera Channels (Has all the G3 and G4 Channels)
+The LCD message displayed by the doorbell will either be the configured message in the thing configuration or
+the set message in the lcd-custom-text channel. 
+Use the thing config if you want a static custom message to be displayed. Use the lcd-custom-text channel
+if you want to dynamically set the message.
 
 | Channel ID                   | Item Type | Description                                                          | Permissions |
 |------------------------------|-----------|--------------------------------------------------------------------- | ----------- |
@@ -230,10 +232,10 @@ You need to configure the alerts yourself by logging into the controller.
 | lcd-do-not-disturb           | Switch    | Will display the predefined Do not disturb message                   | Read/Write  |
 | lcd-custom-text              | String    | Channel for setting custom lcd messages                              | Read/Write  |
 
-The LCD message displayed by the doorbell will either be the configured message in the thing configuration or
-the set message in the lcd-custom-text channel. 
-Use the thing config if you want a static custom message to be displayed. Use the lcd-custom-text channel
-if you want to dynamically set the message.
+### G5 Camera Channels (Has all the G3 & G4 Channels)
+
+| Channel ID                   | Item Type | Description                                                          | Permissions |
+|------------------------------|-----------|--------------------------------------------------------------------- | ----------- |
 
 ## Full Example
 
@@ -442,6 +444,11 @@ https://github.com/seaside1/unifiprotect
 
 ## Changelog
 
+  ### BETA9 (NOT RELEASE YET)
+  
+  * Basic support for G5-cameras
+  * Support for G4 Doorbell Pro
+  
   ### BETA8
 
   * If debug is enabled, bootstrap.json will be printed to a temp-file
