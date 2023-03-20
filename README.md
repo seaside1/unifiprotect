@@ -7,12 +7,12 @@ to the Homebridge and HomeAssistant soultion.
 The binding is written in java and tailored for openHAB.
 
 The Binding has a configurable refresh rate. The refresh rate will update the NVR information. 
-For Events (motion detection) starting at ALPHA6 the UniFiProtect Event API over websockets has 
-been implemented. Thus motion detection should be instant and without the need of polling.
+For Events (motion detection) UniFiProtect Event API over websockets has been implemented, 
+thus motion detection is instant and without the need of polling.
 
 ## openHAB Version
 
-openHAB version 3.x.x is supported.
+openHAB version 3.4.x is supported.
 
 ## Usage
 
