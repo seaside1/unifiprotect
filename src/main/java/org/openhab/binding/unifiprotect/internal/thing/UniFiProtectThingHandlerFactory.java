@@ -53,6 +53,8 @@ public class UniFiProtectThingHandlerFactory extends BaseThingHandlerFactory {
             return uniFiProtectNvrThingHandler;
         } else if (UniFiProtectG4DoorbellThingHandler.supportsThingType(thingTypeUID)) {
             return new UniFiProtectG4DoorbellThingHandler(thing);
+        } else if (UniFiProtectG5CameraThingHandler.supportsThingType(thingTypeUID)) {
+            return new UniFiProtectG5CameraThingHandler(thing);
         } else if (UniFiProtectG4CameraThingHandler.supportsThingType(thingTypeUID)) {
             return new UniFiProtectG4CameraThingHandler(thing);
         } else if (UniFiProtectG3CameraThingHandler.supportsThingType(thingTypeUID)) {
@@ -65,6 +67,7 @@ public class UniFiProtectThingHandlerFactory extends BaseThingHandlerFactory {
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return UniFiProtectNvrThingHandler.supportsThingType(thingTypeUID)
+                || UniFiProtectG5CameraThingHandler.supportsThingType(thingTypeUID)
                 || UniFiProtectG4CameraThingHandler.supportsThingType(thingTypeUID)
                 || UniFiProtectG4DoorbellThingHandler.supportsThingType(thingTypeUID)
                 || UniFiProtectG3CameraThingHandler.supportsThingType(thingTypeUID);

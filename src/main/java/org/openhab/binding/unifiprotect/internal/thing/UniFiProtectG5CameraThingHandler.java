@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 public class UniFiProtectG5CameraThingHandler extends UniFiProtectG4CameraThingHandler {
 
     private static final String NOT_INITIALIZED = "Not initialized";
-    protected UniFiProtectG4CameraThingConfig config = new UniFiProtectG4CameraThingConfig();
+    protected UniFiProtectG5CameraThingConfig config = new UniFiProtectG5CameraThingConfig();
     private final Logger logger = LoggerFactory.getLogger(UniFiProtectG5CameraThingHandler.class);
 
     public UniFiProtectG5CameraThingHandler(Thing thing) {
