@@ -440,7 +440,7 @@ sitemap unifiprotect label="UniFiProtect Binding" {
 ## Manual Install
 
 Get jar-file from repo. Place the jar-file in the openhab-addons folder
-https://github.com/seaside1/unifiprotect
+https://github.com/seaside1/unifiprotect/releases/
 
 ## Changelog
 
