@@ -54,6 +54,7 @@ public class UniFiProtectCamera {
     private @Nullable Boolean isMicEnabled;
     private @Nullable Boolean isRecording;
     private @Nullable Boolean isMotionDetected;
+    private @Nullable SpeakerSettings speakerSettings;
     private @Nullable LedSettings ledSettings;
     private @Nullable IspSettings ispSettings;
     private @Nullable RecordingSettings recordingSettings;
@@ -108,8 +109,21 @@ public class UniFiProtectCamera {
     }
 
     @SuppressWarnings("null")
+    public @Nullable Boolean getMotionDetection() {
+        return recordingSettings != null && recordingSettings.getEnableMotionDetection() != null
+                ? recordingSettings.getEnableMotionDetection()
+                : null;
+    }
+
+    @SuppressWarnings("null")
     public @Nullable Boolean getStatusLight() {
         return ledSettings != null && ledSettings.getIsEnabled() != null ? ledSettings.getIsEnabled() : null;
+    }
+
+    @SuppressWarnings("null")
+    public @Nullable Boolean getStatusSounds() {
+        return speakerSettings != null && speakerSettings.getIsEnabled() != null ? speakerSettings.getIsEnabled()
+                : null;
     }
 
     public String getMac() {
@@ -467,6 +481,7 @@ public class UniFiProtectCamera {
     @NonNullByDefault
     class RecordingSettings {
         private @Nullable String mode;
+        private @Nullable Boolean enableMotionDetection;
 
         public @Nullable String getMode() {
             return mode;
@@ -474,6 +489,14 @@ public class UniFiProtectCamera {
 
         public void setMode(String mode) {
             this.mode = mode;
+        }
+
+        public @Nullable Boolean getEnableMotionDetection() {
+            return enableMotionDetection;
+        }
+
+        public void setEnableMotionDetection(@Nullable Boolean enableMotionDetection) {
+            this.enableMotionDetection = enableMotionDetection;
         }
     }
 
@@ -563,7 +586,7 @@ public class UniFiProtectCamera {
 
     @SuppressWarnings("null")
     @NonNullByDefault
-    // smartDetectSettings":{"objectTypes":["person","vehicle"]}}
+    // smartDetectSettings":{"objectTypes":["person","vehicle","package"]}}
     class SmartDetectSettings {
         private String @Nullable [] objectTypes;
 
@@ -602,6 +625,25 @@ public class UniFiProtectCamera {
 
         public void setBlinkRate(Integer blinkRate) {
             this.blinkRate = blinkRate;
+        }
+    }
+
+    @SuppressWarnings("null")
+    @NonNullByDefault
+    class SpeakerSettings {
+        private @Nullable Boolean isEnabled;
+
+        @Override
+        public String toString() {
+            return "SpeakerSettings [isEnabled=" + isEnabled + "]";
+        }
+
+        public @Nullable Boolean getIsEnabled() {
+            return isEnabled;
+        }
+
+        public void setIsEnabled(Boolean isEnabled) {
+            this.isEnabled = isEnabled;
         }
     }
 

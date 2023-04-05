@@ -161,6 +161,12 @@ public class UniFiProtectBaseThingHandler extends BaseThingHandler {
                             UniFiProtectRecordingMode.valueOf(recordingModeValue.toUpperCase()).ordinal());
                 }
                 break;
+            case MOTION_DETECTION:
+                Boolean motionDetection = camera.getMotionDetection();
+                if (motionDetection != null) {
+                    state = OnOffType.from(motionDetection.booleanValue());
+                }
+                break;
             case SNAPSHOT_IMG:
                 if (imageHandler.getSnapshot(camera) != null) {
                     logger.debug("Setting Snapimage on refresh to len: {} ",
@@ -354,6 +360,9 @@ public class UniFiProtectBaseThingHandler extends BaseThingHandler {
                 break;
             case A_SNAPSHOT:
                 handleAnonSnapshot(camera, channelUID, command);
+                break;
+            case MOTION_DETECTION:
+                handleMotionDetection(camera, channelUID, command);
                 break;
             case CONNECTED_SINCE:
             case HOST:
@@ -566,6 +575,19 @@ public class UniFiProtectBaseThingHandler extends BaseThingHandler {
         logger.info("Setting HDR Mode: {}  camera: {}, ip: {}", command == OnOffType.ON, camera.getName(),
                 camera.getHost());
         getNvr().turnOnOrOffHdrMode(camera, command == OnOffType.ON);
+    }
+
+    @SuppressWarnings("null")
+    private synchronized void handleMotionDetection(UniFiProtectCamera camera, ChannelUID channelUID, Command command) {
+        if (!(command instanceof OnOffType)) {
+            logger.debug("Ignoring unsupported command = {} for channel = {} - valid commands types are: OnOffType",
+                    command, channelUID);
+            return;
+        }
+
+        logger.info("Setting Motion Detection: {}  camera: {}, ip: {}", command == OnOffType.ON, camera.getName(),
+                camera.getHost());
+        getNvr().turnOnOrOffMotionDetection(camera, command == OnOffType.ON);
     }
 
     @SuppressWarnings("null")

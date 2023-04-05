@@ -87,6 +87,7 @@
 			<channel id="motion-thumbnail" typeId="motion-thumbnail"/>
 			<channel id="motion-heatmap" typeId="motion-heatmap"/>
 			<channel id="motion-score" typeId="motion-score"/>
+			<channel id="motion-detection" typeId="motion-detection"/>
 			<channel id="snapshot" typeId="snapshot"/>
 			<channel id="snapshot-img" typeId="snapshot-img"/>
 			<channel id="a-snapshot" typeId="a-snapshot"/>
@@ -105,6 +106,7 @@
 			<channel id="mic-volume" typeId="mic-volume"/>
 			<channel id="smart-detect-vehicle" typeId="smart-detect-vehicle"/>
 			<channel id="smart-detect-person" typeId="smart-detect-person"/>
+			<channel id="smart-detect-package" typeId="smart-detect-package"/>
 			<channel id="smart-detect-motion" typeId="smart-detect-motion"/>
 			<channel id="smart-detect-thumbnail" typeId="smart-detect-thumbnail"/>
 			<channel id="smart-detect-score" typeId="smart-detect-score"/>
@@ -136,7 +138,9 @@
 			<channel id="host" typeId="host"/>
 			<channel id="is-dark" typeId="is-dark"/>
 			<channel id="status-light" typeId="status-light"/>
+			<channel id="status-sounds" typeId="status-sounds"/>
 			<channel id="reboot" typeId="reboot"/>
+			<channel id="motion-detection" typeId="motion-detection"/>
 			<channel id="motion-thumbnail" typeId="motion-thumbnail"/>
 			<channel id="motion-heatmap" typeId="motion-heatmap"/>
 			<channel id="motion-score" typeId="motion-score"/>
@@ -204,6 +208,7 @@
 			<channel id="motion-thumbnail" typeId="motion-thumbnail"/>
 			<channel id="motion-heatmap" typeId="motion-heatmap"/>
 			<channel id="motion-score" typeId="motion-score"/>
+			<channel id="motion-detection" typeId="motion-detection"/>
 			<channel id="snapshot" typeId="snapshot"/>
 			<channel id="snapshot-img" typeId="snapshot-img"/>
 			<channel id="a-snapshot" typeId="a-snapshot"/>
@@ -257,6 +262,7 @@
 			<channel id="motion-thumbnail" typeId="motion-thumbnail"/>
 			<channel id="motion-heatmap" typeId="motion-heatmap"/>
 			<channel id="motion-score" typeId="motion-score"/>
+			<channel id="motion-detection" typeId="motion-detection"/>
 			<channel id="snapshot" typeId="snapshot"/>
 			<channel id="snapshot-img" typeId="snapshot-img"/>
 			<channel id="a-snapshot" typeId="a-snapshot"/>
@@ -478,6 +484,13 @@
 		<description>Motion Score 0 - 100 for the event</description>
 		<state readOnly="true"></state>
 	</channel-type>
+	<channel-type id="motion-detection">
+		<item-type>Switch</item-type>
+		<label>Motion Detection Enable/Disable</label>
+		<description>Determines if motion detection is enabled</description>
+		<state readOnly="false"></state>
+	</channel-type>
+
 	<channel-type id="smart-detect-score">
 		<item-type>Number</item-type>
 		<label>Smart Detect Event Score</label>
@@ -514,6 +527,13 @@
 		<description>Set status light on the camera to on or off</description>
 		<state readOnly="false"></state>
 	</channel-type>
+	<channel-type id="status-sounds">
+		<item-type>Switch</item-type>
+		<label>Status Sounds</label>
+		<description>Set status sounds on the camera to on or off</description>
+		<state readOnly="false"></state>
+	</channel-type>
+
 	<channel-type id="recording-mode">
 		<item-type>Number</item-type>
 		<label>Recording Mode</label>
@@ -614,19 +634,19 @@
 		<item-type>Switch</item-type>
 		<label>Turn on Smart Detect Vehicle</label>
 		<description>Turn on Smart Detect Vehicle</description>
-		<state readOnly="true"></state>
+		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="smart-detect-person">
 		<item-type>Switch</item-type>
 		<label>Turn on Smart Detect Person</label>
 		<description>Turn on Smart Detect Person</description>
-		<state readOnly="true"></state>
+		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="smart-detect-package">
 		<item-type>Switch</item-type>
-		<label>Smart Detect Package</label>
-		<description>Smart Detect Package</description>
-		<state readOnly="true"></state>
+		<label>Turn on Smart Detect Package</label>
+		<description>Turn on Smart Detect Package</description>
+		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="smart-detect-last">
 		<item-type>DateTime</item-type>
@@ -659,6 +679,7 @@
 	<channel-type id="smart-detect-type">
 		<item-type>String</item-type>
 		<label>Smart Detect Type</label>
-		<description>Smart Detect Type (vehicle / person)</description>
+		<description>Smart Detect Type (vehicle / person / package)</description>
+		<state readOnly="true"></state>
 	</channel-type>
 </thing:thing-descriptions>

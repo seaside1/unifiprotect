@@ -19,7 +19,7 @@ import org.eclipse.jdt.annotation.NonNull;
 
 /**
  * The {@link UniFiProtectLcdMessage}
- * 
+ *
  * @author Joseph (Seaside) Hagberg - Initial contribution
  */
 public class UniFiProtectLcdMessage {
@@ -29,7 +29,6 @@ public class UniFiProtectLcdMessage {
     private final LcdMessageType type;
 
     private static final String JSON_LEAVE_PACKAGE = "{\"lcdMessage\":{\"type\":\"LEAVE_PACKAGE_AT_DOOR\",\"text\":\"Lamna pakket\",\"resetAt\":null}}";
-    // "{\"lcdMessage\":{\"type\":\"LEAVE_PACKAGE_AT_DOOR\",\"text\":\"\",\"resetAt\":null}}";
     private static final String JSON_DO_NOT_DISTURB = "{\"lcdMessage\":{\"type\":\"DO_NOT_DISTURB\",\"text\":\"\",\"resetAt\":null}}";
     private static final String JSON_RESET = "{\"lcdMessage\":{\"resetAt\":1614952810643}}";
     private static final String JSON_CUSTOM_START = "{\"lcdMessage\":{\"type\":\"CUSTOM_MESSAGE\",\"text\":\"";

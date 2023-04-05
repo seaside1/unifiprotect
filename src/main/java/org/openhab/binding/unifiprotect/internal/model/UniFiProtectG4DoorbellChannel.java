@@ -29,7 +29,7 @@ public enum UniFiProtectG4DoorbellChannel {
     IS_RINGING,
     RING_THUMBNAIL,
     LAST_RING,
-    SMART_DETECT_PACKAGE,
+    STATUS_SOUNDS,
     UNKNOWN;
 
     private static final String DASH = "-";

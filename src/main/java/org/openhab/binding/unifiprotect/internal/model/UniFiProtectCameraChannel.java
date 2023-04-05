@@ -45,6 +45,7 @@ public enum UniFiProtectCameraChannel {
     MOTION_THUMBNAIL,
     MOTION_HEATMAP,
     MOTION_EVENT,
+    MOTION_DETECTION,
     SNAPSHOT,
     SNAPSHOT_IMG,
     A_SNAPSHOT,

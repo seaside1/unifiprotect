@@ -187,7 +187,10 @@ public class UniFiProtectRequestTester {
                 .filter(camera -> camera.getType().toLowerCase().contains("doorbell")).findAny();
         UniFiProtectCamera camera = optCamera.get();
         // (camera -> logger.debug(camera.toString()));
-        nvr.setSmartDetectTypes(camera, UniFiProtectSmartDetectTypes.PERSON_AND_VEHICLE);
+        UniFiProtectSmartDetectTypes types = UniFiProtectSmartDetectTypes.fromArray(
+                new String[] { UniFiProtectSmartDetectTypes.PERSON_STR, UniFiProtectSmartDetectTypes.VEHICLE_STR });
+
+        nvr.setSmartDetectTypes(camera, types);
     }
 
     @Test

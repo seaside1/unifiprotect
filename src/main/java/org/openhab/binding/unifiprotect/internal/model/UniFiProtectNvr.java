@@ -43,11 +43,13 @@ import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectHighF
 import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectIrModeRequest;
 import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectLcdMessageRequest;
 import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectLoginRequest;
+import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectMotionDetectionRequest;
 import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectRebootCameraRequest;
 import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectRecordingModeRequest;
 import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectSmartDetectRequest;
 import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectSnapshotRequest;
 import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectStatusLightRequest;
+import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectStatusSoundsRequest;
 import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectThumbnailRequest;
 import org.openhab.binding.unifiprotect.internal.thing.UniFiProtectBaseThingConfig;
 import org.openhab.binding.unifiprotect.internal.thing.UniFiProtectNvrThingConfig;
@@ -354,6 +356,21 @@ public class UniFiProtectNvr {
         logger.debug("Hdr mode result jsonResult: {}", jsonContent);
     }
 
+    public synchronized void turnOnOrOffMotionDetection(UniFiProtectCamera camera, boolean enable) {
+        final String cameraId = camera.getId();
+        if (cameraId == null) {
+            logger.error("Failed to set motion detection, camera field is missing: {}", camera);
+            return;
+        }
+        UniFiProtectMotionDetectionRequest request = new UniFiProtectMotionDetectionRequest(httpClient, cameraId,
+                getConfig(), token, enable);
+        if (!requestSuccessFullySent(request.sendRequest())) {
+            return;
+        }
+        String jsonContent = request.getJsonContent();
+        logger.debug("Motion Detection result jsonResult: {}", jsonContent);
+    }
+
     public synchronized void turnOnOrOffHighFpsMode(UniFiProtectCamera camera, boolean enable) {
         String cameraId = camera != null ? camera.getId() : null;
         if (cameraId == null) {
@@ -587,5 +604,20 @@ public class UniFiProtectNvr {
         String jsonContent = request.getJsonContent();
         logger.debug("smartDetectTypes result jsonResult: {}", jsonContent);
         camera.setSmartDetectObjectTypes(smartDetectTypes);
+    }
+
+    public synchronized void setStatusSounds(UniFiProtectCamera camera, boolean enabled) {
+        String cameraId = camera != null ? camera.getId() : null;
+        if (cameraId == null) {
+            logger.error("Failed to set status sounds on, camera has null fields: {}", camera);
+            return;
+        }
+        UniFiProtectStatusSoundsRequest request = new UniFiProtectStatusSoundsRequest(httpClient, cameraId, getConfig(),
+                token, enabled);
+        if (!requestSuccessFullySent(request.sendRequest())) {
+            return;
+        }
+        String jsonContent = request.getJsonContent();
+        logger.debug("StatusSounds on result jsonResult: {}", jsonContent);
     }
 }

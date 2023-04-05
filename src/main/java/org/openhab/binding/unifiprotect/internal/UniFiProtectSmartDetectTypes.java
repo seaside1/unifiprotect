@@ -23,53 +23,50 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Joseph (Seaside) Hagberg - Initial contribution
  */
 @NonNullByDefault
-public enum UniFiProtectSmartDetectTypes {
-    PERSON,
-    VEHICLE,
-    PERSON_AND_VEHICLE,
-    PACKAGE,
-    EMPTY,
-    UNDEF;
+public class UniFiProtectSmartDetectTypes {
 
-    private static final String VEHICLE_STR = "vehicle";
-    private static final String PERSON_STR = "person";
-    private static final String PACKAGE_STR = "package";
+    @Nullable
+    private Boolean vehicle = null;
+    @Nullable
+    private Boolean person = null;
+    @Nullable
+    private Boolean package1 = null;
+
+    private static final UniFiProtectSmartDetectTypes EMPTY = new UniFiProtectSmartDetectTypes(Boolean.FALSE,
+            Boolean.FALSE, Boolean.FALSE);
+    public static final String VEHICLE_STR = "vehicle";
+    public static final String PERSON_STR = "person";
+    public static final String PACKAGE_STR = "package";
+
     private static final String EMPTY_JSON = "{\"smartDetectSettings\":{\"objectTypes\":[]}}";
-    private static final String PERSON_JSON = "{\"smartDetectSettings\":{\"objectTypes\":[\"person\"]}}";
-    private static final String VEHICLE_JSON = "{\"smartDetectSettings\":{\"objectTypes\":[\"vehicle\"]}}";
-    private static final String PACKAGE_JSON = "{\"smartDetectSettings\":{\"objectTypes\":[\"package\"]}}";
-    private static final String PERSON_AND_VEHICLE_JSON = "{\"smartDetectSettings\":{\"objectTypes\":[\"person\",\"vehicle\"]}}";
+    private static final String ONE_JSON = "{\"smartDetectSettings\":{\"objectTypes\":[\"%s\"]}}";
+    private static final String TWO_JSON = "{\"smartDetectSettings\":{\"objectTypes\":[\"%s\",\"%s\"]}}";
+    private static final String THREE_JSON = "{\"smartDetectSettings\":{\"objectTypes\":[\"%s\",\"%s\",\"%s\"]}}";
+
     private static final String DUMMY = "UNDEF OBJ SmartDetectType";
 
-    public boolean containsPerson() {
-        return this == PERSON || this == PERSON_AND_VEHICLE;
+    private UniFiProtectSmartDetectTypes(Boolean vehicle, Boolean person, Boolean package1) {
+        this.setVehicle(vehicle);
+        this.setPerson(person);
+        this.setPackage(package1);
     }
 
-    public boolean containsPackage() {
-        return this == PACKAGE;
-    }
-
-    public boolean containsVehicle() {
-        return this == VEHICLE || this == PERSON_AND_VEHICLE;
+    private String[] getTypes(String... args) {
+        return Arrays.stream(args).filter(r -> r != null).toArray(String[]::new);
     }
 
     public String getJsonRaw() {
-        switch (this) {
-            case PERSON_AND_VEHICLE:
-                return PERSON_AND_VEHICLE_JSON;
-            case PERSON:
-                return PERSON_JSON;
-            case PACKAGE:
-                return PACKAGE_JSON;
-            case EMPTY:
-                return EMPTY_JSON;
-            case UNDEF:
-                return DUMMY;
-            case VEHICLE:
-                return VEHICLE_JSON;
-            default:
-                return DUMMY;
+        final String[] types = getObjectTypesAsArray();
+        if (types.length == 0) {
+            return EMPTY_JSON;
+        } else if (types.length == 1) {
+            return String.format(ONE_JSON, types[0]);
+        } else if (types.length == 2) {
+            return String.format(TWO_JSON, types[0], types[1]);
+        } else if (types.length == 3) {
+            return String.format(THREE_JSON, types[0], types[1], types[2]);
         }
+        return DUMMY;
     }
 
     public static UniFiProtectSmartDetectTypes fromArray(String @Nullable [] objectTypes) {
@@ -77,37 +74,43 @@ public enum UniFiProtectSmartDetectTypes {
             return EMPTY;
         }
 
-        final boolean personType = Arrays.stream(objectTypes).anyMatch(type -> type.equals(PERSON_STR));
         final boolean vehicleType = Arrays.stream(objectTypes).anyMatch(type -> type.equals(VEHICLE_STR));
+        final boolean personType = Arrays.stream(objectTypes).anyMatch(type -> type.equals(PERSON_STR));
         final boolean packageType = Arrays.stream(objectTypes).anyMatch(type -> type.equals(PACKAGE_STR));
-        if (personType && vehicleType) {
-            return PERSON_AND_VEHICLE;
-        } else if (personType) {
-            return PERSON;
-        } else if (vehicleType) {
-            return VEHICLE;
-        } else if (packageType) {
-            return PACKAGE;
-        }
-        return EMPTY;
+        return new UniFiProtectSmartDetectTypes(vehicleType, personType, packageType);
+    }
+
+    @Override
+    public String toString() {
+        return "SmartDetect " + VEHICLE_STR + ": " + vehicle + " " + PERSON_STR + ": " + person + ": " + PACKAGE_STR
+                + ": " + package1;
     }
 
     public String[] getObjectTypesAsArray() {
-        switch (this) {
-            case EMPTY:
-                return new String[] {};
-            case PERSON:
-                return new String[] { PERSON_STR };
-            case PACKAGE:
-                return new String[] { PACKAGE_STR };
-            case PERSON_AND_VEHICLE:
-                return new String[] { PERSON_STR, VEHICLE_STR };
-            case UNDEF:
-                return new String[] {};
-            case VEHICLE:
-                return new String[] { VEHICLE_STR };
-            default:
-                return new String[] {};
-        }
+        return getTypes(vehicle ? VEHICLE_STR : null, person ? PERSON_STR : null, package1 ? PACKAGE_STR : null);
+    }
+
+    public boolean containsPerson() {
+        return person == null ? false : person.booleanValue();
+    }
+
+    public boolean containsVehicle() {
+        return vehicle == null ? false : vehicle.booleanValue();
+    }
+
+    public boolean containsPackage() {
+        return package1 == null ? false : package1.booleanValue();
+    }
+
+    public void setVehicle(@Nullable Boolean vehicle) {
+        this.vehicle = vehicle;
+    }
+
+    public void setPerson(@Nullable Boolean person) {
+        this.person = person;
+    }
+
+    public void setPackage(@Nullable Boolean package1) {
+        this.package1 = package1;
     }
 }

@@ -96,10 +96,9 @@ public class UniFiProtectG4CameraThingHandler extends UniFiProtectBaseThingHandl
         }
         switch (channel) {
             case SMART_DETECT_PERSON:
-                handleSmartDetectPerson(camera, channelUID, command);
-                break;
             case SMART_DETECT_VEHICLE:
-                handleSmartDetectVehicle(camera, channelUID, command);
+            case SMART_DETECT_PACKAGE:
+                handleSmartDetect(camera, channel, command);
                 break;
             case UNKNOWN:
                 break;
@@ -108,96 +107,34 @@ public class UniFiProtectG4CameraThingHandler extends UniFiProtectBaseThingHandl
         }
     }
 
-    private synchronized void handleSmartDetectPerson(UniFiProtectCamera camera, ChannelUID channelUID,
+    private synchronized void handleSmartDetect(UniFiProtectCamera camera, UniFiProtectG4Channel channel,
             Command command) {
         if (!(command instanceof OnOffType)) {
             logger.debug("Ignoring unsupported command = {} for channel = {} - valid commands types are: OnOffType",
-                    command, channelUID);
+                    command, channel.name());
             return;
         }
         UniFiProtectSmartDetectTypes type = camera.getSmartDetectObjectTypes();
-        UniFiProtectSmartDetectTypes newType = null;
-        switch (type) {
-            case PERSON:
-            case EMPTY:
-                if (command == OnOffType.ON) {
-                    newType = UniFiProtectSmartDetectTypes.PERSON;
-                } else if (command == OnOffType.OFF) {
-                    newType = UniFiProtectSmartDetectTypes.EMPTY;
-                } else {
-                    newType = UniFiProtectSmartDetectTypes.UNDEF;
-                }
+        switch (channel) {
+            case SMART_DETECT_PERSON:
+                type.setPerson(command == OnOffType.ON);
                 break;
-            case PERSON_AND_VEHICLE:
-            case VEHICLE:
-                if (command == OnOffType.ON) {
-                    newType = UniFiProtectSmartDetectTypes.PERSON_AND_VEHICLE;
-                } else if (command == OnOffType.OFF) {
-                    newType = UniFiProtectSmartDetectTypes.VEHICLE;
-                } else {
-                    newType = UniFiProtectSmartDetectTypes.UNDEF;
-                }
+            case SMART_DETECT_VEHICLE:
+                type.setVehicle(command == OnOffType.ON);
                 break;
-            case UNDEF:
-                logger.error("Invalid type when trying to activate smart function");
+            case SMART_DETECT_PACKAGE:
+                type.setPackage(command == OnOffType.ON);
                 break;
             default:
                 break;
         }
-        if (newType == null) {
-            logger.error("Failed to get correct type, ignoring command");
-            return;
-        }
-        sendSmartDetectMessage(newType, camera);
-    }
-
-    private synchronized void handleSmartDetectVehicle(UniFiProtectCamera camera, ChannelUID channelUID,
-            Command command) {
-        if (!(command instanceof OnOffType)) {
-            logger.debug("Ignoring unsupported command = {} for channel = {} - valid commands types are: OnOffType",
-                    command, channelUID);
-            return;
-        }
-        UniFiProtectSmartDetectTypes type = camera.getSmartDetectObjectTypes();
-        UniFiProtectSmartDetectTypes newType = null;
-        switch (type) {
-            case EMPTY:
-            case VEHICLE:
-                if (command == OnOffType.ON) {
-                    newType = UniFiProtectSmartDetectTypes.VEHICLE;
-                } else if (command == OnOffType.OFF) {
-                    newType = UniFiProtectSmartDetectTypes.EMPTY;
-                } else {
-                    newType = UniFiProtectSmartDetectTypes.UNDEF;
-                }
-                break;
-            case PERSON:
-            case PERSON_AND_VEHICLE:
-                if (command == OnOffType.ON) {
-                    newType = UniFiProtectSmartDetectTypes.PERSON_AND_VEHICLE;
-                } else if (command == OnOffType.OFF) {
-                    newType = UniFiProtectSmartDetectTypes.PERSON;
-                } else {
-                    newType = UniFiProtectSmartDetectTypes.UNDEF;
-                }
-                break;
-            case UNDEF:
-                logger.error("Invalid type when trying to activate smart function");
-                break;
-            default:
-                break;
-        }
-        if (newType == null) {
-            logger.error("Failed to get correct type, ignoring command");
-            return;
-        }
-        sendSmartDetectMessage(newType, camera);
+        sendSmartDetectMessage(type, camera);
     }
 
     protected synchronized void sendSmartDetectMessage(UniFiProtectSmartDetectTypes newType,
             UniFiProtectCamera camera) {
-        logger.info("Sending turn on/off SmatDetect Settings: {} camera: {}, ip: {}", newType.name(), camera.getName(),
-                camera.getHost());
+        logger.info("Sending turn on/off SmatDetect Settings: {} camera: {}, ip: {}", newType.toString(),
+                camera.getName(), camera.getHost());
         getNvr().setSmartDetectTypes(camera, newType);
     }
 
