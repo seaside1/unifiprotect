@@ -87,15 +87,19 @@ public class UniFiProtectCamera {
 
     @SuppressWarnings("null")
     public UniFiProtectSmartDetectTypes getSmartDetectObjectTypes() {
-        String[] objectTypes = smartDetectSettings != null && smartDetectSettings.getObjectTypes() != null
+        final String[] objectTypes = smartDetectSettings != null && smartDetectSettings.getObjectTypes() != null
                 ? smartDetectSettings.getObjectTypes()
                 : null;
-        return UniFiProtectSmartDetectTypes.fromArray(objectTypes);
+        final String[] audioTypes = smartDetectSettings != null && smartDetectSettings.getAudioTypes() != null
+                ? smartDetectSettings.getAudioTypes()
+                : null;
+        return UniFiProtectSmartDetectTypes.fromArray(objectTypes, audioTypes);
     }
 
     @SuppressWarnings("null")
     public void setSmartDetectObjectTypes(UniFiProtectSmartDetectTypes smartDetectTypes) {
         smartDetectSettings.setObjectTypes(smartDetectTypes.getObjectTypesAsArray());
+        smartDetectSettings.setAudioTypes(smartDetectTypes.getAudioTypesAsArray());
     }
 
     @SuppressWarnings("null")
@@ -586,9 +590,10 @@ public class UniFiProtectCamera {
 
     @SuppressWarnings("null")
     @NonNullByDefault
-    // smartDetectSettings":{"objectTypes":["person","vehicle","package"]}}
+    // smartDetectSettings":{"objectTypes":["person","vehicle","package"],"audioTypes":["smoke_cmonx"]}}
     class SmartDetectSettings {
         private String @Nullable [] objectTypes;
+        private String @Nullable [] audioTypes;
 
         public String @Nullable [] getObjectTypes() {
             return objectTypes;
@@ -596,6 +601,14 @@ public class UniFiProtectCamera {
 
         public void setObjectTypes(String @Nullable [] objectTypes) {
             this.objectTypes = objectTypes;
+        }
+
+        public String @Nullable [] getAudioTypes() {
+            return audioTypes;
+        }
+
+        public void setAudioTypes(String @Nullable [] audioTypes) {
+            this.audioTypes = audioTypes;
         }
     }
 

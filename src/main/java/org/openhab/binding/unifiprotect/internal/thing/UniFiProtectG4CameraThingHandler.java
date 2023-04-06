@@ -97,6 +97,7 @@ public class UniFiProtectG4CameraThingHandler extends UniFiProtectBaseThingHandl
         switch (channel) {
             case SMART_DETECT_PERSON:
             case SMART_DETECT_VEHICLE:
+            case SMART_DETECT_SMOKE:
             case SMART_DETECT_PACKAGE:
                 handleSmartDetect(camera, channel, command);
                 break;
@@ -124,6 +125,9 @@ public class UniFiProtectG4CameraThingHandler extends UniFiProtectBaseThingHandl
                 break;
             case SMART_DETECT_PACKAGE:
                 type.setPackage(command == OnOffType.ON);
+                break;
+            case SMART_DETECT_SMOKE:
+                type.setSmokeCoAlarm(command == OnOffType.ON);
                 break;
             default:
                 break;
@@ -186,6 +190,9 @@ public class UniFiProtectG4CameraThingHandler extends UniFiProtectBaseThingHandl
                 break;
             case SMART_DETECT_VEHICLE:
                 state = OnOffType.from(detectTypes.containsVehicle());
+                break;
+            case SMART_DETECT_SMOKE:
+                state = OnOffType.from(detectTypes.containsSmokeCoAlarm());
                 break;
             case SMART_DETECT_PACKAGE:
                 state = OnOffType.from(detectTypes.containsPackage());

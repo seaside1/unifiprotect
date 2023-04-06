@@ -188,7 +188,8 @@ public class UniFiProtectRequestTester {
         UniFiProtectCamera camera = optCamera.get();
         // (camera -> logger.debug(camera.toString()));
         UniFiProtectSmartDetectTypes types = UniFiProtectSmartDetectTypes.fromArray(
-                new String[] { UniFiProtectSmartDetectTypes.PERSON_STR, UniFiProtectSmartDetectTypes.VEHICLE_STR });
+                new String[] { UniFiProtectSmartDetectTypes.PERSON_STR, UniFiProtectSmartDetectTypes.VEHICLE_STR },
+                new String[] { UniFiProtectSmartDetectTypes.SMOKE_CO_ALARM_STR });
 
         nvr.setSmartDetectTypes(camera, types);
     }

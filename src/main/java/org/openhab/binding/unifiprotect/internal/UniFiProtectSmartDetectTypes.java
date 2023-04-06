@@ -31,24 +31,27 @@ public class UniFiProtectSmartDetectTypes {
     private Boolean person = null;
     @Nullable
     private Boolean package1 = null;
-
+    @Nullable
+    private Boolean smokeCoAlarm = null;
     private static final UniFiProtectSmartDetectTypes EMPTY = new UniFiProtectSmartDetectTypes(Boolean.FALSE,
-            Boolean.FALSE, Boolean.FALSE);
+            Boolean.FALSE, Boolean.FALSE, Boolean.FALSE);
     public static final String VEHICLE_STR = "vehicle";
     public static final String PERSON_STR = "person";
     public static final String PACKAGE_STR = "package";
-
-    private static final String EMPTY_JSON = "{\"smartDetectSettings\":{\"objectTypes\":[]}}";
-    private static final String ONE_JSON = "{\"smartDetectSettings\":{\"objectTypes\":[\"%s\"]}}";
-    private static final String TWO_JSON = "{\"smartDetectSettings\":{\"objectTypes\":[\"%s\",\"%s\"]}}";
-    private static final String THREE_JSON = "{\"smartDetectSettings\":{\"objectTypes\":[\"%s\",\"%s\",\"%s\"]}}";
+    public static final String SMOKE_CO_ALARM_STR_ESC = "\"smoke_cmonx\"";
+    public static final String SMOKE_CO_ALARM_STR = "smoke_cmonx";
+    private static final String EMPTY_JSON = "{\"smartDetectSettings\":{\"objectTypes\":[],\"audioTypes\":[%s]}}";
+    private static final String ONE_JSON = "{\"smartDetectSettings\":{\"objectTypes\":[\"%s\"],\"audioTypes\":[%s]}}";
+    private static final String TWO_JSON = "{\"smartDetectSettings\":{\"objectTypes\":[\"%s\",\"%s\"],\"audioTypes\":[%s]}}";
+    private static final String THREE_JSON = "{\"smartDetectSettings\":{\"objectTypes\":[\"%s\",\"%s\",\"%s\"],\"audioTypes\":[%s]}}";
 
     private static final String DUMMY = "UNDEF OBJ SmartDetectType";
 
-    private UniFiProtectSmartDetectTypes(Boolean vehicle, Boolean person, Boolean package1) {
-        this.setVehicle(vehicle);
-        this.setPerson(person);
-        this.setPackage(package1);
+    private UniFiProtectSmartDetectTypes(Boolean vehicle, Boolean person, Boolean package1, Boolean smokeCoAlarm) {
+        this.vehicle = vehicle;
+        this.person = person;
+        this.package1 = package1;
+        this.smokeCoAlarm = smokeCoAlarm;
     }
 
     private String[] getTypes(String... args) {
@@ -56,38 +59,52 @@ public class UniFiProtectSmartDetectTypes {
     }
 
     public String getJsonRaw() {
-        final String[] types = getObjectTypesAsArray();
-        if (types.length == 0) {
-            return EMPTY_JSON;
-        } else if (types.length == 1) {
-            return String.format(ONE_JSON, types[0]);
-        } else if (types.length == 2) {
-            return String.format(TWO_JSON, types[0], types[1]);
-        } else if (types.length == 3) {
-            return String.format(THREE_JSON, types[0], types[1], types[2]);
+        final String[] objectTypes = getObjectTypesAsArray();
+        final String[] audioTypes = getAudioTypesAsArray();
+        if (objectTypes.length == 0) {
+            return String.format(EMPTY_JSON, getSmoke(audioTypes[0]));
+        } else if (objectTypes.length == 1) {
+            return String.format(ONE_JSON, objectTypes[0], getSmoke(audioTypes[0]));
+        } else if (objectTypes.length == 2) {
+            return String.format(TWO_JSON, objectTypes[0], objectTypes[1], getSmoke(audioTypes[0]));
+        } else if (objectTypes.length == 3) {
+            return String.format(THREE_JSON, objectTypes[0], objectTypes[1], objectTypes[2], getSmoke(audioTypes[0]));
         }
         return DUMMY;
     }
 
-    public static UniFiProtectSmartDetectTypes fromArray(String @Nullable [] objectTypes) {
+    private String getSmoke(String smoke) {
+        return smoke.equals("") ? "" : SMOKE_CO_ALARM_STR_ESC;
+    }
+
+    public static UniFiProtectSmartDetectTypes fromArray(String @Nullable [] objectTypes,
+            String @Nullable [] audioTypes) {
         if (objectTypes == null || objectTypes.length <= 0) {
             return EMPTY;
         }
-
         final boolean vehicleType = Arrays.stream(objectTypes).anyMatch(type -> type.equals(VEHICLE_STR));
         final boolean personType = Arrays.stream(objectTypes).anyMatch(type -> type.equals(PERSON_STR));
         final boolean packageType = Arrays.stream(objectTypes).anyMatch(type -> type.equals(PACKAGE_STR));
-        return new UniFiProtectSmartDetectTypes(vehicleType, personType, packageType);
+        final boolean smokecoAlarmType = Arrays.stream(audioTypes).anyMatch(type -> type.equals(SMOKE_CO_ALARM_STR));
+        return new UniFiProtectSmartDetectTypes(vehicleType, personType, packageType, smokecoAlarmType);
     }
 
     @Override
     public String toString() {
-        return "SmartDetect " + VEHICLE_STR + ": " + vehicle + " " + PERSON_STR + ": " + person + ": " + PACKAGE_STR
-                + ": " + package1;
+        return "SmartDetect vehile: " + vehicle + " " + PERSON_STR + ": " + person + " " + PACKAGE_STR + ": " + package1
+                + " " + SMOKE_CO_ALARM_STR + ": " + smokeCoAlarm;
     }
 
     public String[] getObjectTypesAsArray() {
         return getTypes(vehicle ? VEHICLE_STR : null, person ? PERSON_STR : null, package1 ? PACKAGE_STR : null);
+    }
+
+    public String[] getAudioTypesAsArray() {
+        return getTypes(smokeCoAlarm ? SMOKE_CO_ALARM_STR : "");
+    }
+
+    public boolean containsSmokeCoAlarm() {
+        return smokeCoAlarm == null ? false : smokeCoAlarm.booleanValue();
     }
 
     public boolean containsPerson() {
@@ -100,6 +117,10 @@ public class UniFiProtectSmartDetectTypes {
 
     public boolean containsPackage() {
         return package1 == null ? false : package1.booleanValue();
+    }
+
+    public void setSmokeCoAlarm(@Nullable Boolean smokeCoAlarm) {
+        this.smokeCoAlarm = smokeCoAlarm;
     }
 
     public void setVehicle(@Nullable Boolean vehicle) {
