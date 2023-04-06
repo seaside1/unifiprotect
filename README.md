@@ -21,6 +21,8 @@ Maturity: BETA
 ## Example of usage
 
 - Detect Motion and trigger other system notifications, Alexa, Google Home, turn on lights, sound an alarm etc.
+- Limit detection to only smart motions such as person, vehicle and package.
+- Smoke and CO alarm trigger for G4 and later cameras
 - Turn on and off notifications, can be used together with presence detection.
 - View general information about Cameras and NVR, for instance check hard-drive health and storage.
 - Reboot Cameras
@@ -74,7 +76,7 @@ A quirk is that there is a bug in firmware 2.0.18 which does not display the loc
 when calling the API. Therefor you need to have the same First Name as user name in order for the binding to pick
 up the correct user.
 
-## Step by step setup Anonymous Snapshots (creds @largepills)
+## Step by step setup Anonymous Snapshots 
 
 To use the Anonymous Snapshot, you must ensure that each Camera is configured to allow this. 
 This cannot be done in the UniFi Protect Controller, but has to be done on each individual Camera.
@@ -83,6 +85,7 @@ This cannot be done in the UniFi Protect Controller, but has to be done on each 
 2. If you have never logged in to the Camera before, it might take you through a Setup procedure - just make sure to keep it in Unifi Video mode, so that it is managed by Unifi Protect.
 3. Once you are logged in, you will see an option on the Front page for enabling Anonymous Snapshots. Make sure this is checked, and then press the Save Changes button.
 4. Repeat step 3 for each of your Cameras.
+(creds @largepills)
 
 ## Supported Things
 
@@ -444,10 +447,14 @@ https://github.com/seaside1/unifiprotect/releases/
 
 ## Changelog
 
-  ### BETA9 (NOT RELEASE YET)
+  ### BETA9
   
   * Basic support for G5-cameras
   * Support for G4 Doorbell Pro
+  * Smoke / CO smart detections for G4/G5 cameras
+  * Package smart detection for G4/G5 cameras
+  * Enable/disable status sounds
+  * Motion Detection / Enable & Disable
   
   ### BETA8
 
