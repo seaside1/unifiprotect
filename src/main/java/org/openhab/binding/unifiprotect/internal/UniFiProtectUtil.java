@@ -33,6 +33,7 @@ import org.openhab.binding.unifiprotect.internal.model.json.UniFiProtectEvent;
 import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectRequest;
 import org.openhab.binding.unifiprotect.internal.types.UniFiProtectCamera;
 import org.openhab.core.common.ThreadPoolManager;
+import org.openhab.core.library.types.DecimalType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,6 +87,14 @@ public class UniFiProtectUtil {
                 out.close();
             }
         }
+    }
+
+    public static DecimalType createDecimalType(long value) {
+        return new DecimalType(Long.toString(value));
+    }
+
+    public static DecimalType createDecimalType(double value) {
+        return new DecimalType(Double.toString(value));
     }
 
     @SuppressWarnings("null")

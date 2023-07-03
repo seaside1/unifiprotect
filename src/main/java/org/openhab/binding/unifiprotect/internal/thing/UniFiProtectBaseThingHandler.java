@@ -138,7 +138,7 @@ public class UniFiProtectBaseThingHandler extends BaseThingHandler {
                         logger.debug("Transforming Ir Mode: {} , ordinal: {}", irLedMode,
                                 UniFiProtectIrMode.parse(irLedMode).ordinal());
                     }
-                    state = new DecimalType(UniFiProtectIrMode.parse(irLedMode).ordinal());
+                    state = UniFiProtectUtil.createDecimalType(UniFiProtectIrMode.parse(irLedMode).ordinal());
                 }
                 break;
             case HDR_MODE:
@@ -157,7 +157,7 @@ public class UniFiProtectBaseThingHandler extends BaseThingHandler {
             case RECORDING_MODE:
                 String recordingModeValue = camera.getRecoringMode();
                 if (recordingModeValue != null && !recordingModeValue.isEmpty()) {
-                    state = new DecimalType(
+                    state = UniFiProtectUtil.createDecimalType(
                             UniFiProtectRecordingMode.valueOf(recordingModeValue.toUpperCase()).ordinal());
                 }
                 break;
@@ -201,7 +201,7 @@ public class UniFiProtectBaseThingHandler extends BaseThingHandler {
                 if (event != null) {
                     final Long score = event.getScore();
                     if (score != null) {
-                        state = new DecimalType(score);
+                        state = UniFiProtectUtil.createDecimalType(score);
                     }
                 }
                 break;
@@ -248,7 +248,7 @@ public class UniFiProtectBaseThingHandler extends BaseThingHandler {
             case MIC_VOLUME:
                 Integer micVolume = camera.getMicVolume();
                 if (micVolume != null) {
-                    state = new DecimalType(micVolume);
+                    state = UniFiProtectUtil.createDecimalType(micVolume);
                 }
                 break;
             case NAME:

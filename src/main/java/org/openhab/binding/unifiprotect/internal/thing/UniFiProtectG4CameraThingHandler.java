@@ -32,7 +32,6 @@ import org.openhab.binding.unifiprotect.internal.model.UniFiProtectNvr;
 import org.openhab.binding.unifiprotect.internal.model.json.UniFiProtectEvent;
 import org.openhab.binding.unifiprotect.internal.types.UniFiProtectCamera;
 import org.openhab.core.library.types.DateTimeType;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
@@ -182,7 +181,7 @@ public class UniFiProtectG4CameraThingHandler extends UniFiProtectBaseThingHandl
             case SMART_DETECT_SCORE:
                 final long score = (smartDetectScore != null) ? smartDetectScore : -1;
                 if (score > -1) {
-                    state = new DecimalType(score);
+                    state = UniFiProtectUtil.createDecimalType(score);
                 }
                 break;
             case SMART_DETECT_PERSON:
