@@ -12,7 +12,7 @@ thus motion detection is instant and without the need of polling.
 
 ## openHAB Version
 
-openHAB version 3.4.x is supported.
+openHAB version 4.x.x is supported.
 
 ## Usage
 
@@ -500,7 +500,9 @@ Get jar-file from repo. Place the jar-file in the openhab-addons folder
 https://github.com/seaside1/unifiprotect/releases/
 
 ## Changelog
-
+  ### BETA10
+  * Support for openHAB 4.x.x
+    
   ### BETA9
   
   * Basic support for G5-cameras
