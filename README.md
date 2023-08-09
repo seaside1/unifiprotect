@@ -500,6 +500,9 @@ Get jar-file from repo. Place the jar-file in the openhab-addons folder
 https://github.com/seaside1/unifiprotect/releases/
 
 ## Changelog
+  ### BETA11
+  * Fix build for openHAB 4.x.x
+
   ### BETA10
   * Support for openHAB 4.x.x
     
