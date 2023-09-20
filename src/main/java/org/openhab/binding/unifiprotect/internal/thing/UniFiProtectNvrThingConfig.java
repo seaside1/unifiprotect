@@ -36,7 +36,8 @@ public class UniFiProtectNvrThingConfig {
     private int defaultSnapshotWidth = 1920;
     private int defaultSnapshotHeight = 1080;
     private boolean watchDog = true;
-
+    private boolean eventDownloadHeatMap = true;
+    private boolean eventDownloadThumbnail = true;
     public @Nullable String g4SnapshotWidthAsString;
     public @Nullable String g4SnapshotHeightAsString;
     public @Nullable String defaultSnapshotWidthAsString;
@@ -173,5 +174,21 @@ public class UniFiProtectNvrThingConfig {
 
     public void setWatchDog(boolean watchDog) {
         this.watchDog = watchDog;
+    }
+
+    public boolean isEventDownloadHeatMap() {
+        return eventDownloadHeatMap;
+    }
+
+    public void setEventDownloadHeatMap(boolean eventDownloadHeatMap) {
+        this.eventDownloadHeatMap = eventDownloadHeatMap;
+    }
+
+    public boolean isEventDownloadThumbnail() {
+        return eventDownloadThumbnail;
+    }
+
+    public void setEventDownloadThumbnail(boolean eventDownloadThumbnail) {
+        this.eventDownloadThumbnail = eventDownloadThumbnail;
     }
 }
