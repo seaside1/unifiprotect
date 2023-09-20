@@ -35,6 +35,7 @@ public class UniFiProtectNvrThingConfig {
     private int g4SnapshotHeight = 2160;
     private int defaultSnapshotWidth = 1920;
     private int defaultSnapshotHeight = 1080;
+    private boolean watchDog = true;
 
     public @Nullable String g4SnapshotWidthAsString;
     public @Nullable String g4SnapshotHeightAsString;
@@ -76,14 +77,14 @@ public class UniFiProtectNvrThingConfig {
 
     @Override
     public String toString() {
-        return "UniFiProtectNvrThingConfig [host=" + host + ", username=" + username + ", password=" + "*************"
+        return "UniFiProtectNvrThingConfig [host=" + host + ", username=" + username + ",  password=" + "*************"
                 + ", refresh=" + refresh + ", eventsTimePeriodLength=" + eventsTimePeriodLength + ", thumbnailWidth="
                 + thumbnailWidth + ", imageFolder=" + imageFolder + ", g4SnapshotWidth=" + g4SnapshotWidth
                 + ", g4SnapshotHeight=" + g4SnapshotHeight + ", defaultSnapshotWidth=" + defaultSnapshotWidth
-                + ", defaultSnapshotHeight=" + defaultSnapshotHeight + ", g4SnapshotWidthAsString="
-                + g4SnapshotWidthAsString + ", g4SnapshotHeightAsString=" + g4SnapshotHeightAsString
-                + ", defaultSnapshotWidthAsString=" + defaultSnapshotWidthAsString + ", defaultSnapshotHeightAsString="
-                + defaultSnapshotHeightAsString + "]";
+                + ", defaultSnapshotHeight=" + defaultSnapshotHeight + ", watchDog=" + watchDog
+                + ", g4SnapshotWidthAsString=" + g4SnapshotWidthAsString + ", g4SnapshotHeightAsString="
+                + g4SnapshotHeightAsString + ", defaultSnapshotWidthAsString=" + defaultSnapshotWidthAsString
+                + ", defaultSnapshotHeightAsString=" + defaultSnapshotHeightAsString + "]";
     }
 
     public int getRefresh() {
@@ -164,5 +165,13 @@ public class UniFiProtectNvrThingConfig {
 
     public @Nullable String getDefaultSnapshotHeightAsString() {
         return defaultSnapshotHeightAsString;
+    }
+
+    public boolean isWatchDog() {
+        return watchDog;
+    }
+
+    public void setWatchDog(boolean watchDog) {
+        this.watchDog = watchDog;
     }
 }
