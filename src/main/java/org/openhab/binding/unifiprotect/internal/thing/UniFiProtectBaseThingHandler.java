@@ -513,11 +513,11 @@ public class UniFiProtectBaseThingHandler extends BaseThingHandler {
     }
 
     public synchronized void handleHeatmapEvent(int delay, String eventId) {
-        if (!getNvr().getConfig().isEventDownloadHeatMap()) {
-            logger.debug("Not downloading heatmap due to setting in nvr");
+        if (!cameraConfig.isEventDownloadHeatMap()) {
+            logger.debug("Not downloading heatmap due to setting in camera");
             return;
         }
-        UniFiProtectCamera camera = getCamera();
+        final UniFiProtectCamera camera = getCamera();
         String cameraId = camera.getId();
         if (cameraId == null) {
             logger.error("Failed to handle event, camera null");
@@ -537,8 +537,8 @@ public class UniFiProtectBaseThingHandler extends BaseThingHandler {
     }
 
     public synchronized void handleThumbnailEvent(int delay, String eventId) {
-        if (!getNvr().getConfig().isEventDownloadThumbnail()) {
-            logger.debug("Not downloading thumbnail due to setting in nvr");
+        if (!cameraConfig.isEventDownloadThumbnail()) {
+            logger.debug("Not downloading thumbnail due to setting in camera");
             return;
         }
         UniFiProtectCamera camera = getCamera();

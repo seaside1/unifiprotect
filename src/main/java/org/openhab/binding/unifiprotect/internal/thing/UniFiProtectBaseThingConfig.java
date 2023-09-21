@@ -21,6 +21,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class UniFiProtectBaseThingConfig {
+    private boolean eventDownloadThumbnail = true;
+    private boolean eventDownloadHeatMap = true;
+
     @Override
     public String toString() {
         return "UniFiProtectBaseThingConfig [mac=" + mac + "]";
@@ -39,5 +42,21 @@ public class UniFiProtectBaseThingConfig {
 
     public boolean isValid() {
         return !mac.isEmpty();
+    }
+
+    public boolean isEventDownloadThumbnail() {
+        return eventDownloadThumbnail;
+    }
+
+    public void setEventDownloadThumbnail(boolean eventDownloadThumbnail) {
+        this.eventDownloadThumbnail = eventDownloadThumbnail;
+    }
+
+    public boolean isEventDownloadHeatMap() {
+        return eventDownloadHeatMap;
+    }
+
+    public void setEventDownloadHeatMap(boolean eventDownloadHeatMap) {
+        this.eventDownloadHeatMap = eventDownloadHeatMap;
     }
 }

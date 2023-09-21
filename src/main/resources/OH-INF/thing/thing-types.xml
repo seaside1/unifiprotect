@@ -64,16 +64,6 @@
 				<description>Enable or Disable a Watch Dog for restarting the binding if no events are received in a certain time</description>
 				<default>true</default>
 			</parameter>
-			<parameter name="eventDownloadHeatMap" type="boolean" required="false">
-				<label>Enable / Disable Heat map download</label>
-				<description>Enable or Disable event download of heat maps for all cameras</description>
-				<default>true</default>
-			</parameter>
-			<parameter name="eventDownloadThumbnail" type="boolean" required="false">
-				<label>Enable / Disable Thumbnail download</label>
-				<description>Enable or Disable event download of thumbnails for all cameras</description>
-				<default>true</default>
-			</parameter>
 			<parameter name="imageFolder" type="text" required="false">
 				<label>Image Folder</label>
 				<description>The Image Folder to be used for storing thumbnails/snapshots</description>
@@ -138,6 +128,16 @@
 			<parameter name="mac" type="text" required="true">
 				<label>Mac</label>
 				<description>Mac Address of the Camera</description>
+			</parameter>
+			<parameter name="eventDownloadHeatMap" type="boolean" required="false">
+				<label>Enable / Disable Heat map download</label>
+				<description>Enable or Disable event download of heat maps</description>
+				<default>true</default>
+			</parameter>
+			<parameter name="eventDownloadThumbnail" type="boolean" required="false">
+				<label>Enable / Disable Thumbnail download</label>
+				<description>Enable or Disable event download of thumbnails</description>
+				<default>true</default>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -206,6 +206,16 @@
 				<label>Custom Message </label>
 				<description>Custom Message</description>
 			</parameter>
+			<parameter name="eventDownloadHeatMap" type="boolean" required="false">
+				<label>Enable / Disable Heat map download</label>
+				<description>Enable or Disable event download of heat maps</description>
+				<default>true</default>
+			</parameter>
+			<parameter name="eventDownloadThumbnail" type="boolean" required="false">
+				<label>Enable / Disable Thumbnail download</label>
+				<description>Enable or Disable event download of thumbnails</description>
+				<default>true</default>
+			</parameter>
 		</config-description>
 	</thing-type>
 	<thing-type id="g4camera">
@@ -260,6 +270,16 @@
 				<label>Mac</label>
 				<description>Mac Address of the Camera</description>
 			</parameter>
+			<parameter name="eventDownloadHeatMap" type="boolean" required="false">
+				<label>Enable / Disable Heat map download</label>
+				<description>Enable or Disable event download of heat maps</description>
+				<default>true</default>
+			</parameter>
+			<parameter name="eventDownloadThumbnail" type="boolean" required="false">
+				<label>Enable / Disable Thumbnail download</label>
+				<description>Enable or Disable event download of thumbnails</description>
+				<default>true</default>
+			</parameter>
 		</config-description>
 	</thing-type>
 	<thing-type id="g3camera">
@@ -306,6 +326,16 @@
 			<parameter name="mac" type="text" required="true">
 				<label>Mac</label>
 				<description>Mac Address of the Camera</description>
+			</parameter>
+			<parameter name="eventDownloadHeatMap" type="boolean" required="false">
+				<label>Enable / Disable Heat map download</label>
+				<description>Enable or Disable event download of heat maps</description>
+				<default>true</default>
+			</parameter>
+			<parameter name="eventDownloadThumbnail" type="boolean" required="false">
+				<label>Enable / Disable Thumbnail download</label>
+				<description>Enable or Disable event download of thumbnails</description>
+				<default>true</default>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -507,7 +537,6 @@
 		<description>Determines if motion detection is enabled</description>
 		<state readOnly="false"></state>
 	</channel-type>
-
 	<channel-type id="smart-detect-score">
 		<item-type>Number</item-type>
 		<label>Smart Detect Event Score</label>
@@ -550,7 +579,6 @@
 		<description>Set status sounds on the camera to on or off</description>
 		<state readOnly="false"></state>
 	</channel-type>
-
 	<channel-type id="recording-mode">
 		<item-type>Number</item-type>
 		<label>Recording Mode</label>
