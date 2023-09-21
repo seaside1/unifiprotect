@@ -44,6 +44,7 @@ import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectIrMod
 import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectLcdMessageRequest;
 import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectLoginRequest;
 import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectMotionDetectionRequest;
+import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectPrivacyZoneRequest;
 import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectRebootCameraRequest;
 import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectRecordingModeRequest;
 import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectSmartDetectRequest;
@@ -354,6 +355,21 @@ public class UniFiProtectNvr {
         }
         String jsonContent = request.getJsonContent();
         logger.debug("Hdr mode result jsonResult: {}", jsonContent);
+    }
+
+    public synchronized void turnOnOrOffPrivacyZone(UniFiProtectCamera camera, boolean enable) {
+        final String cameraId = camera.getId();
+        if (cameraId == null) {
+            logger.error("Failed to set privacy zone, camera field is missing: {}", camera);
+            return;
+        }
+        UniFiProtectPrivacyZoneRequest request = new UniFiProtectPrivacyZoneRequest(httpClient, cameraId, getConfig(),
+                token, enable);
+        if (!requestSuccessFullySent(request.sendRequest())) {
+            return;
+        }
+        String jsonContent = request.getJsonContent();
+        logger.debug("Privacy result jsonResult: {}", jsonContent);
     }
 
     public synchronized void turnOnOrOffMotionDetection(UniFiProtectCamera camera, boolean enable) {

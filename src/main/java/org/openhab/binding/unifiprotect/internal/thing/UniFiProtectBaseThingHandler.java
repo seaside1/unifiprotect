@@ -18,6 +18,7 @@ import static org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -37,6 +38,7 @@ import org.openhab.binding.unifiprotect.internal.model.UniFiProtectImage;
 import org.openhab.binding.unifiprotect.internal.model.UniFiProtectNvr;
 import org.openhab.binding.unifiprotect.internal.model.json.UniFiProtectEvent;
 import org.openhab.binding.unifiprotect.internal.types.UniFiProtectCamera;
+import org.openhab.binding.unifiprotect.internal.types.UniFiProtectPrivacyZone;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -140,6 +142,12 @@ public class UniFiProtectBaseThingHandler extends BaseThingHandler {
                     }
                     state = UniFiProtectUtil.createDecimalType(UniFiProtectIrMode.parse(irLedMode).ordinal());
                 }
+                break;
+            case PRIVACY_ZONE:
+                UniFiProtectPrivacyZone[] privacyZones = camera.getPrivacyZones();
+                boolean privazyZoneIsSet = Arrays.stream(privacyZones)
+                        .anyMatch(p -> p.getName().equals(UniFiProtectPrivacyZone.OH_PRIVACY_ZONE_NAME));
+                state = OnOffType.from(privazyZoneIsSet);
                 break;
             case HDR_MODE:
                 Boolean hdrMode = camera.getHdrMode();
@@ -276,7 +284,9 @@ public class UniFiProtectBaseThingHandler extends BaseThingHandler {
                 break;
 
         }
-        if (state != UnDefType.NULL) {
+        if (state != UnDefType.NULL)
+
+        {
             updateState(channelID, state);
         }
     }
@@ -348,6 +358,9 @@ public class UniFiProtectBaseThingHandler extends BaseThingHandler {
                 break;
             case IR_MODE:
                 handleIrMode(camera, channelUID, command);
+                break;
+            case PRIVACY_ZONE:
+                handlePrivacyZone(camera, channelUID, command);
                 break;
             case HDR_MODE:
                 handleHdrMode(camera, channelUID, command);
@@ -609,6 +622,20 @@ public class UniFiProtectBaseThingHandler extends BaseThingHandler {
         long value = irMode.longValue();
         logger.info("Setting IR mode = {} camera: {}, ip: {}", value, camera.getName(), camera.getHost());
         getNvr().setIrMode(camera, UniFiProtectIrMode.create(value));
+    }
+
+    @SuppressWarnings("null")
+    private synchronized void handlePrivacyZone(UniFiProtectCamera camera, ChannelUID channelUID, Command command) {
+        if (!(command instanceof OnOffType)) {
+            logger.debug("Ignoring unsupported command = {} for channel = {} - valid commands types are: OnOffType",
+                    command, channelUID);
+            return;
+        }
+        final OnOffType enablePrivacyZone = (OnOffType) command;
+
+        logger.info("Setting Privacy Zone = {} camera: {}, ip: {}", enablePrivacyZone == OnOffType.ON, camera.getName(),
+                camera.getHost());
+        getNvr().turnOnOrOffPrivacyZone(camera, enablePrivacyZone == OnOffType.ON);
     }
 
     @SuppressWarnings("null")

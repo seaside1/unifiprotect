@@ -38,6 +38,7 @@ public class UniFiProtectCamera {
     private @Nullable Long connectedSince;
     private @Nullable String state;
     private @Nullable Integer hardwareRevision;
+    private @Nullable UniFiProtectPrivacyZone[] privacyZones = new UniFiProtectPrivacyZone[0];
     private @Nullable String firmwareVersion;
     private @Nullable String firmwareBuild;
     private @Nullable Boolean isUpdating;
@@ -694,5 +695,13 @@ public class UniFiProtectCamera {
 
     public void setSmartDetectHeatmapUrl(String smartDetectHeatmapUrl) {
         this.smartDetectHeatmapUrl = smartDetectHeatmapUrl;
+    }
+
+    public @Nullable UniFiProtectPrivacyZone[] getPrivacyZones() {
+        return privacyZones;
+    }
+
+    public void setPrivacyZones(@Nullable UniFiProtectPrivacyZone[] privacyZones) {
+        this.privacyZones = privacyZones;
     }
 }

@@ -98,6 +98,7 @@
 			<channel id="a-snapshot" typeId="a-snapshot"/>
 			<channel id="a-snapshot-img" typeId="a-snapshot-img"/>
 			<channel id="ir-mode" typeId="ir-mode"/>
+			<channel id="privacy-zone" typeId="privacy-zone"/>
 			<channel id="hdr-mode" typeId="hdr-mode"/>
 			<channel id="high-fps-mode" typeId="high-fps-mode"/>
 			<channel id="recording-mode" typeId="recording-mode"/>
@@ -165,6 +166,7 @@
 			<channel id="a-snapshot" typeId="a-snapshot"/>
 			<channel id="a-snapshot-img" typeId="a-snapshot-img"/>
 			<channel id="ir-mode" typeId="ir-mode"/>
+			<channel id="privacy-zone" typeId="privacy-zone"/>
 			<channel id="hdr-mode" typeId="hdr-mode"/>
 			<channel id="high-fps-mode" typeId="high-fps-mode"/>
 			<channel id="recording-mode" typeId="recording-mode"/>
@@ -241,6 +243,7 @@
 			<channel id="a-snapshot" typeId="a-snapshot"/>
 			<channel id="a-snapshot-img" typeId="a-snapshot-img"/>
 			<channel id="ir-mode" typeId="ir-mode"/>
+			<channel id="privacy-zone" typeId="privacy-zone"/>
 			<channel id="hdr-mode" typeId="hdr-mode"/>
 			<channel id="high-fps-mode" typeId="high-fps-mode"/>
 			<channel id="recording-mode" typeId="recording-mode"/>
@@ -305,6 +308,7 @@
 			<channel id="a-snapshot" typeId="a-snapshot"/>
 			<channel id="a-snapshot-img" typeId="a-snapshot-img"/>
 			<channel id="ir-mode" typeId="ir-mode"/>
+			<channel id="privacy-zone" typeId="privacy-zone"/>
 			<channel id="hdr-mode" typeId="hdr-mode"/>
 			<channel id="high-fps-mode" typeId="high-fps-mode"/>
 			<channel id="recording-mode" typeId="recording-mode"/>
@@ -571,6 +575,12 @@
 		<item-type>Switch</item-type>
 		<label>Status Light</label>
 		<description>Set status light on the camera to on or off</description>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="privacy-zone">
+		<item-type>Switch</item-type>
+		<label>Privacy Zone</label>
+		<description>Set Privacy Zone On or Off, disabling the view of Camera</description>
 		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="status-sounds">

@@ -118,6 +118,34 @@ public class UniFiProtectRequestTester {
 
     @Test
     @Disabled
+    public void enablePrivacyZone() throws Exception {
+        UniFiProtectNvr nvr = new UniFiProtectNvr(config);
+        nvr.init();
+        nvr.login();
+        nvr.refreshProtect();
+        UniFiProtectCameraCache cameraInsightCache = nvr.getCameraInsightCache();
+        Optional<UniFiProtectCamera> optCamera = cameraInsightCache.getCameras().stream()
+                .filter(camera -> camera.getType().toLowerCase().contains("doorbell")).findAny();
+        UniFiProtectCamera camera = optCamera.get();
+        nvr.turnOnOrOffPrivacyZone(camera, false);
+    }
+
+    @Test
+    @Disabled
+    public void disablePrivacyZone() throws Exception {
+        UniFiProtectNvr nvr = new UniFiProtectNvr(config);
+        nvr.init();
+        nvr.login();
+        nvr.refreshProtect();
+        UniFiProtectCameraCache cameraInsightCache = nvr.getCameraInsightCache();
+        Optional<UniFiProtectCamera> optCamera = cameraInsightCache.getCameras().stream()
+                .filter(camera -> camera.getType().toLowerCase().contains("doorbell")).findAny();
+        UniFiProtectCamera camera = optCamera.get();
+        nvr.turnOnOrOffPrivacyZone(camera, false);
+    }
+
+    @Test
+    @Disabled
     public void getSnapshot() throws Exception {
         UniFiProtectNvr nvr = new UniFiProtectNvr(config);
         nvr.init();

@@ -51,6 +51,7 @@ public enum UniFiProtectCameraChannel {
     A_SNAPSHOT,
     A_SNAPSHOT_IMG,
     IR_MODE,
+    PRIVACY_ZONE,
     REBOOT,
     UNKNOWN;
 
