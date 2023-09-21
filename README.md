@@ -19,7 +19,9 @@ openHAB version 4.x.x is supported.
 Maturity: Stable
 
 ## Example of usage
-
+- Toggle Privacy Zone on or off, for instance turn on when you are home
+- Turn recording on or off, for instance turn off recoring when you are home
+- Send a notification on motion or ring on doorbell together with a snapshot from the camera
 - Detect Motion and trigger other system notifications, Alexa, Google Home, turn on lights, sound an alarm etc.
 - Limit detection to only smart motions such as person, vehicle and package.
 - Smoke and CO alarm trigger for G4 and later cameras
@@ -113,12 +115,12 @@ The following table describes the Bridge configuration parameters:
 | ------------------------ | ---------------------------------------------------------- |--------- | ------- |
 | Hostname                 | Hostname or IP address of the NVR                          | Required | -       |
 | Username                 | The username to access the UniFiProtect                    | Required | -       |
-| Password                 | The password credential                          		| Required | -       |
-| Refresh Interval         | Refresh interval in seconds                      		| Required | 60      |
-| Thumbnail Width          | Thumbnails will use this width                   		| Required | 640     |
-| Image Folder             | Images (snapshots etc) will be stored in this folder	| Optional | -       |
-| Events Timer Period 	   | The number of seconds to look back for motion events	| Optional | 30      |
-| Watchdog		   | Watchdog for restarting binding if no events are detected  | Optional | True    |
+| Password                 | The password credential                                    | Required | -       |
+| Refresh Interval         | Refresh interval in seconds                                | Required | 60      |
+| Thumbnail Width          | Thumbnails will use this width                             | Required | 640     |
+| Image Folder             | Images (snapshots etc) will be stored in this folder       | Optional | -       |
+| Events Timer Period      | The number of seconds to look back for motion events       | Optional | 30      |
+| Watchdog                 | Watchdog for restarting binding if no events are detected  | Optional | True    |
 
 ## Thing Configuration
 
@@ -209,8 +211,9 @@ You need to configure the alerts yourself by logging into the controller.
 | last-seen                    | DateTime  | Camera was last seen                                                 | Read        |
 | last-motion                  | DateTime  | When last motion was detected at                                     | Read        |
 | mic-volume                   | Number    | The volume of the microphone                                         | Read        |
+| privacy-zone                 | Switch    | Turn Privacy Filter on / Off                                         | Read/Write  |
 
-### G4 Camera Channels (Has all the G3 Channels)
+### G4 and G5 Camera Channels (Has all the G3 Channels)
 
 | Channel ID                   | Item Type | Description                                                          | Permissions |
 |------------------------------|-----------|--------------------------------------------------------------------- | ----------- |
@@ -270,194 +273,182 @@ Bridge unifiprotect:nvr:NVRID "UniFi Protect NVR" [ host="...", username="...", 
 items/unifiprotect.items
 
 ```
-Group   gUniFiProtect   "UniFi Protect"
-Group   sUniFiProtect   "Sitemap UniFiProtect"
-
 //NVR
-Group       CKG2PNvr                    "CKG2+ Nvr"             (gUniFiProtect)
-String      CKG2PNvrName                "CKG2+ Name"                    (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:name" }
-String      CKG2PNvrHost                "CKG2+ Host"                    (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:host" }
-String      CKG2PNvrHosts               "CKG2+ Hosts"                   (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:hosts" }
-String      CKG2PNvrHostShortName       "CKG2+ Host Short Name"         (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:host-short-name" }
-String      CKG2PNvrVersion             "CKG2+ Version"                 (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:version" }
-String      CKG2PNvrFirmwareVersion     "CKG2+ FirmwareVersion"         (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:firmware-version" }
-Number      CKG2PNvrUptime              "CKG2+ Uptime [%d]"             (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:uptime" }
-DateTime    CKG2PNvrLastUpdatedAt       "CKG2+ LastUpdated [%1$tY.%1$tm.%1$td %1$tH:%1$tM]" <timestamp>     (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:last-updated-at" }
-DateTime    CKG2PNvrLastSeen            "CKG2+ LastSeen [%1$tY.%1$tm.%1$td %1$tH:%1$tM]"    <timestamp>     (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:last-seen" }
-Switch      CKG2PNvrConnectedToCloud    "CKG2+ Cloud Connected [%s]"    (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:is-connected-to-cloud" }
-Switch      CKG2PNvrAutomaticBackups    "CKG2+ Enabled Automatic Backups [%s]"      (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:enable-automatic-backups" }
-Number      CKG2PNvrRetention           "CKG2+ Recording Retention Duration [%d]"   (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:recording-retention-duration" }
-Number      CKG2PNvrCpuLoad             "CKG2+ CPU Load [%d]"           (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:cpu-average-load" }
-Number      CKG2PNvrCpuTemperature      "CKG2+ CPU Temperature [%d]"    (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:cpu-temperature" }
-Number      CKG2PNvrMemAvailable        "CKG2+ Memory Available [%d]"   (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:mem-available" }
-Number      CKG2PNvrMemFree             "CKG2+ Memory Free [%d]"        (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:mem-total" }
-Number      CKG2PNvrMemTotal            "CKG2+ Memory Total [%d]"       (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:mem-free" }
-Number      CKG2PNvrStorageUsed         "CKG2+ Storage Used [%d]"       (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:storage-used" }
-Number      CKG2PNvrStorageTotalSize    "CKG2+ Storage Total Size [%d]" (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:storage-total-size" }
-Number      CKG2PNvrStorageAvailable    "CKG2+ Storage Available [%d]"  (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:storage-available" }
-String      CKG2PNvrStorageType         "CKG2+ Storage Type"            (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:storage-type" }
-String      CKG2PNvrD0Model             "CKG2+ Device 0 Model"          (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:device-0-model" }
-Switch      CKG2PNvrD0Healthy           "CKG2+ Device 0 Healthy"        (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:device-0-healthy" }
-Number      CKG2PNvrD0Size              "CKG2+ Device 0 Size [%d]"      (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:device-0-size" }
-Switch      CKG2PNvrAlerts              "CKG2+ Alerts [%s]"             (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:alerts" }
+Group    CKG2PNvr                   "CKG2+ Nvr"                                         (gUniFiProtect)
+String   CKG2PNvrName               "CKG2+ Name"                                        (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:name" }
+String   CKG2PNvrHost               "CKG2+ Host"                                        (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:host" }
+String   CKG2PNvrHosts              "CKG2+ Hosts"                                       (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:hosts" }
+String   CKG2PNvrHostShortName      "CKG2+ Host Short Name"                             (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:host-short-name" }
+String   CKG2PNvrVersion            "CKG2+ Version"                                     (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:version" }
+String   CKG2PNvrFirmwareVersion    "CKG2+ FirmwareVersion"                             (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:firmware-version" }
+Number   CKG2PNvrUptime             "CKG2+ Uptime [%d]"                                 (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:uptime" }
+DateTime CKG2PNvrLastUpdatedAt      "CKG2+ LastUpdated [%1$tY.%1$tm.%1$td %1$tH:%1$tM]" (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:last-updated-at" }
+DateTime CKG2PNvrLastSeen           "CKG2+ LastSeen [%1$tY.%1$tm.%1$td %1$tH:%1$tM]"    (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:last-seen" }
+Switch   CKG2PNvrConnectedToCloud   "CKG2+ Cloud Connected [%s]"                        (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:is-connected-to-cloud" }
+Switch   CKG2PNvrAutomaticBackups   "CKG2+ Enabled Automatic Backups [%s]"              (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:enable-automatic-backups" }
+Number   CKG2PNvrRetention          "CKG2+ Recording Retention Duration [%d]"           (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:recording-retention-duration" }
+Number   CKG2PNvrCpuLoad            "CKG2+ CPU Load [%d]"                               (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:cpu-average-load" }
+Number   CKG2PNvrCpuTemperature     "CKG2+ CPU Temperature [%d]"                        (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:cpu-temperature" }
+Number   CKG2PNvrMemAvailable       "CKG2+ Memory Available [%d]"                       (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:mem-available" }
+Number   CKG2PNvrMemFree            "CKG2+ Memory Free [%d]"                            (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:mem-total" }
+Number   CKG2PNvrMemTotal           "CKG2+ Memory Total [%d]"                           (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:mem-free" }
+Number   CKG2PNvrStorageUsed        "CKG2+ Storage Used [%d]"                           (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:storage-used" }
+Number   CKG2PNvrStorageTotalSize   "CKG2+ Storage Total Size [%d]"                     (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:storage-total-size" }
+Number   CKG2PNvrStorageAvailable   "CKG2+ Storage Available [%d]"                      (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:storage-available" }
+String   CKG2PNvrStorageType        "CKG2+ Storage Type"                                (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:storage-type" }
+String   CKG2PNvrD0Model            "CKG2+ Device 0 Model"                              (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:device-0-model" }
+Switch   CKG2PNvrD0Healthy          "CKG2+ Device 0 Healthy"                            (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:device-0-healthy" }
+Number   CKG2PNvrD0Size             "CKG2+ Device 0 Size [%d]"                          (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:device-0-size" }
+Switch   CKG2PNvrAlerts             "CKG2+ Alerts [%s]"                                 (CKG2PNvr) { channel="unifiprotect:nvr:NVRID:alerts" }
 
 //G3 Camera
-Group       G3DMyCam                "G3 Cam"                        (gUniFiProtect)
-String      G3DMyCamName            "G3 Cam Name"                   (G3DMyCam) { channel="unifiprotect:g3camera:NVRID:MACADDRESS:name" }
-String      G3DMyCamType            "G3 Cam Type"                   (G3DMyCam) { channel="unifiprotect:g3camera:NVRID:MACADDRESS:type" }
-String      G3DMyCamHost            "G3 Cam Host"                   (G3DMyCam) { channel="unifiprotect:g3camera:NVRID:MACADDRESS:host" }
-String      G3DMyCamState           "G3 Cam State"                  (G3DMyCam) { channel="unifiprotect:g3camera:NVRID:MACADDRESS:state" }
-DateTime    G3DMyCamUpSince         "G3 Cam Up Since [%1$tY.%1$tm.%1$td %1$tH:%1$tM]"           (G3DMyCam) { channel="unifiprotect:g3camera:NVRID:MACADDRESS:up-since" }       
-DateTime    G3DMyCamLastSeen        "G3 Cam Last Seen [%1$tY.%1$tm.%1$td %1$tH:%1$tM]"          (G3DMyCam) { channel="unifiprotect:g3camera:NVRID:MACADDRESS:last-seen" }       
-DateTime    G3DMyCamConnectedSince  "G3 Cam Connected Since [%1$tY.%1$tm.%1$td %1$tH:%1$tM]"    (G3DMyCam) { channel="unifiprotect:g3camera:NVRID:MACADDRESS:connected-since" }       
-DateTime    G3DMyCamLastMotion      "G3 Cam Last Motion [%1$tY.%1$tm.%1$td %1$tH:%1$tM]"        (G3DMyCam) { channel="unifiprotect:g3camera:NVRID:MACADDRESS:last-motion" }       
-Number      G3DMyCamMicVolume       "G3 Cam Mic Volume [%d]"        (G3DMyCam) { channel="unifiprotect:g3camera:NVRID:MACADDRESS:mic-volume" }
-Switch      G3DMyCamMicEnabled      "G3 Cam Mic Enabled [%s]"       (G3DMyCam) { channel="unifiprotect:g3camera:NVRID:MACADDRESS:is-mic-enabled" }
-Switch      G3DMyCamDark            "G3 Cam is Dark [%s]"           (G3DMyCam) { channel="unifiprotect:g3camera:NVRID:MACADDRESS:is-dark" }
-Switch      G3DBMotionDetection     "G3 Cam Motion Detection [%s]"  (G3DMyCam) { channel="unifiprotect:g3camera:NVRID:MACADDRESS:motion-detection" }
-Switch      G3DMyCamRecording       "G3 Cam is Recording [%s]"      (G3DMyCam) { channel="unifiprotect:g3camera:NVRID:MACADDRESS:is-recording" }
-Switch      G3DMyCamMotionDetect    "G3 Cam Motion Detected [%s]"   (G3DMyCam) { channel="unifiprotect:g3camera:NVRID:MACADDRESS:is-motion-detected" }
-Switch      G3DMyCamStatusLight     "G3 Cam Status Light [%s]"      (G3DMyCam) { channel="unifiprotect:g3camera:NVRID:MACADDRESS:status-light" }
-Switch      G3DMyCamReboot          "G3 Cam Reboot [%s]"            (G3DMyCam) { channel="unifiprotect:g3camera:NVRID:MACADDRESS:reboot" }
-Switch      G3DMyCamHDRMode         "G3 Cam HDR Mode [%s]"          (G3DMyCam) { channel="unifiprotect:g3camera:NVRID:MACADDRESS:hdr-mode" }
-Switch      G3DMyCamHighFPSMode     "G3 Cam High Fps Mode [%s]"     (G3DMyCam) { channel="unifiprotect:g3camera:NVRID:MACADDRESS:high-fps-mode" }
-Number      G3DMyCamIRMode          "G3 Cam IR Mode [MAP(unifiprotect_ir.map):%s]"          (G3DMyCam) { channel="unifiprotect:g3camera:NVRID:MACADDRESS:ir-mode" }
-Number      G3DMyCamRecordingMode   "G3 Cam Recording mode [MAP(unifiprotect_rec.map):%s]"  (G3DMyCam) { channel="unifiprotect:g3camera:NVRID:MACADDRESS:recording-mode" }
-Switch      G3DMyCamAnonSnapshot    "G3 Cam AnonSnapshot"           (G3DMyCam) { channel="unifiprotect:g3camera:NVRID:MACADDRESS:a-snapshot",expire="3s,command=OFF" } 
-Image       G3DMyCamAnonSnapshotImg "G3 Cam AnonSnapshot Img"       (G3DMyCam) { channel="unifiprotect:g3camera:NVRID:MACADDRESS:a-snapshot-img" } 
-Switch      G3DMyCamSnapshot        "G3 Cam Snapshot"               (G3DMyCam) { channel="unifiprotect:g3camera:NVRID:MACADDRESS:snapshot",expire="3s,command=OFF" } 
-Image       G3DMyCamSnapshotImg     "G3 Cam Snapshot Img"           (G3DMyCam) { channel="unifiprotect:g3camera:NVRID:MACADDRESS:snapshot-img" } 
-Image       G3DMyMotionThumbnail    "G3 Thumbnail Img"              (G3DMyCam) { channel="unifiprotect:g3camera:NVRID:MACADDRESS:motion-thumbnail" } 
-Image       G3DMyMotionHeatmap      "G3 Heatmap Img"                (G3DMyCam) { channel="unifiprotect:g3camera:NVRID:MACADDRESS:motion-heatmap" } 
-Number      G3DMyMotionScore        "G3 Score [%d]"                 (G3DMyCam) { channel="unifiprotect:g3camera:NVRID:MACADDRESS:motion-score" } 
+Group    G3MyCam                 "G3 Cam"                                                 (gUniFiProtect)
+String   G3MyCamName             "G3 Cam Name"                                            (G3MyCam) { channel="unifiprotect:g3camera:NVRID:MACADDRESS:name" }
+String   G3MyCamType             "G3 Cam Type"                                            (G3MyCam) { channel="unifiprotect:g3camera:NVRID:MACADDRESS:type" }
+String   G3MyCamHost             "G3 Cam Host"                                            (G3MyCam) { channel="unifiprotect:g3camera:NVRID:MACADDRESS:host" }
+String   G3MyCamState            "G3 Cam State"                                           (G3MyCam) { channel="unifiprotect:g3camera:NVRID:MACADDRESS:state" }
+DateTime G3MyCamUpSince          "G3 Cam Up Since [%1$tY.%1$tm.%1$td %1$tH:%1$tM]"        (G3MyCam) { channel="unifiprotect:g3camera:NVRID:MACADDRESS:up-since" }       
+DateTime G3MyCamLastSeen         "G3 Cam Last Seen [%1$tY.%1$tm.%1$td %1$tH:%1$tM]"       (G3MyCam) { channel="unifiprotect:g3camera:NVRID:MACADDRESS:last-seen" }       
+DateTime G3MyCamConnectedSince   "G3 Cam Connected Since [%1$tY.%1$tm.%1$td %1$tH:%1$tM]" (G3MyCam) { channel="unifiprotect:g3camera:NVRID:MACADDRESS:connected-since" }       
+DateTime G3MyCamLastMotion       "G3 Cam Last Motion [%1$tY.%1$tm.%1$td %1$tH:%1$tM]"     (G3MyCam) { channel="unifiprotect:g3camera:NVRID:MACADDRESS:last-motion" }       
+Number   G3MyCamMicVolume        "G3 Cam Mic Volume [%d]"                                 (G3MyCam) { channel="unifiprotect:g3camera:NVRID:MACADDRESS:mic-volume" }
+Switch   G3MyCamMicEnabled       "G3 Cam Mic Enabled [%s]"                                (G3MyCam) { channel="unifiprotect:g3camera:NVRID:MACADDRESS:is-mic-enabled" }
+Switch   G3MyCamDark             "G3 Cam is Dark [%s]"                                    (G3MyCam) { channel="unifiprotect:g3camera:NVRID:MACADDRESS:is-dark" }
+Switch   G3MyCamRecording        "G3 Cam is Recording [%s]"                               (G3MyCam) { channel="unifiprotect:g3camera:NVRID:MACADDRESS:is-recording" }
+Switch   G3MyCamMotionDetect     "G3 Cam Motion Detected [%s]"                            (G3MyCam) { channel="unifiprotect:g3camera:NVRID:MACADDRESS:is-motion-detected" }
+Switch   G3MyCamStatusLight      "G3 Cam Status Light [%s]"                               (G3MyCam) { channel="unifiprotect:g3camera:NVRID:MACADDRESS:status-light" }
+Switch   G3MyCamReboot           "G3 Cam Reboot [%s]"                                     (G3MyCam) { channel="unifiprotect:g3camera:NVRID:MACADDRESS:reboot" }
+Switch   G3MyCamHDRMode          "G3 Cam HDR Mode [%s]"                                   (G3MyCam) { channel="unifiprotect:g3camera:NVRID:MACADDRESS:hdr-mode" }
+Switch   G3MyCamHighFPSMode      "G3 Cam High Fps Mode [%s]"                              (G3MyCam) { channel="unifiprotect:g3camera:NVRID:MACADDRESS:high-fps-mode" }
+Number   G3MyCamIRMode           "G3 Cam IR Mode [MAP(unifiprotect_ir.map):%s]"           (G3MyCam) { channel="unifiprotect:g3camera:NVRID:MACADDRESS:ir-mode" }
+Number   G3MyCamRecordingMode    "G3 Cam Recording mode [MAP(unifiprotect_rec.map):%s]"   (G3MyCam) { channel="unifiprotect:g3camera:NVRID:MACADDRESS:recording-mode" }
+Switch   G3MyCamAnonSnapshot     "G3 Cam AnonSnapshot "                                   (G3MyCam) { channel="unifiprotect:g3camera:NVRID:MACADDRESS:a-snapshot",expire="3s,command=OFF" } 
+Image    G3MyCamAnonSnapshotImg  "G3 Cam AnonSnapshot Img"                                (G3MyCam) { channel="unifiprotect:g3camera:NVRID:MACADDRESS:a-snapshot-img" } 
+Switch   G3MyCamSnapshot         "G3 Cam Snapshot "                                       (G3MyCam) { channel="unifiprotect:g3camera:NVRID:MACADDRESS:snapshot",expire="3s,command=OFF" } 
+Image    G3MyCamSnapshotImg      "G3 Cam Snapshot Img"                                    (G3MyCam) { channel="unifiprotect:g3camera:NVRID:MACADDRESS:snapshot-img" } 
+Image    G3MyMotionThumbnail     "G3 Thumbnail Img"                                       (G3MyCam) { channel="unifiprotect:g3camera:NVRID:MACADDRESS:motion-thumbnail" } 
+Image    G3MyMotionHeatmap       "G3 Heatmap Img"                                         (G3MyCam) { channel="unifiprotect:g3camera:NVRID:MACADDRESS:motion-heatmap" } 
+Number   G3MyMotionScore         "G3 Score [%d]"                                          (G3MyCam) { channel="unifiprotect:g3camera:NVRID:MACADDRESS:motion-score" } 
+Switch   G3MyCamPrivacyZone      "G3 Cam Privacy Zone [%s]"                               (G3MyCam) { channel="unifiprotect:g3camera:NVRID:MACADDRESS:privacy-zone" }
 
 //G4 Camera
-Group       G4DMyCam                "G4 Cam"                        (gUniFiProtect)
-String      G4DMyCamName            "G4 Cam Name"                   (G4DMyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:name" }
-String      G4DMyCamType            "G4 Cam Type"                   (G4DMyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:type" }
-String      G4DMyCamHost            "G4 Cam Host"                   (G4DMyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:host" }
-String      G4DMyCamState           "G4 Cam State"                  (G4DMyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:state" }
-DateTime    G4DMyCamUpSince         "G4 Cam Up Since [%1$tY.%1$tm.%1$td %1$tH:%1$tM]"           (G4DMyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:up-since" }       
-DateTime    G4DMyCamLastSeen        "G4 Cam Last Seen [%1$tY.%1$tm.%1$td %1$tH:%1$tM]"          (G4DMyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:last-seen" }       
-DateTime    G4DMyCamConnectedSince  "G4 Cam Connected Since [%1$tY.%1$tm.%1$td %1$tH:%1$tM]"    (G4DMyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:connected-since" }       
-DateTime    G4DMyCamLastMotion      "G4 Cam Last Motion [%1$tY.%1$tm.%1$td %1$tH:%1$tM]"        (G4DMyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:last-motion" }       
-Number      G4DMyCamMicVolume       "G4 Cam Mic Volume [%d]"        (G4DMyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:mic-volume" }
-Switch      G4DMyCamMicEnabled      "G4 Cam Mic Enabled [%s]"       (G4DMyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:is-mic-enabled" }
-Switch      G4DMyCamDark            "G4 Cam is Dark [%s]"           (G4DMyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:is-dark" }
-Switch      G4DMyCamMotionDetection "G4 Cam Motion Detection [%s]"  (G4DMyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:motion-detection" }
-Switch      G4DMyCamRecording       "G4 Cam is Recording [%s]"      (G4DMyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:is-recording" }
-Switch      G4DMyCamMotionDetect    "G4 Cam Motion Detected [%s]"   (G4DMyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:is-motion-detected" }
-Switch      G4DMyCamStatusLight     "G4 Cam Status Light [%s]"      (G4DMyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:status-light" }
-Switch      G4DMyCamReboot          "G4 Cam Reboot [%s]"            (G4DMyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:reboot" }
-Switch      G4DMyCamHDRMode         "G4 Cam HDR Mode [%s]"          (G4DMyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:hdr-mode" }
-Switch      G4DMyCamHighFPSMode     "G4 Cam High Fps Mode [%s]"     (G4DMyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:high-fps-mode" }
-Number      G4DMyCamIRMode          "G4 Cam IR Mode [MAP(unifiprotect_ir.map):%s]"              (G4DMyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:ir-mode" }
-Number      G4DMyCamRecordingMode   "G4 Cam Recording mode [MAP(unifiprotect_rec.map):%s]"      (G4DMyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:recording-mode" }
-Switch      G4DMyCamAnonSnapshot    "G4 Cam AnonSnapshot "          (G4DMyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:a-snapshot",expire="3s,command=OFF" } 
-Image       G4DMyCamAnonSnapshotImg "G4 Cam AnonSnapshot Img"       (G4DMyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:a-snapshot-img" } 
-Switch      G4DMyCamSnapshot        "G4 Cam Snapshot "              (G4DMyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:snapshot",expire="3s,command=OFF" } 
-Image       G4DMyCamSnapshotImg     "G4 Cam Snapshot Img"           (G4DMyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:snapshot-img" } 
-Image       G4DMyMotionThumbnail    "G4 Thumbnail Img"              (G4DMyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:motion-thumbnail" } 
-Image       G4DMyMotionHeatmap      "G4 Heatmap Img"                (G4DMyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:motion-heatmap" } 
-Number      G4DMyMotionScore        "G4 Score [%d]"                 (G4DMyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:motion-score" } 
-Switch      G4SmartDetectPerson     "G4 SmartDetect Person"         (G4DMyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:smart-detect-person" }
-Switch      G4SmartDetectVehicle    "G4 SmartDetect Vehicle"        (G4DMyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:smart-detect-vehicle" }
-Switch      G4SmartDetectPackage    "G4 SmartDetect Package"        (G4DMyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:smart-detect-package" }
-Switch      G4SmartDetectSmoke      "G4 SmartDetect Smoke/CO"       (G4DMyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:smart-detect-smoke" }
-Switch      G4SmartDetectMotion     "G4 SmartDetect Motion"         (G4DMyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:smart-detect-motion" }
-Image       G4SmartDetectThumbnail  "G4 SmartDetect Thumbnail Img"  (G4DMyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:smart-detect-thumbnail" } 
-Number      G4SmartDetectScore      "G4 Score [%d]"                 (G4DMyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:smart-detect-score" } 
-String      G4SmartDetectType       "G4 SmartDetect Type"           (G4DMyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:smart-detect-type" }
-DateTime    G4SmartDetectLast       "G4 Last SmartDetect [%1$tY.%1$tm.%1$td %1$tH:%1$tM]" <timestamp> (G4DMyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:smart-detect-last" }
-
-
-//G5 Camera
-Group       G4DMyCam                "G5 Cam"                        (gUniFiProtect)
-String      G5DMyCamName            "G5 Cam Name"                   (G5DMyCam) { channel="unifiprotect:G5camera:NVRID:MACADDRESS:name" }
-String      G5DMyCamType            "G5 Cam Type"                   (G5DMyCam) { channel="unifiprotect:G5camera:NVRID:MACADDRESS:type" }
-String      G5DMyCamHost            "G5 Cam Host"                   (G5DMyCam) { channel="unifiprotect:G5camera:NVRID:MACADDRESS:host" }
-String      G5DMyCamState           "G5 Cam State"                  (G5DMyCam) { channel="unifiprotect:G5camera:NVRID:MACADDRESS:state" }
-DateTime    G5DMyCamUpSince         "G5 Cam Up Since [%1$tY.%1$tm.%1$td %1$tH:%1$tM]"           (G5DMyCam) { channel="unifiprotect:G5camera:NVRID:MACADDRESS:up-since" }       
-DateTime    G5DMyCamLastSeen        "G5 Cam Last Seen [%1$tY.%1$tm.%1$td %1$tH:%1$tM]"          (G5DMyCam) { channel="unifiprotect:G5camera:NVRID:MACADDRESS:last-seen" }       
-DateTime    G5DMyCamConnectedSince  "G5 Cam Connected Since [%1$tY.%1$tm.%1$td %1$tH:%1$tM]"    (G5DMyCam) { channel="unifiprotect:G5camera:NVRID:MACADDRESS:connected-since" }       
-DateTime    G5DMyCamLastMotion      "G5 Cam Last Motion [%1$tY.%1$tm.%1$td %1$tH:%1$tM]"        (G5DMyCam) { channel="unifiprotect:G5camera:NVRID:MACADDRESS:last-motion" }       
-Number      G5DMyCamMicVolume       "G5 Cam Mic Volume [%d]"        (G5DMyCam) { channel="unifiprotect:G5camera:NVRID:MACADDRESS:mic-volume" }
-Switch      G5DMyCamMicEnabled      "G5 Cam Mic Enabled [%s]"       (G5DMyCam) { channel="unifiprotect:G5camera:NVRID:MACADDRESS:is-mic-enabled" }
-Switch      G5DMyCamDark            "G5 Cam is Dark [%s]"           (G5DMyCam) { channel="unifiprotect:G5camera:NVRID:MACADDRESS:is-dark" }
-Switch      G5DMyCamMotionDetection "G5 Cam Motion Detection [%s]"  (G5DMyCam) { channel="unifiprotect:G5camera:NVRID:MACADDRESS:motion-detection" }
-Switch      G5DMyCamRecording       "G5 Cam is Recording [%s]"      (G5DMyCam) { channel="unifiprotect:G5camera:NVRID:MACADDRESS:is-recording" }
-Switch      G5DMyCamMotionDetect    "G5 Cam Motion Detected [%s]"   (G5DMyCam) { channel="unifiprotect:G5camera:NVRID:MACADDRESS:is-motion-detected" }
-Switch      G5DMyCamStatusLight     "G5 Cam Status Light [%s]"      (G5DMyCam) { channel="unifiprotect:G5camera:NVRID:MACADDRESS:status-light" }
-Switch      G5DMyCamReboot          "G5 Cam Reboot [%s]"            (G5DMyCam) { channel="unifiprotect:G5camera:NVRID:MACADDRESS:reboot" }
-Switch      G5DMyCamHDRMode         "G5 Cam HDR Mode [%s]"          (G5DMyCam) { channel="unifiprotect:G5camera:NVRID:MACADDRESS:hdr-mode" }
-Switch      G5DMyCamHighFPSMode     "G5 Cam High Fps Mode [%s]"     (G5DMyCam) { channel="unifiprotect:G5camera:NVRID:MACADDRESS:high-fps-mode" }
-Number      G5DMyCamIRMode          "G5 Cam IR Mode [MAP(unifiprotect_ir.map):%s]"              (G5DMyCam) { channel="unifiprotect:G5camera:NVRID:MACADDRESS:ir-mode" }
-Number      G5DMyCamRecordingMode   "G5 Cam Recording mode [MAP(unifiprotect_rec.map):%s]"      (G5DMyCam) { channel="unifiprotect:G5camera:NVRID:MACADDRESS:recording-mode" }
-Switch      G5DMyCamAnonSnapshot    "G5 Cam AnonSnapshot "          (G5DMyCam) { channel="unifiprotect:G5camera:NVRID:MACADDRESS:a-snapshot",expire="3s,command=OFF" } 
-Image       G5DMyCamAnonSnapshotImg "G5 Cam AnonSnapshot Img"       (G5DMyCam) { channel="unifiprotect:G5camera:NVRID:MACADDRESS:a-snapshot-img" } 
-Switch      G5DMyCamSnapshot        "G5 Cam Snapshot "              (G5DMyCam) { channel="unifiprotect:G5camera:NVRID:MACADDRESS:snapshot",expire="3s,command=OFF" } 
-Image       G5DMyCamSnapshotImg     "G5 Cam Snapshot Img"           (G5DMyCam) { channel="unifiprotect:G5camera:NVRID:MACADDRESS:snapshot-img" } 
-Image       G5DMyMotionThumbnail    "G5 Thumbnail Img"              (G5DMyCam) { channel="unifiprotect:G5camera:NVRID:MACADDRESS:motion-thumbnail" } 
-Image       G5DMyMotionHeatmap      "G5 Heatmap Img"                (G5DMyCam) { channel="unifiprotect:G5camera:NVRID:MACADDRESS:motion-heatmap" } 
-Number      G5DMyMotionScore        "G5 Score [%d]"                 (G5DMyCam) { channel="unifiprotect:G5camera:NVRID:MACADDRESS:motion-score" } 
-Switch      G5SmartDetectPerson     "G5 SmartDetect Person"         (G5DMyCam) { channel="unifiprotect:G5camera:NVRID:MACADDRESS:smart-detect-person" }
-Switch      G5SmartDetectVehicle    "G5 SmartDetect Vehicle"        (G5DMyCam) { channel="unifiprotect:G5camera:NVRID:MACADDRESS:smart-detect-vehicle" }
-Switch      G5SmartDetectPackage    "G5 SmartDetect Package"        (G5DMyCam) { channel="unifiprotect:G5camera:NVRID:MACADDRESS:smart-detect-package" }
-Switch      G5SmartDetectSmoke      "G5 SmartDetect Smoke/CO"       (G5DMyCam) { channel="unifiprotect:G5camera:NVRID:MACADDRESS:smart-detect-smoke" }
-Switch      G5SmartDetectMotion     "G5 SmartDetect Motion"         (G5DMyCam) { channel="unifiprotect:G5camera:NVRID:MACADDRESS:smart-detect-motion" }
-Image       G5SmartDetectThumbnail  "G5 SmartDetect Thumbnail Img"  (G5DMyCam) { channel="unifiprotect:G5camera:NVRID:MACADDRESS:smart-detect-thumbnail" } 
-Number      G5SmartDetectScore      "G5 Score [%d]"                 (G5DMyCam) { channel="unifiprotect:G5camera:NVRID:MACADDRESS:smart-detect-score" } 
-String      G5SmartDetectType       "G5 SmartDetect Type"           (G5DMyCam) { channel="unifiprotect:G5camera:NVRID:MACADDRESS:smart-detect-type" }
-DateTime    G5SmartDetectLast       "G5 Last SmartDetect [%1$tY.%1$tm.%1$td %1$tH:%1$tM]" <timestamp> (G5DMyCam) { channel="unifiprotect:G5camera:NVRID:MACADDRESS:smart-detect-last" }
-
+Group    G4MyCam                 "G4 Cam"                                                 (gUniFiProtect)
+String   G4MyCamName             "G4 Cam Name"                                            (G4MyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:name" }
+String   G4MyCamType             "G4 Cam Type"                                            (G4MyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:type" }
+String   G4MyCamHost             "G4 Cam Host"                                            (G4MyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:host" }
+String   G4MyCamState            "G4 Cam State"                                           (G4MyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:state" }
+DateTime G4MyCamUpSince          "G4 Cam Up Since [%1$tY.%1$tm.%1$td %1$tH:%1$tM]"        (G4MyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:up-since" }       
+DateTime G4MyCamLastSeen         "G4 Cam Last Seen [%1$tY.%1$tm.%1$td %1$tH:%1$tM]"       (G4MyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:last-seen" }       
+DateTime G4MyCamConnectedSince   "G4 Cam Connected Since [%1$tY.%1$tm.%1$td %1$tH:%1$tM]" (G4MyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:connected-since" }       
+DateTime G4MyCamLastMotion       "G4 Cam Last Motion [%1$tY.%1$tm.%1$td %1$tH:%1$tM]"     (G4MyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:last-motion" }       
+Number   G4MyCamMicVolume        "G4 Cam Mic Volume [%d]"                                 (G4MyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:mic-volume" }
+Switch   G4MyCamMicEnabled       "G4 Cam Mic Enabled [%s]"                                (G4MyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:is-mic-enabled" }
+Switch   G4MyCamDark             "G4 Cam is Dark [%s]"                                    (G4MyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:is-dark" }
+Switch   G4MyCamRecording        "G4 Cam is Recording [%s]"                               (G4MyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:is-recording" }
+Switch   G4MyCamMotionDetect     "G4 Cam Motion Detected [%s]"                            (G4MyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:is-motion-detected" }
+Switch   G4MyCamStatusLight      "G4 Cam Status Light [%s]"                               (G4MyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:status-light" }
+Switch   G4MyCamReboot           "G4 Cam Reboot [%s]"                                     (G4MyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:reboot" }
+Switch   G4MyCamHDRMode          "G4 Cam HDR Mode [%s]"                                   (G4MyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:hdr-mode" }
+Switch   G4MyCamHighFPSMode      "G4 Cam High Fps Mode [%s]"                              (G4MyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:high-fps-mode" }
+Number   G4MyCamIRMode           "G4 Cam IR Mode [MAP(unifiprotect_ir.map):%s]"           (G4MyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:ir-mode" }
+Number   G4MyCamRecordingMode    "G4 Cam Recording mode [MAP(unifiprotect_rec.map):%s]"   (G4MyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:recording-mode" }
+Switch   G4MyCamAnonSnapshot     "G4 Cam AnonSnapshot "                                   (G4MyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:a-snapshot",expire="3s,command=OFF" } 
+Image    G4MyCamAnonSnapshotImg  "G4 Cam AnonSnapshot Img"                                (G4MyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:a-snapshot-img" } 
+Switch   G4MyCamSnapshot         "G4 Cam Snapshot "                                       (G4MyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:snapshot",expire="3s,command=OFF" } 
+Image    G4MyCamSnapshotImg      "G4 Cam Snapshot Img"                                    (G4MyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:snapshot-img" } 
+Image    G4DMyMotionThumbnail    "G4 Thumbnail Img"                                       (G4MyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:motion-thumbnail" } 
+Image    G4DMyMotionHeatmap      "G4 Heatmap Img"                                         (G4MyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:motion-heatmap" } 
+Number   G4DMyMotionScore        "G4 Score [%d]"                                          (G4MyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:motion-score" } 
+Switch   G4SmartDetectPerson     "G4 SmartDetect Person"                                  (G4MyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:smart-detect-person" }
+Switch   G4SmartDetectVehicle    "G4 SmartDetect Vehicle"                                 (G4MyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:smart-detect-vehicle" }
+Switch   G4SmartDetectMotion     "G4 SmartDetect Motion"                                  (G4MyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:smart-detect-motion" }
+Image    G4SmartDetectThumbnail  "G4 SmartDetect Thumbnail Img"                           (G4MyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:smart-detect-thumbnail" } 
+Number   G4SmartDetectScore      "G4 Score [%d]"                                          (G4MyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:smart-detect-score" } 
+String   G4SmartDetectType       "G4 SmartDetect Type"                                    (G4MyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:smart-detect-type" }
+DateTime G4SmartDetectLast       "G4 Last SmartDetect [%1$tY.%1$tm.%1$td %1$tH:%1$tM]"    (G4MyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:smart-detect-last" }
+Switch   G4MyCamPrivacyZone      "G4 Cam Privacy Zone [%s]"                               (G4MyCam) { channel="unifiprotect:g4camera:NVRID:MACADDRESS:privacy-zone" }
 
 //G4 Doorbell
-Group    G4DB               		"G4DB"																	(gUniFiProtect)
-String   G4DBName             		"G4DB Name"																(G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:name" }
-String   G4DBType             		"G4DB Type"                   											(G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:type" }
-String   G4DBHost             		"G4DB Host"                   											(G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:host" }
-String   G4DBState             		"G4DB State"                   											(G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:state" }
-DateTime G4DBUpSince            	"G4DB Up Since [%1$tY.%1$tm.%1$td %1$tH:%1$tM]" 			<timestamp> (G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:up-since" }       
-DateTime G4DBLastSeen				"G4DB Last Seen [%1$tY.%1$tm.%1$td %1$tH:%1$tM]" 			<timestamp> (G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:last-seen" }       
-DateTime G4DBConnectedSince			"G4DB Connected Since [%1$tY.%1$tm.%1$td %1$tH:%1$tM]" 		<timestamp> (G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:connected-since" }       
-DateTime G4DBLastMotion				"G4DB Last Motion [%1$tY.%1$tm.%1$td %1$tH:%1$tM]" 			<timestamp> (G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:last-motion" }       
-Number   G4DBMicVolume				"G4DB Mic Volume [%d]" 													(G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:mic-volume" }       
-Switch   G4DBStatusSounds           "G4DB Status Sounds [%s]"                                               (G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:status-sounds" }
-Switch   G4DBMicEnabled				"G4DB Mic Enabled [%s]" 												(G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:is-mic-enabled" }       
-Switch   G4DBDark					"G4DB is Dark [%s]" 													(G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:is-dark" }       
-Switch   G4DBMotionDetection        "G4DB Motion Detection [%s]"                                            (G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:motion-detection" }
-Switch   G4DBRecording				"G4DB is Recording [%s]" 												(G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:is-recording" }              
-Switch   G4DBMotionDetect			"G4DB Motion Detected [%s]" 											(G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:is-motion-detected" }       
-Switch   G4DBStatusLight			"G4DB Status Light [%s]" 												(G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:status-light" }       
-Switch   G4DBReboot					"G4DB Reboot [%s]" 														(G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:reboot" }       
-Switch   G4DBHDRMode				"G4DB HDR Mode [%s]" 													(G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:hdr-mode" }
-Switch   G4DBHighFPSMode			"G4DB High Fps Mode [%s]" 												(G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:high-fps-mode" }       
-Number   G4DBIRMode					"G4DB IR Mode [MAP(unifiprotect_ir.map):%s]" 							(G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:ir-mode" }       
-Number   G4DBRecordingMode			"G4DB Recording mode [MAP(unifiprotect_rec.map):%s]" 					(G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:recording-mode" }       
-Switch   G4DBAnonSnapshot			"G4DB AnonSnapshot " 													(G4DB,gUniFiProtectAnonSnapshot) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:a-snapshot",expire="3s,command=OFF" } 
-Image   G4DBAnonSnapshotImg			"G4DB AnonSnapshot Img" 												(G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:a-snapshot-img" } 
-Switch   G4DBSnapshot				"G4DB Snapshot " 														(G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:snapshot",expire="3s,command=OFF" } 
-Image   G4DBSnapshotImg				"G4DB Snapshot Img" 													(G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:snapshot-img" } 
-Image   G4DBMotionThumbnail			"G4DB Thumbnail Img" 													(G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:motion-thumbnail" } 
-Image   G4DBMotionHeatmap			"G4DB Heatmap Img" 														(G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:motion-heatmap" } 
-Number  G4DBMotionScore				"G4DB Score [%d]" 														(G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:motion-score" } 
-Switch  G4DBLcdLeavePackage			"G4DB LCD Leave Package At Door" 										(G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:lcd-leave-package",expire="5s,command=OFF" } 
-Switch  G4DBLcdDoNotDisturb			"G4DB LCD Do not disturb" 												(G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:lcd-do-not-disturb",expire="5s,command=OFF" } 
-Switch  G4DBCustomMessage			"G4DB LCD Custom Message" 												(G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:lcd-custom",expire="5s,command=OFF" } 
-String  G4DBCustomMessageText		"G4DB LCD Custom Message Text" 											(G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:lcd-custom-text" } 
-Switch   G4DBIsRinging				"G4DB is Ringing" 														(G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:is-ringing" } 
-DateTime G4DBLastRing				"G4DB Last Ring [%1$tY.%1$tm.%1$td %1$tH:%1$tM]" <timestamp>  			(G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:last-ring" }       
-Image   G4DBRingThumbnail			"G4DB Ring Thumbnail Img" 												(G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:ring-thumbnail" } 
-Switch  G4DBSetCustomMessage		"G4DB Set Custom message" 												(G4DB)
-Switch  G4DBSmartDetectPerson		"G4DB SmartDetect Person" 												(G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:smart-detect-person" }
-Switch  G4DBSmartDetectVehicle		"G4DB SmartDetect Vehicle" 												(G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:smart-detect-vehicle" }
-Switch  G4DBSmartDetectPackage      "G4DB SmartDetect Package"                                              (G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:smart-detect-package" }
-Switch  G4DBSmartDetectSmoke        "G4DB SmartDetect Smoke/CO"                                             (G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:smart-detect-smoke" }
-Switch  G4DBSmartDetectMotion		"G4DB SmartDetect Motion" 												(G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:smart-detect-motion" }
-Image   G4DBSmartDetectThumbnail	"G4DB SmartDetect Thumbnail Img" 										(G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:smart-detect-thumbnail" } 
-Number  G4DBSmartDetectScore		"G4DB Score [%d]" 														(G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:smart-detect-score" } 
-String  G4DBSmartDetectType			"G4DB SmartDetect Type"  												(G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:smart-detect-type" }
-DateTime G4DBSmartDetectLast		"G4DB Last SmartDetect [%1$tY.%1$tm.%1$td %1$tH:%1$tM]" 	<timestamp> (G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:smart-detect-last" }
+Group    G4DB                     "G4DB"                                                   (gUniFiProtect)
+String   G4DBName                 "G4DB Name"                                              (G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:name" }
+String   G4DBType                 "G4DB Type"                                              (G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:type" }
+String   G4DBHost                 "G4DB Host"                                              (G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:host" }
+String   G4DBState                "G4DB State"                                             (G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:state" }
+DateTime G4DBUpSince              "G4DB Up Since [%1$tY.%1$tm.%1$td %1$tH:%1$tM]"          (G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:up-since" }       
+DateTime G4DBLastSeen             "G4DB Last Seen [%1$tY.%1$tm.%1$td %1$tH:%1$tM]"         (G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:last-seen" }       
+DateTime G4DBConnectedSince       "G4DB Connected Since [%1$tY.%1$tm.%1$td %1$tH:%1$tM]"   (G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:connected-since" }       
+DateTime G4DBLastMotion           "G4DB Last Motion [%1$tY.%1$tm.%1$td %1$tH:%1$tM]"       (G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:last-motion" }       
+Number   G4DBMicVolume            "G4DB Mic Volume [%d]" (                                 (G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:mic-volume" }       
+Switch   G4DBMicEnabled           "G4DB Mic Enabled [%s]"                                  (G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:is-mic-enabled" }       
+Switch   G4DBDark                 "G4DB is Dark [%s]"                                      (G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:is-dark" }       
+Switch   G4DBRecording            "G4DB is Recording [%s]"                                 (G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:is-recording" }              
+Switch   G4DBMotionDetect         "G4DB Motion Detected [%s]"                              (G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:is-motion-detected" }       
+Switch   G4DBStatusLight          "G4DB Status Light [%s]"                                 (G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:status-light" }       
+Switch   G4DBReboot               "G4DB Reboot [%s]"                                       (G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:reboot" }       
+Switch   G4DBHDRMode              "G4DB HDR Mode [%s]"                                     (G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:hdr-mode" }
+Switch   G4DBHighFPSMode          "G4DB High Fps Mode [%s]"                                (G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:high-fps-mode" }       
+Number   G4DBIRMode               "G4DB IR Mode [MAP(unifiprotect_ir.map):%s]"             (G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:ir-mode" }       
+Number   G4DBRecordingMode        "G4DB Recording mode [MAP(unifiprotect_rec.map):%s]"     (G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:recording-mode" }       
+Switch   G4DBAnonSnapshot         "G4DB AnonSnapshot "                                     (G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:a-snapshot",expire="3s,command=OFF" } 
+Image    G4DBAnonSnapshotImg      "G4DB AnonSnapshot Img"                                  (G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:a-snapshot-img" } 
+Switch   G4DBSnapshot             "G4DB Snapshot "                                         (G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:snapshot",expire="3s,command=OFF" } 
+Image    G4DBSnapshotImg          "G4DB Snapshot Img"                                      (G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:snapshot-img" } 
+Image    G4DBMotionThumbnail      "G4DB Thumbnail Img"                                     (G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:motion-thumbnail" } 
+Image    G4DBMotionHeatmap        "G4DB Heatmap Img"                                       (G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:motion-heatmap" } 
+Number   G4DBMotionScore          "G4DB Score [%d]"                                        (G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:motion-score" } 
+Switch   G4DBLcdLeavePackage      "G4DB LCD Leave Package At Door"                         (G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:lcd-leave-package",expire="5s,command=OFF" } 
+Switch   G4DBLcdDoNotDisturb      "G4DB LCD Do not disturb"                                (G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:lcd-do-not-disturb",expire="5s,command=OFF" } 
+Switch   G4DBCustomMessage        "G4DB LCD Custom Message"                                (G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:lcd-custom",expire="5s,command=OFF" } 
+String   G4DBCustomMessageText    "G4DB LCD Custom Message Text"                           (G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:lcd-custom-text" } 
+Switch   G4DBIsRinging            "G4DB is Ringing"                                        (G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:is-ringing" } 
+DateTime G4DBLastRing             "G4DB Last Ring [%1$tY.%1$tm.%1$td %1$tH:%1$tM]"         (G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:last-ring" }       
+Image    G4DBRingThumbnail        "G4DB Ring Thumbnail Img"                                (G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:ring-thumbnail" } 
+Switch   G4DBSetCustomMessage     "G4DB Set Custom message"                                (G4DB)
+Switch   G4DBSmartDetectPerson    "G4DB SmartDetect Person"                                (G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:smart-detect-person" }
+Switch   G4DBSmartDetectVehicle   "G4DB SmartDetect Vehicle"                               (G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:smart-detect-vehicle" }
+Switch   G4DBSmartDetectMotion    "G4DB SmartDetect Motion"                                (G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:smart-detect-motion" }
+Image    G4DBSmartDetectThumbnail "G4DB SmartDetect Thumbnail Img"                         (G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:smart-detect-thumbnail" } 
+Number   G4DBSmartDetectScore     "G4DB Score [%d]"                                        (G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:smart-detect-score" } 
+String   G4DBSmartDetectType      "G4DB SmartDetect Type"                                  (G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:smart-detect-type" }
+DateTime G4DBSmartDetectLast      "G4DB Last SmartDetect [%1$tY.%1$tm.%1$td %1$tH:%1$tM]"  (G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:smart-detect-last" }
+Switch   G4DBDPrivacyZone         "G4DB Privacy Zone [%s]"                                 (G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:privacy-zone" }
+
+//G5 Camera
+Group    G5MyCam                 "G5 Cam"                                                 (gUniFiProtect)
+String   G5MyCamName             "G5 Cam Name"                                            (G5MyCam) { channel="unifiprotect:g5camera:NVRID:MACADDRESS:name" }
+String   G5MyCamType             "G5 Cam Type"                                            (G5MyCam) { channel="unifiprotect:g5camera:NVRID:MACADDRESS:type" }
+String   G5MyCamHost             "G5 Cam Host"                                            (G5MyCam) { channel="unifiprotect:g5camera:NVRID:MACADDRESS:host" }
+String   G5MyCamState            "G5 Cam State"                                           (G5MyCam) { channel="unifiprotect:g5camera:NVRID:MACADDRESS:state" }
+DateTime G5MyCamUpSince          "G5 Cam Up Since [%1$tY.%1$tm.%1$td %1$tH:%1$tM]"        (G5MyCam) { channel="unifiprotect:g5camera:NVRID:MACADDRESS:up-since" }       
+DateTime G5MyCamLastSeen         "G5 Cam Last Seen [%1$tY.%1$tm.%1$td %1$tH:%1$tM]"       (G5MyCam) { channel="unifiprotect:g5camera:NVRID:MACADDRESS:last-seen" }       
+DateTime G5MyCamConnectedSince   "G5 Cam Connected Since [%1$tY.%1$tm.%1$td %1$tH:%1$tM]" (G5MyCam) { channel="unifiprotect:g5camera:NVRID:MACADDRESS:connected-since" }       
+DateTime G5MyCamLastMotion       "G5 Cam Last Motion [%1$tY.%1$tm.%1$td %1$tH:%1$tM]"     (G5MyCam) { channel="unifiprotect:g5camera:NVRID:MACADDRESS:last-motion" }       
+Number   G5MyCamMicVolume        "G5 Cam Mic Volume [%d]"                                 (G5MyCam) { channel="unifiprotect:g5camera:NVRID:MACADDRESS:mic-volume" }
+Switch   G5MyCamMicEnabled       "G5 Cam Mic Enabled [%s]"                                (G5MyCam) { channel="unifiprotect:g5camera:NVRID:MACADDRESS:is-mic-enabled" }
+Switch   G5MyCamDark             "G5 Cam is Dark [%s]"                                    (G5MyCam) { channel="unifiprotect:g5camera:NVRID:MACADDRESS:is-dark" }
+Switch   G5MyCamRecording        "G5 Cam is Recording [%s]"                               (G5MyCam) { channel="unifiprotect:g5camera:NVRID:MACADDRESS:is-recording" }
+Switch   G5MyCamMotionDetect     "G5 Cam Motion Detected [%s]"                            (G5MyCam) { channel="unifiprotect:g5camera:NVRID:MACADDRESS:is-motion-detected" }
+Switch   G5MyCamStatusLight      "G5 Cam Status Light [%s]"                               (G5MyCam) { channel="unifiprotect:g5camera:NVRID:MACADDRESS:status-light" }
+Switch   G5MyCamReboot           "G5 Cam Reboot [%s]"                                     (G5MyCam) { channel="unifiprotect:g5camera:NVRID:MACADDRESS:reboot" }
+Switch   G5MyCamHDRMode          "G5 Cam HDR Mode [%s]"                                   (G5MyCam) { channel="unifiprotect:g5camera:NVRID:MACADDRESS:hdr-mode" }
+Switch   G5MyCamHighFPSMode      "G5 Cam High Fps Mode [%s]"                              (G5MyCam) { channel="unifiprotect:g5camera:NVRID:MACADDRESS:high-fps-mode" }
+Number   G5MyCamIRMode           "G5 Cam IR Mode [MAP(unifiprotect_ir.map):%s]"           (G5MyCam) { channel="unifiprotect:g5camera:NVRID:MACADDRESS:ir-mode" }
+Number   G5MyCamRecordingMode    "G5 Cam Recording mode [MAP(unifiprotect_rec.map):%s]"   (G5MyCam) { channel="unifiprotect:g5camera:NVRID:MACADDRESS:recording-mode" }
+Switch   G5MyCamAnonSnapshot     "G5 Cam AnonSnapshot "                                   (G5MyCam) { channel="unifiprotect:g5camera:NVRID:MACADDRESS:a-snapshot",expire="3s,command=OFF" } 
+Image    G5MyCamAnonSnapshotImg  "G5 Cam AnonSnapshot Img"                                (G5MyCam) { channel="unifiprotect:g5camera:NVRID:MACADDRESS:a-snapshot-img" } 
+Switch   G5MyCamSnapshot         "G5 Cam Snapshot "                                       (G5MyCam) { channel="unifiprotect:g5camera:NVRID:MACADDRESS:snapshot",expire="3s,command=OFF" } 
+Image    G5MyCamSnapshotImg      "G5 Cam Snapshot Img"                                    (G5MyCam) { channel="unifiprotect:g5camera:NVRID:MACADDRESS:snapshot-img" } 
+Image    G5DMyMotionThumbnail    "G5 Thumbnail Img"                                       (G5MyCam) { channel="unifiprotect:g5camera:NVRID:MACADDRESS:motion-thumbnail" } 
+Image    G5DMyMotionHeatmap      "G5 Heatmap Img"                                         (G5MyCam) { channel="unifiprotect:g5camera:NVRID:MACADDRESS:motion-heatmap" } 
+Number   G5DMyMotionScore        "G5 Score [%d]"                                          (G5MyCam) { channel="unifiprotect:g5camera:NVRID:MACADDRESS:motion-score" } 
+Switch   G5SmartDetectPerson     "G5 SmartDetect Person"                                  (G5MyCam) { channel="unifiprotect:g5camera:NVRID:MACADDRESS:smart-detect-person" }
+Switch   G5SmartDetectVehicle    "G5 SmartDetect Vehicle"                                 (G5MyCam) { channel="unifiprotect:g5camera:NVRID:MACADDRESS:smart-detect-vehicle" }
+Switch   G5SmartDetectMotion     "G5 SmartDetect Motion"                                  (G5MyCam) { channel="unifiprotect:g5camera:NVRID:MACADDRESS:smart-detect-motion" }
+Image    G5SmartDetectThumbnail  "G5 SmartDetect Thumbnail Img"                           (G5MyCam) { channel="unifiprotect:g5camera:NVRID:MACADDRESS:smart-detect-thumbnail" } 
+Number   G5SmartDetectScore      "G5 Score [%d]"                                          (G5MyCam) { channel="unifiprotect:g5camera:NVRID:MACADDRESS:smart-detect-score" } 
+String   G5SmartDetectType       "G5 SmartDetect Type"                                    (G5MyCam) { channel="unifiprotect:g5camera:NVRID:MACADDRESS:smart-detect-type" }
+DateTime G5SmartDetectLast       "G5 Last SmartDetect [%1$tY.%1$tm.%1$td %1$tH:%1$tM]"    (G5MyCam) { channel="unifiprotect:g5camera:NVRID:MACADDRESS:smart-detect-last" }
+Switch   G5MyCamPrivacyZone      "G5 Cam Privacy Zone [%s]"                               (G5MyCam) { channel="unifiprotect:g5camera:NVRID:MACADDRESS:privacy-zone" }
 
 ```
 
@@ -501,6 +492,9 @@ Get jar-file from repo. Place the jar-file in the openhab-addons folder
 https://github.com/seaside1/unifiprotect/releases/
 
 ## Changelog
+  ### 1.1 - NOT BUILT
+  * Added Privazy Zone Support, toggle privacy zone from any camera on or off
+  
   ### 1.0
   * Add enable / disable of thumbnail download
     
