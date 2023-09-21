@@ -59,11 +59,6 @@
 				<description>The thumbnail width</description>
 				<default>640</default>
 			</parameter>
-			<parameter name="watchDog" type="boolean" required="false">
-				<label>Enable / Disable Watch Dog</label>
-				<description>Enable or Disable a Watch Dog for restarting the binding if no events are received in a certain time</description>
-				<default>true</default>
-			</parameter>
 			<parameter name="imageFolder" type="text" required="false">
 				<label>Image Folder</label>
 				<description>The Image Folder to be used for storing thumbnails/snapshots</description>
@@ -72,6 +67,11 @@
 				<label>Events Timer Period</label>
 				<description>The number of seconds to look back for motion events</description>
 				<default>30</default>
+			</parameter>
+			<parameter name="watchDog" type="boolean" required="false">
+				<label>Enable / Disable Watch Dog</label>
+				<description>Enable or Disable a Watch Dog for restarting the binding if no events are received in a certain time</description>
+				<default>true</default>
 			</parameter>
 		</config-description>
 	</bridge-type>
