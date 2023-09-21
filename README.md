@@ -16,7 +16,7 @@ openHAB version 4.x.x is supported.
 
 ## Usage
 
-Maturity: BETA
+Maturity: Stable
 
 ## Example of usage
 
