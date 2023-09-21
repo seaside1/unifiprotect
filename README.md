@@ -62,7 +62,7 @@ UDMP and UNVR.
 
 ## Dependencies
 
-* OH3 Map transformations ( https://www.openhab.org/addons/transformations/map/ )
+* OH Map transformations ( https://www.openhab.org/addons/transformations/map/ )
 
 ## Manual setup
 
@@ -110,27 +110,29 @@ You need to configure a NVR / Bridge manually before you can setup any cameras.
 
 The following table describes the Bridge configuration parameters:
 
-| Parameter                | Description                                          | Config   | Default |
-| ------------------------ | ---------------------------------------------------- |--------- | ------- |
-| Hostname                 | Hostname or IP address of the NVR                    | Required | -       |
-| Username                 | The username to access the UniFiProtect              | Required | -       |
-| Password                 | The password credential                              | Required | -       |
-| Refresh Interval         | Refresh interval in seconds                          | Required | 60      |
-| Thumbnail Width          | Thumbnails will use this width                       | Required | 640     |
-| Image Folder             | Images (snapshots etc) will be stored in this folder | Optional | -       |
-| Events Timer Period 	   | The number of seconds to look back for motion events | Optional | 30      |
-
+| Parameter                | Description                                                | Config   | Default |
+| ------------------------ | ---------------------------------------------------------- |--------- | ------- |
+| Hostname                 | Hostname or IP address of the NVR                          | Required | -       |
+| Username                 | The username to access the UniFiProtect                    | Required | -       |
+| Password                 | The password credential                          		| Required | -       |
+| Refresh Interval         | Refresh interval in seconds                      		| Required | 60      |
+| Thumbnail Width          | Thumbnails will use this width                   		| Required | 640     |
+| Image Folder             | Images (snapshots etc) will be stored in this folder	| Optional | -       |
+| Events Timer Period 	   | The number of seconds to look back for motion events	| Optional | 30      |
+| Watchdog		   | Watchdog for restarting binding if no events are detected  | Optional | True    |
 
 ## Thing Configuration
 
 You must add a NVR / Controller (Bridge) before adding Cameras.
 
-The following table describes the Thing configuration parameters for G3 and G4:
+The following table describes the Thing configuration parameters for all cameras:
 
-| Parameter    | Description                                                  | Config   | Default |
-| ------------ | -------------------------------------------------------------|--------- | ------- |
-| Name         | The name of the Camera                                       | Required | -       |
-| Mac          | The MAC address of the camera (uppercase without ':')        | Required | 180     |
+| Parameter              | Description                                                  | Config   | Default |
+| ---------------------- | -------------------------------------------------------------|--------- | ------- |
+| Name                   | The name of the Camera                                       | Required | -       |
+| Mac                    | The MAC address of the camera (uppercase without ':')        | Required | 180     |
+| eventDownloadHeatMap   | Enable/disable download of heatmap picture on motion         | Optional | True    |
+| eventDownloadThumbnail | Enable/disable download of thumbnail on motion               | Optional | True    |
 
 The following table describes the Thing configuration parameters for G4 Doorbell:
 
@@ -500,6 +502,12 @@ Get jar-file from repo. Place the jar-file in the openhab-addons folder
 https://github.com/seaside1/unifiprotect/releases/
 
 ## Changelog
+  ### 1.0
+  * Add enable / disable of thumbnail download
+    
+  ### BETA12
+  * Added watchdog to restart binding if no events are detected for 15 minutes
+    
   ### BETA11
   * Fix build for openHAB 4.x.x
 
@@ -612,8 +620,3 @@ https://github.com/seaside1/unifiprotect/releases/
  * Motion score added
  * Events are now fetched at the same rate as refresh 
  * Changed debug log to not be as verbose
- 
-## Roadmap
-
-* Support for multiple harddrives
-* Live view of cameras
