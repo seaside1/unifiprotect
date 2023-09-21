@@ -67,10 +67,9 @@ UDMP and UNVR.
 ## Manual setup
 
 * Log into UniFi Protect and create a user with admin rights that you use
-* Manually log into all cameras where you want to use anonymous-snapshots, you have to
-
-enable it yourself.  (See next section for a detailed description)
-See https://github.com/briis/unifiprotect for instructions on how to add a user.
+* Manually log into all cameras where you want to use anonymous-snapshots, 
+you have to enable it yourself.  (See next section for a detailed description)
+See https://www.home-assistant.io/integrations/unifiprotect/#local-user for instructions on how to add a user.
 
 A quirk is that there is a bug in firmware 2.0.18 which does not display the local user name
 when calling the API. Therefor you need to have the same First Name as user name in order for the binding to pick
