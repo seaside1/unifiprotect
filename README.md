@@ -22,7 +22,7 @@ openHAB version 4.x.x is supported.
 Maturity: Stable
 
 ## Example of usage
-- Toggle Privacy Zone on or off, for instance turn on when you are home
+- Toggle Privacy Zone on or off, for instance turn on and black out recording and view when you are home
 - Turn recording on or off, for instance turn off recoring when you are home
 - Send a notification on motion or ring on doorbell together with a snapshot from the camera
 - Detect Motion and trigger other system notifications, Alexa, Google Home, turn on lights, sound an alarm etc.
@@ -31,7 +31,7 @@ Maturity: Stable
 - Turn on and off notifications, can be used together with presence detection.
 - View general information about Cameras and NVR, for instance check hard-drive health and storage.
 - Reboot Cameras
-- Disable chime on doorbell certain hours
+- Disable chime on doorbell certain hours, can be good when your kids/pets/partners/etc are sleeping
 - Turn on / off IR - leds
 - Turn on / off Recording from the camera
 - Turn on / off HDR mode
