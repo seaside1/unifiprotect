@@ -26,6 +26,7 @@ public enum UniFiProtectG4DoorbellChannel {
     LCD_LEAVE_PACKAGE,
     LCD_DO_NOT_DISTURB,
     LCD_CUSTOM_TEXT,
+    CHIME,
     IS_RINGING,
     RING_THUMBNAIL,
     LAST_RING,

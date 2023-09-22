@@ -28,6 +28,7 @@ Maturity: Stable
 - Turn on and off notifications, can be used together with presence detection.
 - View general information about Cameras and NVR, for instance check hard-drive health and storage.
 - Reboot Cameras
+- Disable chime on doorbell certain hours
 - Turn on / off IR - leds
 - Turn on / off Recording from the camera
 - Turn on / off HDR mode
@@ -137,11 +138,12 @@ The following table describes the Thing configuration parameters for all cameras
 
 The following table describes the Thing configuration parameters for G4 Doorbell:
 
-| Parameter         | Description                                                   | Config   | Default |
-| ----------------- | --------------------------------------------------------------|--------- | ------- |
-| Name              | The name of the G4 Doorbell                                   | Required | -       |
-| Mac               | The MAC address of the G4 Doorbell (uppercase without ':')    | Required | 180     |
-| lcdCustomMessage  | A custm LCD preconfigured message                             | Optional | -       |
+| Parameter         | Description                                                       | Config   | Default |
+| ----------------- | ------------------------------------------------------------------|--------- | ------- |
+| Name              | The name of the G4 Doorbell                                       | Required | -       |
+| Mac               | The MAC address of the G4 Doorbell (uppercase without ':')        | Required | 180     |
+| lcdCustomMessage  | A custm LCD preconfigured message                                 | Optional | -       |
+| chimeDuration     | If chime is enabled this is the preset duration that vill be used | Optional | -       |
 
 ## NVR Channels
 
@@ -233,15 +235,16 @@ the set message in the lcd-custom-text channel.
 Use the thing config if you want a static custom message to be displayed. Use the lcd-custom-text channel
 if you want to dynamically set the message.
 
-| Channel ID                   | Item Type | Description                                                          | Permissions |
-|------------------------------|-----------|--------------------------------------------------------------------- | ----------- |
-| ring-thumbnail               | Image     | Last Ring Event Image                                                | Read/Write  |
-| is-ringing                   | Switch    | Toggled when doorbell is pushed (ding-dong)                          | Read/Write  |
-| last-ring                    | DateTime  | Timestamp for last ring event                                        | Read/Write  |
-| lcd-leave-package            | Switch    | Will display the predefined Leave Package at Door message            | Read/Write  |
-| lcd-do-not-disturb           | Switch    | Will display the predefined Do not disturb message                   | Read/Write  |
-| lcd-custom-text              | String    | Channel for setting custom lcd messages                              | Read/Write  |
-| status-sounds                | Switch    | Channel for setting toggle status sounds                             | Read/Write  |
+| Channel ID                   | Item Type | Description                                                                     | Permissions |
+|------------------------------|-----------|-------------------------------------------------------------------------------- | ----------- |
+| ring-thumbnail               | Image     | Last Ring Event Image                                                           | Read/Write  |
+| is-ringing                   | Switch    | Toggled when doorbell is pushed (ding-dong)                                     | Read/Write  |
+| last-ring                    | DateTime  | Timestamp for last ring event                                                   | Read/Write  |
+| lcd-leave-package            | Switch    | Will display the predefined Leave Package at Door message                       | Read/Write  |
+| lcd-do-not-disturb           | Switch    | Will display the predefined Do not disturb message                              | Read/Write  |
+| lcd-custom-text              | String    | Channel for setting custom lcd messages                                         | Read/Write  |
+| status-sounds                | Switch    | Channel for setting toggle status sounds                                        | Read/Write  |
+| chime                        | Switch    | Will toggle the Chime on or off. Will used thing configured value for duration. | Read/Write  |
 
 
 ### G5 Camera Channels (Has all the G3 & G4 Channels)
@@ -412,6 +415,7 @@ Number   G4DBSmartDetectScore     "G4DB Score [%d]"                             
 String   G4DBSmartDetectType      "G4DB SmartDetect Type"                                  (G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:smart-detect-type" }
 DateTime G4DBSmartDetectLast      "G4DB Last SmartDetect [%1$tY.%1$tm.%1$td %1$tH:%1$tM]"  (G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:smart-detect-last" }
 Switch   G4DBDPrivacyZone         "G4DB Privacy Zone [%s]"                                 (G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:privacy-zone" }
+Switch   G4DBDChime               "G4DB Chime [%s]"                                        (G4DB) { channel="unifiprotect:g4doorbell:NVRID:MACADDRESS:chime" }
 
 //G5 Camera
 Group    G5MyCam                 "G5 Cam"                                                 (gUniFiProtect)
@@ -494,6 +498,7 @@ https://github.com/seaside1/unifiprotect/releases/
 ## Changelog
   ### 1.1 - NOT BUILT
   * Added Privazy Zone Support, toggle privacy zone from any camera on or off
+  * Added chime channel for G4DB/PRO to easily enable / disable chime. Using chimeDuration configuration.
   
   ### 1.0
   * Add enable / disable of thumbnail download

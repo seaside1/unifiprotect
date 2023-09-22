@@ -114,6 +114,9 @@ public class UniFiProtectG4DoorbellThingHandler extends UniFiProtectG4CameraThin
             case LCD_CUSTOM_TEXT:
                 handleLcdCustomText(camera, channelUID, command);
                 break;
+            case CHIME:
+                handleChime(camera, channelUID, command);
+                break;
             case LCD_DO_NOT_DISTURB:
                 handleLcdDoNotDisturb(camera, channelUID, command);
                 break;
@@ -141,9 +144,33 @@ public class UniFiProtectG4DoorbellThingHandler extends UniFiProtectG4CameraThin
 
     private void handleLcdCustomText(UniFiProtectCamera camera, ChannelUID channelUID, Command command) {
         if (command instanceof StringType) {
-            String lcdCustomText = ((StringType) command).toString();
+            final String lcdCustomText = ((StringType) command).toString();
             storeConfigProperty(PROPERTY_CUSTOM_LCD_TEXT, lcdCustomText);
             handleLcdCustom(camera);
+        }
+    }
+
+    /*
+     * ChimeDuration
+     * 0 - None /off
+     * 1-300 - Mechanical
+     * 1000-10000 - 1-10s Digital
+     *
+     * Only supporting off or digital
+     */
+    private void handleChime(UniFiProtectCamera camera, ChannelUID channelUID, Command command) {
+        if (command instanceof OnOffType) {
+            final boolean chime = ((OnOffType) command) == OnOffType.ON;
+            int chimeDuration = chime ? config.getChimeDuration() : 0;
+            if (chimeDuration > 10 || chimeDuration < 0) {
+                logger.error("Failing to set chime duration, due to out of bunds value: {} Valid values are 0-10",
+                        chimeDuration);
+                return;
+            }
+            if (chimeDuration > 0) {
+                chimeDuration *= 1000;
+            }
+            getNvr().setChime(camera, chimeDuration);
         }
     }
 
@@ -274,6 +301,11 @@ public class UniFiProtectG4DoorbellThingHandler extends UniFiProtectG4CameraThin
                 if (statusSounds != null) {
                     state = OnOffType.from(statusSounds.booleanValue());
                 }
+                break;
+            case CHIME:
+                final Integer chimeDuration = camera.getChimeDuration();
+                final boolean chime = chimeDuration != null && chimeDuration > 0;
+                state = OnOffType.from(chime);
                 break;
             default:
                 break;

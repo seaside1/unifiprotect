@@ -193,6 +193,7 @@
 			<channel id="lcd-leave-package" typeId="lcd-predefined-message"/>
 			<channel id="lcd-do-not-disturb" typeId="lcd-predefined-message"/>
 			<channel id="lcd-custom-text" typeId="lcd-custom-text"/>
+			<channel id="chime" typeId="chime"/>
 		</channels>
 		<representation-property>mac</representation-property>
 		<config-description>
@@ -207,6 +208,11 @@
 			<parameter name="lcdCustomMessage" type="text" required="false">
 				<label>Custom Message </label>
 				<description>Custom Message</description>
+			</parameter>
+			<parameter name="chimeDuration" type="integer" required="false" min="1" max="10" step="0.5">
+				<label>Chime Duration</label>
+				<description>Chime Duration in seconds when Chime is enabled</description>
+				<default>3</default>
 			</parameter>
 			<parameter name="eventDownloadHeatMap" type="boolean" required="false">
 				<label>Enable / Disable Heat map download</label>
@@ -736,6 +742,11 @@
 		<item-type>Switch</item-type>
 		<label>Predefined Message</label>
 		<description>Predefined Message</description>
+	</channel-type>
+	<channel-type id="chime">
+		<item-type>Switch</item-type>
+		<label>Chime on/off</label>
+		<description>Enable or disable the Chime for the Doorbell</description>
 	</channel-type>
 	<channel-type id="smart-detect-type">
 		<item-type>String</item-type>

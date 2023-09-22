@@ -36,6 +36,7 @@ import org.openhab.binding.unifiprotect.internal.model.json.UniFiProtectJsonPars
 import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectAlertsRequest;
 import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectAnonymousSnapshotRequest;
 import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectBootstrapRequest;
+import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectChimeRequest;
 import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectEventsRequest;
 import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectHdrModeRequest;
 import org.openhab.binding.unifiprotect.internal.model.request.UniFiProtectHeatmapRequest;
@@ -635,5 +636,20 @@ public class UniFiProtectNvr {
         }
         String jsonContent = request.getJsonContent();
         logger.debug("StatusSounds on result jsonResult: {}", jsonContent);
+    }
+
+    public synchronized void setChime(UniFiProtectCamera camera, int chimeDuration) {
+        String cameraId = camera != null ? camera.getId() : null;
+        if (cameraId == null) {
+            logger.error("Failed to set chime, camera has null fields: {}", camera);
+            return;
+        }
+        UniFiProtectChimeRequest request = new UniFiProtectChimeRequest(httpClient, cameraId, getConfig(), token,
+                chimeDuration);
+        if (!requestSuccessFullySent(request.sendRequest())) {
+            return;
+        }
+        String jsonContent = request.getJsonContent();
+        logger.debug("ChimeRequest on result jsonResult: {}", jsonContent);
     }
 }

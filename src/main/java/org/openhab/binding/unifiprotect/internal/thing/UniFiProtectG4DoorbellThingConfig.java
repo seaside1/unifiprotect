@@ -22,4 +22,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class UniFiProtectG4DoorbellThingConfig extends UniFiProtectG4CameraThingConfig {
 
+    private Integer chimeDuration = 0;
+
+    public Integer getChimeDuration() {
+        return chimeDuration;
+    }
+
+    public void setChimeDuration(Integer chimeDuration) {
+        this.chimeDuration = chimeDuration;
+    };
 }
