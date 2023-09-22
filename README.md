@@ -1,3 +1,6 @@
+* [![GitHub Release](https://img.shields.io/github/release/seaside1/unifiprotect.svg?style=flat)](https://github.com/seaside1/unifiprotect/releases/latest)
+* [Full changelog](doc/CHANGELOG.md)
+* 
 ![alt text](https://raw.githubusercontent.com/seaside1/unifiprotect/main/img/logocombo.png)
 
 Integrates UniFi Protect Camera System into openHAB. See https://ui.com/why-protect/
