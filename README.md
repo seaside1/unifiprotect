@@ -496,7 +496,7 @@ Get jar-file from repo. Place the jar-file in the openhab-addons folder
 https://github.com/seaside1/unifiprotect/releases/
 
 ## Changelog
-  ### 1.1 - NOT BUILT
+  ### 1.1
   * Added Privazy Zone Support, toggle privacy zone from any camera on or off
   * Added chime channel for G4DB/PRO to easily enable / disable chime. Using chimeDuration configuration.
   
