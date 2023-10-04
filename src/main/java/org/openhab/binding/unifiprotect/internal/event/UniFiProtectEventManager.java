@@ -104,6 +104,7 @@ public class UniFiProtectEventManager implements PropertyChangeListener {
             reInitializationFuture = UniFiProtectUtil.delayedExecution(INITIALIZATION_DELAY_SECS, TimeUnit.SECONDS);
             reInitializationFuture.thenAcceptAsync(s -> {
                 logger.info("Socket failed, reinitializing!");
+                dispose();
                 final boolean startStatus = start();
                 reInitializationFuture = null;
                 if (!startStatus) {
@@ -165,6 +166,7 @@ public class UniFiProtectEventManager implements PropertyChangeListener {
         try {
             socket.removePropertyChangeListener(this);
             wsClient.stop();
+            socket.dispose();
             cancelWatchDog();
             cancelReinitFuture();
             socket = null;

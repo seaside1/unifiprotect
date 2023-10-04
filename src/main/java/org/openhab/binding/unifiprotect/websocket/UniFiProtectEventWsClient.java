@@ -46,7 +46,8 @@ public class UniFiProtectEventWsClient {
     }
 
     public UniFiProtectEventWebSocket start() throws IOException, Exception {
-        client = new WebSocketClient(new SslContextFactory(true));
+        final HttpClient httpClient = new HttpClient(new SslContextFactory.Client(true));
+        client = new WebSocketClient(httpClient);
         final UniFiProtectEventWebSocket socket = new UniFiProtectEventWebSocket(uniFiProtectJsonParser);
         client.start();
         final URI destUri = new URI(uri);
