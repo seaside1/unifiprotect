@@ -499,7 +499,6 @@ Get jar-file from repo. Place the jar-file in the openhab-addons folder
 https://github.com/seaside1/unifiprotect/releases/
 
 ## Changelog
-## Changelog
   ### 1.2
   * Fixed socket termination and reinitialization
     
