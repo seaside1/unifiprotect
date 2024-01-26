@@ -48,7 +48,7 @@ public class UniFiProtectEventManager implements PropertyChangeListener {
     private volatile CompletableFuture<Void> eventWatchDogFuture = null;
     private final UniFiProtectNvrThingConfig config;
     private volatile Date lastActionTimestamp = new Date();
-    private static final int WATCH_DOG_CHECK_INTERVAL_MINUTES = 5;
+    private static final int WATCH_DOG_CHECK_INTERVAL_MINUTES = 10;
     private static final int WATCH_DOG_MAX_WAIT_TIME_RESTART_MILLIS = 15 * 60 * 1000; // 15 Minutes
 
     public UniFiProtectEventManager(HttpClient httpClient, UniFiProtectJsonParser uniFiProtectJsonParser,
@@ -144,7 +144,8 @@ public class UniFiProtectEventManager implements PropertyChangeListener {
         eventWatchDogFuture = UniFiProtectUtil.delayedExecution(WATCH_DOG_CHECK_INTERVAL_MINUTES, TimeUnit.MINUTES);
         eventWatchDogFuture.thenAcceptAsync(s -> {
             Date now = new Date();
-            if ((now.getTime() - lastActionTimestamp.getTime()) > WATCH_DOG_MAX_WAIT_TIME_RESTART_MILLIS) {
+            if (((now.getTime() - lastActionTimestamp.getTime()) > WATCH_DOG_MAX_WAIT_TIME_RESTART_MILLIS)
+                    || config.isWatchDogForceRestart()) { // Hack to restart each time until websocket bug is solved.
                 logger.info(WATCH_DOG_LOG_MESSAGE);
                 reinit();
                 return;

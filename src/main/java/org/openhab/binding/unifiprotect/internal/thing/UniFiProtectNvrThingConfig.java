@@ -36,6 +36,7 @@ public class UniFiProtectNvrThingConfig {
     private int defaultSnapshotWidth = 1920;
     private int defaultSnapshotHeight = 1080;
     private boolean watchDog = true;
+    private boolean watchDogForceRestart = true;
     public @Nullable String g4SnapshotWidthAsString;
     public @Nullable String g4SnapshotHeightAsString;
     public @Nullable String defaultSnapshotWidthAsString;
@@ -172,5 +173,13 @@ public class UniFiProtectNvrThingConfig {
 
     public void setWatchDog(boolean watchDog) {
         this.watchDog = watchDog;
+    }
+
+    public boolean isWatchDogForceRestart() {
+        return watchDogForceRestart;
+    }
+
+    public void setWatchDogForceRestart(boolean watchDogForceRestart) {
+        this.watchDogForceRestart = watchDogForceRestart;
     }
 }
