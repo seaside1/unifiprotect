@@ -68,18 +68,6 @@
 				<description>The number of seconds to look back for motion events</description>
 				<default>30</default>
 			</parameter>
-			<parameter name="watchDog" type="boolean" required="false">
-				<label>Watch Dog</label>
-				<description>Enable or Disable a Watch Dog for restarting the binding if no events are received in a certain time</description>
-				<default>true</default>
-			</parameter>
-			<parameter name="watchDogForceRestart" type="boolean" required="false">
-				<label>Watch Dog Force Restart</label>
-				<description>Enable or Disable a forced restart of websocket, restarting the binding every time the watchdog is
-					triggered</description>
-				<default>true</default>
-			</parameter>
-
 		</config-description>
 	</bridge-type>
 	<thing-type id="g5camera">

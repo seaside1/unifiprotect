@@ -130,6 +130,7 @@ public abstract class UniFiProtectRequest {
         return getResponse() != null && getResponse().getStatus() == HTTP_STATUS_200;
     }
 
+    // TODO On 401 refresh websocket as well
     @SuppressWarnings("null")
     public synchronized boolean creditialsExpired() {
         return getResponse() == null || getResponse().getStatus() == HTTP_STATUS_401;

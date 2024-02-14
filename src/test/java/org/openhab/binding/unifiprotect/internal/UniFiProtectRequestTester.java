@@ -77,9 +77,8 @@ public class UniFiProtectRequestTester {
         nvr.refreshProtect();
         nvr.getNvrUser();
         logger.debug("Fetch NvrUser: {}", nvr.getNvrUser());
-        UniFiProtectEventManager em = new UniFiProtectEventManager(nvr.getHttpClient(), nvr.getUniFiProtectJsonParser(),
-                config);
-        em.start();
+        UniFiProtectEventManager em = new UniFiProtectEventManager(nvr.getUniFiProtectJsonParser(), config);
+        em.start(nvr.getHttpClient());
         em.addPropertyChangeListener(new PropertyChangeListener() {
 
             @Override

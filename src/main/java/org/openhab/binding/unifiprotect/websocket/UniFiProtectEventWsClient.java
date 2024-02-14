@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.net.URI;
 
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.unifiprotect.internal.model.json.UniFiProtectJsonParser;
@@ -33,20 +32,17 @@ public class UniFiProtectEventWsClient {
     private static final String PROXY_PROTECT_WS_UPDATES = "/proxy/protect/ws/updates";
     private static final String WSS = "wss://";
     private final String uri;
-    private HttpClient httpClient;
     private UniFiProtectJsonParser uniFiProtectJsonParser;
     private final Logger logger = LoggerFactory.getLogger(UniFiProtectEventWsClient.class);
     private WebSocketClient client;
 
-    public UniFiProtectEventWsClient(HttpClient httpClient, UniFiProtectJsonParser uniFiProtectJsonParser,
-            UniFiProtectNvrThingConfig config) {
+    public UniFiProtectEventWsClient(UniFiProtectJsonParser uniFiProtectJsonParser, UniFiProtectNvrThingConfig config) {
         uri = WSS.concat(config.getHost()).concat(PROXY_PROTECT_WS_UPDATES);
-        this.httpClient = httpClient;
         this.uniFiProtectJsonParser = uniFiProtectJsonParser;
     }
 
-    public UniFiProtectEventWebSocket start() throws IOException, Exception {
-        client = new WebSocketClient(new SslContextFactory(true));
+    public UniFiProtectEventWebSocket start(HttpClient httpClient) throws IOException, Exception {
+        client = new WebSocketClient(httpClient);
         final UniFiProtectEventWebSocket socket = new UniFiProtectEventWebSocket(uniFiProtectJsonParser);
         client.start();
         final URI destUri = new URI(uri);

@@ -15,13 +15,9 @@ package org.openhab.binding.unifiprotect.internal.event;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.util.Date;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.unifiprotect.internal.UniFiProtectUtil;
 import org.openhab.binding.unifiprotect.internal.model.json.UniFiProtectJsonParser;
 import org.openhab.binding.unifiprotect.internal.thing.UniFiProtectNvrThingConfig;
 import org.openhab.binding.unifiprotect.websocket.UniFiProtectAction;
@@ -38,34 +34,25 @@ import org.slf4j.LoggerFactory;
  * @author Joseph Hagberg - Initial contribution
  */
 public class UniFiProtectEventManager implements PropertyChangeListener {
-    private static final int INITIALIZATION_DELAY_SECS = 10;
-    private static final String WATCH_DOG_LOG_MESSAGE = "Watch dog Detected no events recieved, reinitializing!";
     private final Logger logger = LoggerFactory.getLogger(UniFiProtectEventManager.class);
     private final UniFiProtectEventWsClient wsClient;
     private UniFiProtectEventWebSocket socket;
     private final PropertyChangeSupport propertyChangeSupport;
     private volatile CompletableFuture<Void> reInitializationFuture = null;
-    private volatile CompletableFuture<Void> eventWatchDogFuture = null;
-    private final UniFiProtectNvrThingConfig config;
-    private volatile Date lastActionTimestamp = new Date();
-    private static final int WATCH_DOG_CHECK_INTERVAL_MINUTES = 10;
-    private static final int WATCH_DOG_MAX_WAIT_TIME_RESTART_MILLIS = 15 * 60 * 1000; // 15 Minutes
 
-    public UniFiProtectEventManager(HttpClient httpClient, UniFiProtectJsonParser uniFiProtectJsonParser,
-            UniFiProtectNvrThingConfig config) {
+    public UniFiProtectEventManager(UniFiProtectJsonParser uniFiProtectJsonParser, UniFiProtectNvrThingConfig config) {
         propertyChangeSupport = new PropertyChangeSupport(this);
-        wsClient = new UniFiProtectEventWsClient(httpClient, uniFiProtectJsonParser, config);
-        this.config = config;
+        wsClient = new UniFiProtectEventWsClient(uniFiProtectJsonParser, config);
     }
 
     public boolean isStarted() {
         return socket != null;
     }
 
-    public synchronized boolean start() {
+    public synchronized boolean start(HttpClient httpClient) {
         try {
             logger.debug("Trying to start new websocket");
-            socket = wsClient.start();
+            socket = wsClient.start(httpClient);
             socket.addPropertyChangeListener(this);
             return true;
         } catch (Exception e) {
@@ -75,49 +62,23 @@ public class UniFiProtectEventManager implements PropertyChangeListener {
     }
 
     @Override
-    public synchronized void propertyChange(@Nullable PropertyChangeEvent evt) {
-        logger.debug("Property Changed: {}", evt.getPropertyName());
+    public synchronized void propertyChange(PropertyChangeEvent evt) {
+        logger.debug("Property Changed: {}", evt != null ? evt.getPropertyName() : "null");
         if (evt.getPropertyName().equals(UniFiProtectAction.PROPERTY_EVENT_ACTION_ADD)) {
             UniFiProtectAction action = (UniFiProtectAction) evt.getNewValue();
             logger.debug("Got action property add change: {}", action);
             actionEventDetected(action, UniFiProtectAction.PROPERTY_EVENT_ACTION_ADD);
-            String eventId = action.getId();
         } else if (evt.getPropertyName().equals(UniFiProtectAction.PROPERTY_EVENT_ACTION_UPDATE)) {
             UniFiProtectAction action = (UniFiProtectAction) evt.getNewValue();
             logger.debug("Got action property upd change: {}", action);
             actionEventDetected(action, UniFiProtectAction.PROPERTY_EVENT_ACTION_UPDATE);
-            String eventId = action.getId();
         } else if (evt.getPropertyName().equals(UniFiProtectAction.PROPERTY_SOCKET_CONNECTED)) {
             logger.debug("Socket connected!");
         } else if (evt.getPropertyName().equals(UniFiProtectAction.PROPERTY_SOCKET_CLOSED)) {
             logger.debug("Socket disconnected!");
-            reinit();
+            actionSocketClosed();
         } else {
             logger.debug("Unhandled Property change in UniFiProtectEventManager: {}", evt.getPropertyName());
-        }
-    }
-
-    private synchronized void reinit() {
-        socket.removePropertyChangeListener(this);
-        cancelWatchDog();
-        if (reInitializationFuture == null) {
-            reInitializationFuture = UniFiProtectUtil.delayedExecution(INITIALIZATION_DELAY_SECS, TimeUnit.SECONDS);
-            reInitializationFuture.thenAcceptAsync(s -> {
-                logger.info("Socket failed, reinitializing!");
-                dispose();
-                final boolean startStatus = start();
-                reInitializationFuture = null;
-                if (!startStatus) {
-                    reinit();
-                }
-            });
-        }
-    }
-
-    private synchronized void cancelWatchDog() {
-        if (eventWatchDogFuture != null) {
-            eventWatchDogFuture.cancel(true);
-            eventWatchDogFuture = null;
         }
     }
 
@@ -128,31 +89,12 @@ public class UniFiProtectEventManager implements PropertyChangeListener {
         }
     }
 
-    private void actionEventDetected(UniFiProtectAction action, String property) {
-        propertyChangeSupport.firePropertyChange(property, null, action);
-        lastActionTimestamp = new Date();
-        if (eventWatchDogFuture == null) {
-            scheduleWatchDog();
-        }
+    private void actionSocketClosed() {
+        propertyChangeSupport.firePropertyChange(UniFiProtectAction.PROPERTY_SOCKET_CLOSED, null, null);
     }
 
-    private void scheduleWatchDog() {
-        if (!config.isWatchDog()) {
-            return;
-        }
-        logger.debug("Schedule watchDog currentMillisDiff {}", (new Date().getTime() - lastActionTimestamp.getTime()));
-        eventWatchDogFuture = UniFiProtectUtil.delayedExecution(WATCH_DOG_CHECK_INTERVAL_MINUTES, TimeUnit.MINUTES);
-        eventWatchDogFuture.thenAcceptAsync(s -> {
-            Date now = new Date();
-            if (((now.getTime() - lastActionTimestamp.getTime()) > WATCH_DOG_MAX_WAIT_TIME_RESTART_MILLIS)
-                    || config.isWatchDogForceRestart()) { // Hack to restart each time until websocket bug is solved.
-                logger.info(WATCH_DOG_LOG_MESSAGE);
-                reinit();
-                return;
-            }
-            eventWatchDogFuture = null;
-            scheduleWatchDog();
-        });
+    private void actionEventDetected(UniFiProtectAction action, String property) {
+        propertyChangeSupport.firePropertyChange(property, null, action);
     }
 
     public void addPropertyChangeListener(PropertyChangeListener pcl) {
@@ -166,9 +108,8 @@ public class UniFiProtectEventManager implements PropertyChangeListener {
     public synchronized void stop() {
         try {
             socket.removePropertyChangeListener(this);
-            wsClient.stop();
             socket.dispose();
-            cancelWatchDog();
+            wsClient.stop();
             cancelReinitFuture();
             socket = null;
         } catch (Exception e) {

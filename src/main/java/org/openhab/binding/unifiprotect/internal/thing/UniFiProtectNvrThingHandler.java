@@ -104,9 +104,8 @@ public class UniFiProtectNvrThingHandler extends BaseBridgeHandler implements Pr
         if (initNvr) {
             status = nvr.start();
             if (status.getStatus() == SendStatus.SUCCESS) {
-                eventManager = new UniFiProtectEventManager(nvr.getHttpClient(), nvr.getUniFiProtectJsonParser(),
-                        config);
-                eventManager.start();
+                eventManager = new UniFiProtectEventManager(nvr.getUniFiProtectJsonParser(), config);
+                eventManager.start(nvr.getHttpClient());
                 eventManager.addPropertyChangeListener(this);
             }
         }
@@ -172,7 +171,7 @@ public class UniFiProtectNvrThingHandler extends BaseBridgeHandler implements Pr
         if (status.getStatus() == SendStatus.SUCCESS) {
             updateStatus(ONLINE);
             if (!eventManager.isStarted()) {
-                eventManager.start();
+                eventManager.start(nvr.getHttpClient());
                 eventManager.addPropertyChangeListener(this);
             }
         } else {
@@ -205,6 +204,10 @@ public class UniFiProtectNvrThingHandler extends BaseBridgeHandler implements Pr
         if (nvr != null) {
             logger.debug("Refreshing the UniFi Protect Controller {}", getThing().getUID());
             status = nvr.refreshProtect();
+            if (status.equals(UniFiProtectStatus.STATUS_SUCCESS_LOGIN)) {
+                eventManager.stop();
+                eventManager.start(nvr.getHttpClient());
+            }
             if (status.getStatus() == SendStatus.SUCCESS) {
                 refreshNvrChannels();
                 refreshCameras();
@@ -492,6 +495,10 @@ public class UniFiProtectNvrThingHandler extends BaseBridgeHandler implements Pr
                 logger.debug("Handling upd event ring");
             }
             return;
+        } else if (isSocketClosedEvent(evt)) {
+            eventManager.stop();
+            nvr.login();
+            eventManager.start(nvr.getHttpClient());
         } else {
             logger.debug("Unhandled event {}", evt.getPropertyName());
         }
@@ -536,6 +543,10 @@ public class UniFiProtectNvrThingHandler extends BaseBridgeHandler implements Pr
 
     private boolean isUpdEvent(@Nullable PropertyChangeEvent evt) {
         return evt.getPropertyName().equals(UniFiProtectAction.PROPERTY_EVENT_ACTION_UPDATE);
+    }
+
+    private boolean isSocketClosedEvent(PropertyChangeEvent evt) {
+        return evt.getPropertyName().equals(UniFiProtectAction.PROPERTY_SOCKET_CLOSED);
     }
 
     private boolean isAddEvent(@Nullable PropertyChangeEvent evt) {

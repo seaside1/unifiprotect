@@ -110,7 +110,7 @@ public class UniFiProtectNvr {
         if (token.isEmpty()) {
             return UniFiProtectStatus.STATUS_TOKEN_MISSING;
         }
-        return sendStatus;
+        return UniFiProtectStatus.STATUS_SUCCESS_LOGIN;
     }
 
     protected synchronized UniFiProtectStatus refreshBootstrap(String bootstrapJsonContent) {
@@ -212,6 +212,7 @@ public class UniFiProtectNvr {
         UniFiProtectStatus status = null;
         if (!isLoggedIn()) {
             status = login();
+            // TODO: Refresh websocket as well
         }
         if (status != null && status.getStatus() != SendStatus.SUCCESS) {
             logger.error("Failed to updated Cameras since we can't seem to login status: {}", status.getStatus());
@@ -223,7 +224,8 @@ public class UniFiProtectNvr {
         if (refreshBootstrap.getStatus() == SendStatus.SUCCESS) {
             logger.debug("Successfully refreshed bootstrap");
         }
-        return refreshBootstrap;
+
+        return status == null ? refreshBootstrap : status;
     }
 
     private boolean isLoggedIn() {
