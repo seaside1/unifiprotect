@@ -124,7 +124,6 @@ The following table describes the Bridge configuration parameters:
 | Thumbnail Width          | Thumbnails will use this width                             | Required | 640     |
 | Image Folder             | Images (snapshots etc) will be stored in this folder       | Optional | -       |
 | Events Timer Period      | The number of seconds to look back for motion events       | Optional | 30      |
-| Watchdog                 | Watchdog for restarting binding if no events are detected  | Optional | True    |
 
 ## Thing Configuration
 
@@ -499,6 +498,10 @@ Get jar-file from repo. Place the jar-file in the openhab-addons folder
 https://github.com/seaside1/unifiprotect/releases/
 
 ## Changelog
+  ### 1.3
+  * Removed watch dog
+  * Reworked socket connection to be compatible with newer firmwares
+
   ### 1.2
   * Fixed socket termination and reinitialization
     
