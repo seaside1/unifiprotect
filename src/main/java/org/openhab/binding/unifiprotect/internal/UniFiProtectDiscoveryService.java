@@ -105,7 +105,8 @@ public class UniFiProtectDiscoveryService extends AbstractDiscoveryService {
                 return UniFiProtectBindingConstants.THING_TYPE_G4_DOORBELL;
             }
 
-            if (type.startsWith(UniFiProtectBindingConstants.G4_CAMERA_PREFIX)) {
+            if (type.startsWith(UniFiProtectBindingConstants.G4_CAMERA_PREFIX)
+                    || type.startsWith(UniFiProtectBindingConstants.UVC_AI_PRO)) {
                 return UniFiProtectBindingConstants.THING_TYPE_G4_CAMERA;
             }
 
