@@ -54,7 +54,6 @@ public class UniFiProtectBoostrapTest {
 
         rootLogger = (Logger) LoggerFactory.getLogger("org.eclipse.jetty");
         rootLogger.setLevel(Level.WARN);
-
     }
 
     @SuppressWarnings("null")
