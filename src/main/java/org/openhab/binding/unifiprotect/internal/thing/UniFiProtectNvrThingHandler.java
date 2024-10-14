@@ -509,6 +509,10 @@ public class UniFiProtectNvrThingHandler extends BaseBridgeHandler implements Pr
         if (evt == null) {
             return;
         }
+        if (evt.getPropertyName().equals(UniFiProtectAction.PROPERTY_SOCKET_CLOSED)) {
+            logger.info("Socket closed: {}", evt.getNewValue());
+            return;
+        }
         getNvr().refreshEvents();
         UniFiProtectAction action = (UniFiProtectAction) evt.getNewValue();
         UniFiProtectEvent event = getNvr().getEventFromId(action.getId());
@@ -559,10 +563,12 @@ public class UniFiProtectNvrThingHandler extends BaseBridgeHandler implements Pr
         for (Thing thing : getThing().getThings()) {
             if (thing.getHandler() instanceof UniFiProtectBaseThingHandler) {
                 UniFiProtectBaseThingHandler handler = (UniFiProtectBaseThingHandler) thing.getHandler();
-                logger.debug("Handler id: {} name: {} eventCame: {}", handler.getCamera().getId(),
-                        handler.getCamera().getName(), event.getCamera());
-                if (handler.getCamera() != null && handler.getCamera().getId().equals(event.getCamera())) {
-                    return handler;
+                if (handler.getCamera() != null && handler.getCamera().getId() != null) {
+                    logger.debug("Handler id: {} name: {} eventCame: {}", handler.getCamera().getId(),
+                            handler.getCamera().getName(), event.getCamera());
+                    if (handler.getCamera().getId().equals(event.getCamera())) {
+                        return handler;
+                    }
                 }
             }
         }

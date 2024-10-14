@@ -76,7 +76,7 @@ public class UniFiProtectEventManager implements PropertyChangeListener {
             logger.debug("Socket connected!");
         } else if (evt.getPropertyName().equals(UniFiProtectAction.PROPERTY_SOCKET_CLOSED)) {
             logger.debug("Socket disconnected!");
-            actionSocketClosed();
+            actionSocketClosed(evt);
         } else {
             logger.debug("Unhandled Property change in UniFiProtectEventManager: {}", evt.getPropertyName());
         }
@@ -89,8 +89,8 @@ public class UniFiProtectEventManager implements PropertyChangeListener {
         }
     }
 
-    private void actionSocketClosed() {
-        propertyChangeSupport.firePropertyChange(UniFiProtectAction.PROPERTY_SOCKET_CLOSED, null, null);
+    private void actionSocketClosed(PropertyChangeEvent evt) {
+        propertyChangeSupport.firePropertyChange(evt);
     }
 
     private void actionEventDetected(UniFiProtectAction action, String property) {
