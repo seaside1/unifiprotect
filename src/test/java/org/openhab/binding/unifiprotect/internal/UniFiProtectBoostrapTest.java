@@ -37,7 +37,7 @@ import ch.qos.logback.classic.Logger;
  */
 @NonNullByDefault
 public class UniFiProtectBoostrapTest {
-    private static final Logger logger = (Logger) LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
+    private static final Logger logger = (Logger) LoggerFactory.getLogger("org.openhab.binding.unifiprotect.internal");
 
     private UniFiProtectNvrThingConfig config = new UniFiProtectNvrThingConfig();
 
@@ -51,8 +51,10 @@ public class UniFiProtectBoostrapTest {
         config.setEventsTimePeriodLength(13000);
         Logger rootLogger = (Logger) LoggerFactory.getLogger("org.openhab");
         rootLogger.setLevel(Level.DEBUG);
+
         rootLogger = (Logger) LoggerFactory.getLogger("org.eclipse.jetty");
         rootLogger.setLevel(Level.WARN);
+
     }
 
     @SuppressWarnings("null")
@@ -70,6 +72,7 @@ public class UniFiProtectBoostrapTest {
     public void testBootstrap() throws Exception {
         UniFiProtectNvr nvr = new UniFiProtectNvrCustomBootstrap(config);
         nvr.refreshProtect();
+        logger.info("Looking att camera cache {}", nvr.getCameraInsightCache().getCameras().size());
         UniFiProtectCameraCache cameraInsightCache = nvr.getCameraInsightCache();
         cameraInsightCache.getCameras().forEach(c -> logger.info(c.getType()));
     }

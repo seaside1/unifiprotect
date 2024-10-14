@@ -365,11 +365,11 @@ public class UniFiProtectNvrDevice {
     }
 
     public Double getCpuTemperature() {
-        return getSystemInfo().getCpu().getTemperature();
+        return getSystemInfo().getCpu() != null ? getSystemInfo().getCpu().getTemperature() : null;
     }
 
     public Double getCpuAverageLoad() {
-        return getSystemInfo().getCpu().getAverageLoad();
+        return getSystemInfo().getCpu() != null ? getSystemInfo().getCpu().getAverageLoad() : null;
     }
 
     @SuppressWarnings("null")
